@@ -17,3 +17,11 @@
    1. use 'xfce4-appearance-settings' and select a theme
    2. good themes are arc-dark
 6. Get lazy tiling by going to 'xfce4-settings-manager -> window manager -> keyboard -> Tile window to the X'. Also remember to change the window snapping under 'advanced' to snap to screen borders and make the distance a good number to prevent windows from being moved to the next virtual desktop
+7. Yeet the window borders from your xfce by creating an empty xfce window manager theme. Go to 'xfce4-settings-manager -> window manager -> style' and select the 'empty' theme. Its literally a theme with no styles in it. So you will get no borders or anything.
+```
+sudo mkdir -p /usr/share/themes/empty/xfwm4/
+sudo touch /usr/share/themes/empty/xfwm4/themerc
+```
+8. Get the screenshot tool working with 'xfce4-settings-manager -> keyboard' and binding the 'Print' key (printscreen) to your screenshot program (flameshot is my preferred program)
+9. Get moving windows to move to next/prev screen with wmctrl
+10. Fix an issue in VSCode where XFCE takes over the ALT key and you cannot alt+up/down lines of code by rebinding the alt key in VSC to MOD (or something else). press f1 and type f1 and search for 'Preferences: Open Keyboard Shortcuts'.
