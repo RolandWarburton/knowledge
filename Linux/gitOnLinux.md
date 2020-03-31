@@ -28,6 +28,7 @@ git remote set-url origin git@gist.github.com:<Project code>
 ```
 # Should change to the url you just set for the (fetch) and (push) links
 git remote -v
+# should output git@github.com:RolandWarburton/<Project>.git if SSH
 ```
 
 ### SSH commit Issue with VSCode
