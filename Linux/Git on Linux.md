@@ -1,6 +1,6 @@
 # Git on Linux
 
-## Commit without authenticating
+### Commit without authenticating
 Use SSH keys! 😍
 
 1. Generate a SSH key like normal
