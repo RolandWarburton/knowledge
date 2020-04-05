@@ -33,12 +33,7 @@ git remote -v
 
 ### SSH commit Issue with VSCode
 When you commit code with an ssh url you may get the following error
-```
-ssh_askpass: exec(/usr/lib/ssh/ssh-askpass): no such file or directory
-```
+```ssh_askpass: exec(/usr/lib/ssh/ssh-askpass): no such file or directory```
 
 To fix this you need to add that key to your authorization agent (openssh).
-
-```
-ssh-add ~/.ssh/id_rsa
-```
+```ssh-add ~/.ssh/id_rsa```
