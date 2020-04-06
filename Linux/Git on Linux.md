@@ -6,7 +6,6 @@ Use SSH keys! 😍
 1. Generate a SSH key like normal
 ```
 # Generate an ssh key
-
 ssh-keygen
 ```
 2. Go to github -> settings -> keys and add your **public** key to your list of trusted keys.
@@ -14,13 +13,11 @@ ssh-keygen
 
 ```
 # Point your origin url for a git repo
-
 git remote set-url origin git@github.com:<Username>/<Project>.git
 ```
 
 ```
 # Point your origin url for a gist
-
 git remote set-url origin git@gist.github.com:<Project code>
 ```
 
