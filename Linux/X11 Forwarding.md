@@ -24,12 +24,12 @@ X11 Forwarding allows you to launch **applications** from remote linux systems o
 3. edit ```/etc/ssh/sshd_config``` and ```/etc/ssh/ssh_config```.
 ```
 # /etc/ssh/sshd_config
-
+#
 # Either...
 # Globally
 X11Forwarding yes
 X11DisplayOffset 10 <- this is the display number used in step 2.
-
+#
 #Per user/group
 Match user roland
 X11Forwarding yes
@@ -37,7 +37,7 @@ X11DisplayOffset 10
 ```
 ```
 #/etc/ssh/ssh_config
-
+#
 Host *
    ForwardX11 yes
    ForwardX11Trusted yes
