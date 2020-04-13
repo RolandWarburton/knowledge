@@ -19,7 +19,7 @@ For example, lets say you wanted to run a script that ran a nodejs script
 [Unit]
 Description=build my website	# Describe what the unit does
 After=network.target	# When should the unit run
-
+#
 [Service]
 Type=oneshot	# Set the type
 WorkingDirectory=/home/roland/staticFolio	# set the directory to work from
@@ -29,7 +29,7 @@ ExecStartPre=/usr/bin/bash -c 'echo build script ran at $(date) >> /home/roland/
 ExecStart=/home/roland/.nvm/versions/node/v12.16.1/bin/node build.js
 User=roland
 Group=roland
-
+#
 [Install]
 WantedBy= multi-user.target
 ```
@@ -59,7 +59,7 @@ A timer might look like this
 OnBootSec=10 m	# start 10mins after boot
 OnCalendar=daily	# Run once a day at midnight
 Unit=myservice.service	# THis is the service that we are targeting
-
+#
 [Install]
 WantedBy=timers.target
 ```
