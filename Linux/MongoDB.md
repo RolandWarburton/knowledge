@@ -2,7 +2,14 @@
 
 ## Install 
 ### Arch
-Forget about it
+MongoDB happens to be in the AUR as a prebuilt binary. This makes our job way easier. Just install with your favorite AUR helper/manager:
+```
+yay -S mongodb-bin
+```
+Optionally (and highly recommended) is to install the mongodb-compass app that provides a GUI for the mongo shell.
+```
+yay -S mongodb-compass
+```
 
 ### Debian 10
 Use the [official documentation](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-debian/).
