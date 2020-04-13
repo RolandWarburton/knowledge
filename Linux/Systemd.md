@@ -17,15 +17,19 @@ For example, lets say you wanted to run a script that ran a nodejs script
 2. put the following mandatory content in the systemd file
 ```
 [Unit]
-Description=build my website	# Describe what the unit does
-After=network.target	# When should the unit run
+#Describe what the unit does
+Description=build my website
+#When should the unit run
+After=network.target
 #
 [Service]
-Type=oneshot	# Set the type
-WorkingDirectory=/home/roland/staticFolio	# set the directory to work from
-# Do this before ExecStart
+#Set the type
+Type=oneshot
+#set the directory to work from
+WorkingDirectory=/home/roland/staticFolio
+#Do this before ExecStart
 ExecStartPre=/usr/bin/bash -c 'echo build script ran at $(date) >> /home/roland/log.txt'
-# Run this command
+#Run this command
 ExecStart=/home/roland/.nvm/versions/node/v12.16.1/bin/node build.js
 User=roland
 Group=roland
@@ -56,9 +60,12 @@ When you want to run a systemd service file on a regular basis (once every X) yo
 A timer might look like this
 ```
 [Timer]
-OnBootSec=10 m	# start 10mins after boot
-OnCalendar=daily	# Run once a day at midnight
-Unit=myservice.service	# THis is the service that we are targeting
+#start 10mins after boot
+OnBootSec=10 m
+#Run once a day at midnight
+OnCalendar=daily
+#THis is the service that we are targeting
+Unit=myservice.service
 #
 [Install]
 WantedBy=timers.target
