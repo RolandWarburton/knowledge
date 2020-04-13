@@ -43,11 +43,13 @@ Create a user in the **admin** database
 ```javascript
 > use testdb
 
-> db.createUser({
-    user: 'roland',
-    pwd: 'myPassword',
-    roles: [{ role: 'readWrite', db:'Put_Your_Database_Name_Here'}]
-})
+> db.createUser(
+	{ 
+		user: "roland", 
+		pwd: "rhinos", 
+		roles: [ "readWrite", "dbAdmin" ]
+	}
+)
 ```
 
 ```
