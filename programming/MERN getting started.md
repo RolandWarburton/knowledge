@@ -135,6 +135,9 @@ mongo mongodb://roland:rhinos@139.180.169.10:27017/testdb
 ```
 3. mongodb-compass connection using username and password. I find that this only works when using separate fields (click the top left button to switch to field entry rather than  URL entry)
 
+#### Create a collection in your database
+Once you have created the database (testdb). use mongodb-compass to create a collection inside the database (testCollection).
+
 ## Creating the node project
 The initial setup of the node project is very straightforward
 
@@ -175,6 +178,27 @@ The initial setup of the node project is very straightforward
 ## Creating the Front End
 Come back to me. Not done yet :smile:
 
+#### Create a Folder Structure
+The structure of the projects front end should look like this
+```
+├── templates
+│   └── template.html
+├── webpack
+│   ├── plugins.js
+│   ├── modules.js
+│   ├── paths.js
+│   └── common.js
+├── src
+│   ├── styles
+│   ├── components
+│   └── index.js
+├── routes
+│   └── tracks.js
+├── webpack.config.js
+├── package.json
+└── package-lock.json
+```
+
 #### Building the webpack configuration
 1. Common configuration
 2. modules
@@ -198,22 +222,252 @@ DB_CONNECTION=mongodb://<username>:<password>@139.180.169.10:27017/testdb
 ```
 
 ## Creating the Back End
-Come back to me. Not done yet :smile:
+The projects back end should look like this
+```
+├── routes
+│   └── tracks.js
+├── database
+│   └── index.js
+├── controllers
+│   └── tracks.js
+├── models
+│   └── Tracks.js
+├── api
+│   └── index.js
+├── server.js
+├── package.json
+└── package-lock.json
+```
 
-#### Serving React With Express
+* A form from the front end submits data to the /api/track endpoint.
+* Express picks up the submission and uses body-parser to extract the body of the text
+* It then uses routes/tracks.js to find the correct controller to use (for example TrackController.createTrack). The route also passes the (req, res) parameters to createTrack
+* TrackController.createTrack then uses the schema in models/Tracks to create a POST request to the database using mongoose
+
+
+#### Serving React With Express (server.js)
 1. Connecting middleware
    1. CORS and Bodyparser middleware. [reference this](https://expressjs.com/en/resources/middleware/cors.html) and [this](https://www.npmjs.com/package/body-parser). In most most normal situations body parser is parsing json, so call the middleware with `app.use(bodyParser.json())`.
       1. If you need to POST files (like images). The bodyparser middleware needs to be set to `app.use(bodyParser.urlencoded({ extended: false }))` to parse x-www-form-urlencoded. See reference [here](https://dev.to/getd/x-www-form-urlencoded-or-form-data-explained-in-2-mins-5hk6).
    2. Serving the static files ([reference this](https://expressjs.com/en/starter/static-files.html))
 
-#### Creating a router to route axios http requests
-Come back to me. Not done yet :smile:
+#### Connect the server to mongo (database)
+To make the backend more readable and modular. We will create a separate directory called **database** to store the connection code to your server. This helps make your application more secure in case you eccidently exposed your server code on dist but also makes the server.js less cluttered.
 
-#### Creating the a mongoose schema to use with axios
-Come back to me. Not done yet :smile:
+Start by importing the database connection in server.js
+```javascript
+const db = require('./database')
+```
 
-#### Using axios to create controllers for POST, GET etc...
-Come back to me. Not done yet :smile:
+Next write your connection
+```javascript
+// database/index.js
 
-#### Implementing the API with axios
-Come back to me. Not done yet :smile:
+const mongoose = require('mongoose');
+require('dotenv/config');
+
+// connect to the database
+mongoose
+	.connect(process.env.DB_CONNECTION, {
+		useNewUrlParser: true,
+		useUnifiedTopology: true
+	})
+	.catch(err => {
+		console.log(err)
+	});
+
+const connection = mongoose.connection;
+
+connection.once('open', function() {
+    console.log("MongoDB database connection established successfully");
+})
+
+module.exports = connection
+```
+
+#### Create a router to route axios http requests (routes)
+Like the database connection. Routes can also be modularized to make the back end nicer to read and handle more routes in the future.
+1. Create the routes/ directory
+2. I put my tracks.js in routes/ and required it in my server.js
+
+routes/tracks.js is going to be my api endpoint for axios so i require the routes in my server.js like so
+```javascript
+app.use('/api', tracks);
+```
+
+When i want to create a new route in routes/tracks the path will be relative to `/api`.
+
+the routes/tracks.js file imports a TrackController. Each endpoint will call a function from the controller which will use mongoose to POST/GET/DELETE from the database.
+```javascript
+const express = require('express');
+const TrackController = require('../controllers/tracks')
+const router = express.Router();
+
+// should return all tracks
+router.get('/tracks', TrackController.getTracks)
+
+// return a track by its ID
+router.get('/track/:id', TrackController.getTrackById)
+
+// delete a track by its ID
+router.delete('/track/:id', TrackController.deleteTrack)
+
+module.exports = router
+```
+
+##### What is the purpose of axios if we use mongoose to put data into the database?
+Currently none.
+The way the application/back end is set up right now does not use axios to do anything yet.
+
+#### Create the a mongoose schema to use with axios (models)
+In /models/Tracks.js create a schema which is like a template to construct json objects to submit to the server
+```javascript
+const mongoose = require('mongoose')
+
+const Track = mongoose.Schema({
+	title: {
+		type: String,
+		require: true
+	},
+	desc: {
+		type: String,
+		require: true
+	}
+
+}, { collection: 'testCollection' })
+
+module.exports = mongoose.model('Track', Track)
+```
+
+#### Create controllers for POST, GET etc... (controllers)
+In controllers/tracks.js you can create  functions for each action on the database. For example, POSTing, GETting, and DELETE(ing) data.
+
+Make sure to import the mongoose schema to use to create a mongo object
+```javascript
+const Track = require('../models/Tracks')
+
+// now you can create a mongo object to submit to the database with 
+const track = new Track(body)
+```
+
+When you export your controllers use `module.exports` and export it as an array.
+```javascript
+module.exports = {
+	createTrack,
+	deleteTrack,
+	getTracks,
+	getTrackById
+}
+```
+
+#### Generic POST
+```javascript
+createTrack = async (req, res) => {
+	const body = req.body
+	console.log("parsing")
+	console.log(body)
+
+	if (!body) {
+		return res.status(400).json({
+			success: false,
+			error: 'nothing in body'
+		})
+	}
+
+	const track = new Track(body)
+
+	if (!track) {
+		return res.status(400).json({ success: false, error: err })
+	}
+
+	track
+		.save()
+		.then(() => {
+			return res.status(201).json({
+				success: true,
+				id: track.id,
+				desc: track.desc,
+				message: "success!"
+			})
+		})
+		.catch((err) => {
+			return res.status(400).json({
+				success: false,
+				err
+			})
+		})
+}
+```
+
+#### Generic GET all
+```javascript
+getTracks = async (req, res) => {
+	await Track
+		.find({}, (err, tracks) => {
+			if (err) {
+				return res.status(400).json({ success: false, error: err })
+			}
+			if (!tracks.length) {
+				return res
+					.status(404)
+					.json({ success: false, error: `Tracks not found` })
+			}
+			return res.status(200).json({ success: true, data: tracks })
+		})
+		.catch(err => console.log(err))
+}
+```
+
+#### Generic GET by ID
+```javascript
+getTrackById = async (req, res) => {
+	await Track
+		.findOne({ title: req.params.id }, (err, track) => {
+			if (err) {
+				return res.status(400).json({ success: false, error: err })
+			}
+
+			if (!track) {
+				return res
+					.status(404)
+					.json({ success: false, error: `Track not found` })
+			}
+			return res.status(200).json({ success: true, data: track })
+		})
+		.catch((err) => console.log(err))
+}
+```
+
+#### Generic DELETE by ID
+```javascript
+deleteTrack = async (req, res) => {
+	await Track
+		.findOneAndDelete({ title: req.params.id }, (err, track) => {
+			if (err) {
+				return res.status(400).json({ success: false, error: err })
+			}
+
+			if (!track) {
+				return res
+					.status(404)
+					.json({ success: false, error: `track not found` })
+			}
+			return res.status(200).json({ success: true, data: track })
+		})
+		.catch(err => console.log(err))
+}
+```
+
+#### Implement the API with axios (api)
+I am currently not using axios but i plan to eventually.
+
+This should make writing the controllers easier ([reference](https://gist.github.com/PowellTravis/5e629532d7f48c7cfdf37e7e9201ccb7)).
+
+#### Handling images
+I have not finished researching this and this section will remain empty for some time (a long time) until i figure out how this works.
+
+I need to read [this](https://dev.to/getd/x-www-form-urlencoded-or-form-data-explained-in-2-mins-5hk6) to learn about using x-www-form-urlencoded (for sending text/ascii) vs form-data for sending raw data (images etc) ([reference](https://stackoverflow.com/questions/26723467/what-is-the-difference-between-form-data-x-www-form-urlencoded-and-raw-in-the-p))
+
+I should read about [form-data](https://www.npmjs.com/package/form-data) for parsing images through req.body to the controllers/tracks.js code to parse it and insert it into my database
+
+Some other resources to read are this SO post [here](https://stackoverflow.com/questions/48863580/insert-data-into-mongodb-and-upload-image-issue-with-enctype-multipart-form-dat), and this blog post [here](https://bezkoder.com/node-js-upload-store-images-mongodb/)
