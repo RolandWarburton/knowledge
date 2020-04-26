@@ -9,6 +9,7 @@
 
 #### Windows
 
+![MAC_in_linux](/media/MAC_in_Windows.png)
 ```
 ipconfig /all
 ```
