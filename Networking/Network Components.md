@@ -69,4 +69,4 @@ A Channel Service Unit / Data Service Unit is a single piece of hardware that tr
 
 Literally a wireless hub
 
-![WAP](media/WAP.png)
+![WAP](/media/WAP.png)
