@@ -32,8 +32,8 @@ Decidedly less important that private IPs because you dont get a choice in picki
 
 Checking if an IP is public or not can be hard to know without staring at these 2 tables. If you want to check if an IP to see if its public run it through [this](https://ipinfo.info/html/ip_checker.php) and if it returns a whois result then its public.
 
-|   | First Octet Address | IP Range                            | Default Subnet Masks | Spread                                                                                               |
-|---|---------------------|-------------------------------------|----------------------|------------------------------------------------------------------------------------------------------|
-| A | 1-126               | 1.0.0.1 to 126.255.255.254          | 255.0.0.0            | <br>16 million hosts on 126 networks.<br>This class is for large organizations.                      |
-| B | 128-191             | 128.1.0.1 to<br>191.255.255.254     | 255.255.0.0          | <br>65 thousand hosts on 16 thousand networks.<br>This class is used for medium sized organizations. |
-| C | 192-223             | <br>192.0.1.1 to<br>223.255.254.254 | 255.255.255.0        | Supports 254 hosts on 2 million networks                                                             |
+|Class| First Octet Address | IP Range                            | Default Subnet Masks | Spread                                                                                               |
+|-----|---------------------|-------------------------------------|----------------------|------------------------------------------------------------------------------------------------------|
+| A   | 1-126               | 1.0.0.1 to 126.255.255.254          | 255.0.0.0            | <br>16 million hosts on 126 networks.<br>This class is for large organizations.                      |
+| B   | 128-191             | 128.1.0.1 to<br>191.255.255.254     | 255.255.0.0          | <br>65 thousand hosts on 16 thousand networks.<br>This class is used for medium sized organizations. |
+| C   | 192-223             | <br>192.0.1.1 to<br>223.255.254.254 | 255.255.255.0        | Supports 254 hosts on 2 million networks                                                             |
