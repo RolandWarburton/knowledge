@@ -18,10 +18,10 @@ ipconfig /all
 ```
 ip address
 ```
-![MAC_in_linux](media/MAC_in_linux.png)
+![MAC_in_linux](/media/MAC_in_linux.png)
 
 ### Identifying a MAC Address
 
 Mac addresses are written in hexadecimal (0-F)
 
-![MAC_Parts](media/MAC_Parts.png)
+![MAC_Parts](/media/MAC_Parts.png)
