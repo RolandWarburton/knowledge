@@ -88,7 +88,6 @@ You should understand binary while you are learning subnetting on a theory level
 If you are using a different technique you may need to have to convert between up to 8 bits of binary to decimal for each octet of your IPv4 address. Make sure to include these tables in your bound reference book. It covers enough of the conversions that you can manually add or subtract any missing bits without making a fatal math error.
 
 Put this in your reference book for converting between binary and decimal.
-
 | Bin       | Dec |
 |-----------|-----|
 | 100000000 | 128 |
