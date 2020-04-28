@@ -100,6 +100,7 @@ If you are using a different technique you may need to have to convert between u
 | 11111111  | 255 |
 
 
+
 | Bin       | Dec |
 |-----------|-----|
 | 011111111 | 127 |
@@ -110,6 +111,7 @@ If you are using a different technique you may need to have to convert between u
 | 00000011  | 3   |
 | 00000001  | 1   |
 | 00000000  | 0   |
+
 
 
 | Bit | Val |
