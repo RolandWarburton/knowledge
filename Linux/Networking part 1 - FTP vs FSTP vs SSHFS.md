@@ -10,6 +10,13 @@ Use client AND server side configuration.\
 **Server:** ```echo "ClientAliveInterval 120\nClientAliveCountMax 720" > /etc/ssh/sshd_config```.\
 Server makes client send 1 null packet every 120s a maximum of 720 times. 120*720=24 hours. 
 
+Heres the copy pasta version for configuration!
+```
+echo "ServerAliveInterval 60" > ~/.ssh/config
+echo "ClientAliveInterval 120"> /etc/ssh/sshd_config
+echo "ClientAliveCountMax 720"> /etc/ssh/sshd_config
+```
+
 ### SSHFS Vs SFTP
 * SFTP is a common protocol for graphical ftp clients such as filezilla or network drive mounting with Thunar.
 * SSHFS is easier to configure and more lightweight than using virtual file systems inside your graphical file manager. Instead you mound a drive over the command line.
