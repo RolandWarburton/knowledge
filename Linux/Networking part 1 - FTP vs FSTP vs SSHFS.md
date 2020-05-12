@@ -6,15 +6,15 @@
 
 ### Prevent timeout for SSH/FTP/SFTP sessions
 Use client AND server side configuration.\
-**Client:** ```echo "ServerAliveInterval 60" > ~/.ssh/config```.\
-**Server:** ```echo "ClientAliveInterval 120\nClientAliveCountMax 720" > /etc/ssh/sshd_config```.\
+**Client:** ```echo "ServerAliveInterval 60" >> ~/.ssh/config```.\
+**Server:** ```echo "ClientAliveInterval 120\nClientAliveCountMax 720" >> /etc/ssh/sshd_config```.\
 Server makes client send 1 null packet every 120s a maximum of 720 times. 120*720=24 hours. 
 
 Heres the copy pasta version for configuration!
 ```
-echo "ServerAliveInterval 60" > ~/.ssh/config
-echo "ClientAliveInterval 120"> /etc/ssh/sshd_config
-echo "ClientAliveCountMax 720"> /etc/ssh/sshd_config
+echo "ServerAliveInterval 60" >> ~/.ssh/config
+echo "ClientAliveInterval 120">> /etc/ssh/sshd_config
+echo "ClientAliveCountMax 720">> /etc/ssh/sshd_config
 ```
 
 ### SSHFS Vs SFTP
