@@ -13,8 +13,8 @@ Server makes client send 1 null packet every 120s a maximum of 720 times. 120*72
 Heres the copy pasta version for configuration!
 ```
 echo "ServerAliveInterval 60" >> ~/.ssh/config
-echo "ClientAliveInterval 120">> /etc/ssh/sshd_config
-echo "ClientAliveCountMax 720">> /etc/ssh/sshd_config
+echo "ClientAliveInterval 120" >> /etc/ssh/sshd_config
+echo "ClientAliveCountMax 720" >> /etc/ssh/sshd_config
 ```
 
 ### SSHFS Vs SFTP
