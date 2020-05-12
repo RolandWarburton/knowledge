@@ -19,5 +19,15 @@ useradd -g users -G wheel,storage,power -m roland
 * Create a home directory folder for Roland with ```-m``` 
 * Dont forget to allow roland (and other members of wheel) access to sudo by enabling access in ```/etc/sudoers```
 
-### Getting the desktop going
+#### Getting the desktop going
 After installing your WM/DE of choice copy startx config from ```/etc/X11/xinit/xinitrc``` to ```~/.xinitrc``` and then refer to [startx debugging](https://github.com/RolandWarburton/knowledge/Debugging) because i dont think i have ever gotten startx to work first try without wanting to poke my eyes out.
+
+
+#### Setting a hostname
+Edit /etc/hostname and give your computer a name. This will be in the format of `user@hostname`.
+
+Once you have changed your hostname file. add that host to `/etc/hosts` and add a host entry for a connection when you ssh into the machine. For example:
+```
+127.0.0.1 localhost
+127.0.1.1 MyCustomHostname # <- change to the same name that you set in /etc/hostname
+```
