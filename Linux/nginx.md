@@ -231,6 +231,53 @@ server{
 }
 ```
 
+### Full Config Example
+Make sure you have the correct *A records* in your DNS settings on your nameserver. In this example namecheap is the domain host so the @ represents an empty field (ie roaming.host with no subdomain or www).
+| Type     | Host | Value          | TTL       |
+|----------|------|----------------|-----------|
+| A Record | @    | 149.28.174.161 | Automatic |
+| A Record | api  | 149.28.174.161 | Automatic |
+| A Record | www  | 149.28.174.161 | Automatic |
+
+```
+# Roaming Host
+server {
+	listen 80 default_server;
+	server_name roaming.host default_server;
+	index index.html;
+	root /var/www/roaming.host;
+
+	location = /fm/ {
+#		clear the index so it doesn't match anything
+		index _;
+		alias /var/www/secret/;
+		autoindex on;
+	}
+
+	location /testing {
+		alias /var/www/secret/;
+	}
+
+	location / {
+		autoindex on;
+		try_files $uri $uri.html $uri/ /404;
+	}
+
+	location = /500 {
+		return 500;
+	}
+
+}
+
+# roaming host API
+server {
+	listen 80;
+	index index.html;
+	server_name api.roaming.host;
+	root /var/www/api.roaming.host;
+}
+```
+
 ## Nginx Configuration
 
 ### HTTP2
