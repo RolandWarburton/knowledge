@@ -233,6 +233,8 @@ server{
 
 ### Full Config Example
 Make sure you have the correct *A records* in your DNS settings on your nameserver. In this example namecheap is the domain host so the @ represents an empty field (ie roaming.host with no subdomain or www).
+<br />
+
 | Type     | Host | Value          | TTL       |
 |----------|------|----------------|-----------|
 | A Record | @    | 149.28.174.161 | Automatic |
