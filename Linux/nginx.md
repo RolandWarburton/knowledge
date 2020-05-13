@@ -278,6 +278,68 @@ server {
 }
 ```
 
+### Debugging
+
+#### Disable HTTPS redirects
+Heres the situation. I have 2 server blocks. Server block `roaming.host` is listening on port 443 for HTTPS traffic and server block `api.roaming.host` is listening on port 80 for HTTP traffic.
+
+```
+server {
+	listen 443 ssl;
+	listen [::]:443 ssl;
+	server_name roaming.host;
+	
+#	...code
+}
+
+server {
+	listen 80;
+	listen [::]:80;
+	server_name api.roaming.host;
+
+#	...code
+}
+```
+
+What would happen if i tried to access `https://api.roaming.host` (on https/443)?
+
+Nginx has documentation about how a process is requested [here](https://nginx.org/en/docs/http/request_processing.html), and in this situation your request to api.roaming.host will actually be passed to roaming.host instead by default. This is because of the order that nginx uses to determine the server block to pass the request to. In this case the given route starts with https so roaming.host is considered above api.roaming.host because the port matches (listen: 80 or listen: 443) outranks the importance of the server_name.
+
+To fix this and redirect https requests to api.roaming.host which is not configured to work on https you should create a fallback server. In fact while you are at it create two to take care of the reverse situation (:80 request to a site that should be :443 getting redirected back to the :80 site).
+
+
+These server blocks are hit as a last resort when nginx cant match the request to any other reasonable server in the config. 
+
+Ie when a request comes in for api.roaming.host:443 and api.roaming.host can only handle api.roaming.host:80 the default_server block is called instead of roaming.host:443
+```
+# default server blocks
+when a nginx
+server {
+	server_name roaming.host;
+#	...
+}
+
+server {
+	server_name api.roaming.host;
+#	...
+}
+
+# Default server to prevent invalid ports
+# ...being switched to sites that dont match that port
+# This works because default_server is called as a last resort
+server {
+	listen 443 default_server;
+	return 403;
+}
+
+# Another default server for the reverse 
+# ...(requests to :80 that should go to :443)
+server {
+	listen 80 default_server;
+	return 403;
+}
+```
+
 ## Nginx Configuration
 
 ### HTTP2
