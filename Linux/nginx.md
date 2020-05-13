@@ -241,6 +241,8 @@ Make sure you have the correct *A records* in your DNS settings on your nameserv
 | A Record | api  | 149.28.174.161 | Automatic |
 | A Record | www  | 149.28.174.161 | Automatic |
 
+<br />
+
 ```
 # Roaming Host
 server {
