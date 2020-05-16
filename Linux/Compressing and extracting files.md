@@ -5,4 +5,4 @@
 * Extract a file.tar.gz the easier way ```gunzip file.tar.gz```
 * Extract a file.tar.gz to a location ```tar xvzf file.tar.gz -C /some/location/```
 * Extract a file.tar.bz2 ```tar xvjf file.tar.bz2``` (j for bz2)
-* Compress a file ```tar cvzf file.tar.gz```
+* Compress a file ```tar cvzf file.tar.gz file```
