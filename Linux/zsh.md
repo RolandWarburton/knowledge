@@ -6,35 +6,36 @@
 ### Setting up ZSH
 1. Install using your distros package manager (pacman, apt, brew, or even WSL).
 2. Set up a location to put your config files by exporting `$ZDOTDIR` through `~/.zshenv` in your home directory or /etc/zsh/zshenv.
-```
-! Make the new location for config files
+```bash
+# Make the new location for config files
 mkdir -p ~/.config/zsh
 
-! Tell ZSH to load configs from the new ZDOTDIR
+# Tell ZSH to load configs from the new ZDOTDIR
 sudo echo export ZDOTDIR=$HOME/.config/zsh >> /etc/zsh/zshenv
 
-! Create config files in their new home
+# Create config files in their new home
 touch ~/.config/zsh/.zsh_aliases
 touch ~/.config/zsh/.zshrc
 
-! Or move them
+# Or move them
 cp ~/.zsh_aliases ~/.zshrc ~/.config/zsh
 ```
 3. Change your shell
-```
-! Change the shell for the current user
+
+```bash
+# Change the shell for the current user
 chsh -s $(which zsh)
 
-! Change the shell for root
+# Change the shell for root
 sudo chsh -s $(which zsh)
 ```
-3. Start configuring!
+1. Start configuring!
 
 ### Setting up fpath
 *fpath* is like *$PATH* but just for *ZSH*, you can see your fpath by running `echo $fpath`.
 
-```
-! echo $fpath
+```bash
+# echo $fpath
 
 /home/roland/.config/zsh/userFunctions /usr/local/share/zsh/site-functions /usr/share/zsh/site-functions /usr/share/zsh/functions/Calendar /usr/share/zsh/functions/Chpwd /usr/share/zsh/functions/Completion /usr/share/zsh/functions/Completion/Base /usr/share/zsh/functions/Completion/Linux /usr/share/zsh/functions/Completion/Unix /usr/share/zsh/functions/Completion/X /usr/share/zsh/functions/Completion/Zsh /usr/share/zsh/functions/Exceptions /usr/share/zsh/functions/Math /usr/share/zsh/functions/MIME /usr/share/zsh/functions/Misc /usr/share/zsh/functions/Newuser /usr/share/zsh/functions/Prompts /usr/share/zsh/functions/TCP /usr/share/zsh/functions/VCS_Info /usr/share/zsh/functions/VCS_Info/Backends /usr/share/zsh/functions/Zftp /usr/share/zsh/functions/Zle
 ```
