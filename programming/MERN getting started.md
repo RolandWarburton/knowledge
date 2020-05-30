@@ -471,3 +471,36 @@ I need to read [this](https://dev.to/getd/x-www-form-urlencoded-or-form-data-exp
 I should read about [form-data](https://www.npmjs.com/package/form-data) for parsing images through req.body to the controllers/tracks.js code to parse it and insert it into my database
 
 Some other resources to read are this SO post [here](https://stackoverflow.com/questions/48863580/insert-data-into-mongodb-and-upload-image-issue-with-enctype-multipart-form-dat), and this blog post [here](https://bezkoder.com/node-js-upload-store-images-mongodb/)
+
+One possible solution is to upload the file to a directory and then store a path to that file on the server in mongodb.
+
+To do this you need:
+1. `form-data` to construct a FormData object to store blob information about the image when you POST it to express
+2. `formidable` to deconstruct the FormData object. You cannot use body-parser for this as it only works with x-www-form-urlencoded (ie. json) data only.
+
+1. On `src/components/Home` in your `onsubmit()` function construct a new form for submission to your axios api function
+```javascript
+const form = new FormData()
+		const input = document.querySelector('input[type=file]')
+		form.append("image", input.files[0])
+		form.append("title", "myTitle")
+		form.append("desc", "myDesc")
+		api.createTrack(form);
+```
+2. Your axios api then receives the FormData object as a single parameter and then passes it as an argument to the `/api/track` route as a POST request
+3. Express picks up this POST request from axios and executes the `controllers/tracks.js` function which takes a `(req, res)` parameter and then imports formidable to deconstruct the `req` and extracts all the fields. It then modifies the `res` header with the now extracted json data.
+```javascript
+createTrack = (req, res) => {
+	console.log("parsing the request through formidable")
+	
+	const form = formidable({ multiples: true });
+
+	form.parse(req, (err, fields, files) => {
+		if (err) {
+			next(err);
+			return;
+		}
+		res.json({ fields, files });
+	});
+}
+```
