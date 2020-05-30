@@ -41,18 +41,18 @@ sudo chsh -s $(which zsh)
 
 In the default zsh config you get some useful functions for manipulating your fpath.
 
-##### fpath prepend
+### fpath prepend
 Prepend a directory to your fpath. You can now call functions from inside your fpath.
 ```bash
 function fpath-prepend {
     [[ -d "$1" ]] && fpath=($1 $fpath)
 }
 
-! Example use. prepend your own function directory to fpath
+# Prepend your own function directory to fpath
 fpath-prepend "$HOME/.config/zsh/userFunctions"
 ```
 
-##### autoload functions
+### autoload functions
 Say you have a directory thats in your fpath and you want to lazy load (autoload) the function into zsh (source the function only when needed). More info [here](https://unix.stackexchange.com/questions/33255/how-to-define-and-load-your-own-shell-function-in-zsh).
 
 ```
@@ -63,30 +63,47 @@ Say you have a directory thats in your fpath and you want to lazy load (autoload
 ```
 
 ```bash
-! .config/zsh/userFunctions/hello
+# .config/zsh/userFunctions/hello
 
 #!/bin/sh
 echo "hello!"
 ```
 
-```
-! With the -U flag, alias expansion is suppressed when the function is loaded. 
-! The flags -z and -k mark the function to be autoloaded using the zsh or ksh style.
+```bash
+# .config/zsh/.zshrc
 
-! .config/zsh/.zshrc
-...
+# With the -U flag, alias expansion is suppressed when the function is loaded. 
+# The flags -z and -k mark the function to be autoloaded using the zsh or ksh style.
 autoload -Uz hello
+
+# Ensure fpath does not contain duplicates
+typeset -gU fpath
 ```
 
 ```bash
-! now inside your terminal you can run 'which hello':
+# now inside your terminal you can run 'which hello':
 hello () {
 	# undefined
 	builtin autoload -XU
 }
 
-! now run the 'hello' command:
+# now run the 'hello' command:
 hello () {
 	echo "hello!"
 }
+```
+
+```bash
+# .config/zsh/.zshrc
+# Complete example
+
+function fpath-prepend {
+    [[ -d "$1" ]] && fpath=($1 $fpath)
+}
+
+fpath-prepend "$HOME/.config/zsh/userFunctions"
+
+autoload -Uz hello
+
+typeset -gU fpath
 ```
