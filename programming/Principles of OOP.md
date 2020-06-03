@@ -1,6 +1,6 @@
 # Principles of OOP
 
-### Introduction
+## Introduction
 
 OOP, otherwise known as Object Oriented Programming is a programming
 concept of putting data structures inside objects to better isolate functions of
@@ -46,7 +46,7 @@ decoupled (the opposite of coupled) as there are many different methods
 within the ‘game’ class that serve different purposes.
 
 
-### Abstraction
+## Abstraction
 
 #### What is Abstraction
 
@@ -82,7 +82,7 @@ Abstraction as the way your object interfaces out, And encapsulation is the
 way that other objects interface in to your object.
 
 
-### Encapsulation
+## Encapsulation
 
 Attribute accessors are restricted to either accessors or mutators, these fields
 are considered state based which means that their attributes store the current
@@ -106,11 +106,11 @@ Through mutators usually use the set property method, both accessors and
 mutators can be any public method that alters the state of the object. for
 example, regular methods.
 
-### Inheritance
+## Inheritance
 
 #### What is Inheritance
 
-A good way to think about inheritance is to think of it as a hierachy.
+A good way to think about inheritance is to think of it as a hierarchy.
 Ie. If C inherits from B and B inherits from A. then C inherits A as well.
 C→B and B→A then C→ A.
 
@@ -146,7 +146,7 @@ the hovercraft inherit from? Possible solutions are using an interface, or
 abstracting the vehicle class even more in order to properly encompass boats.
 
 This scenario can become a problem when a ‘fragile base class’ can occur. As
-a result the program could become overabstracted. If theres a sudden change
+a result the program could become over-abstracted. If theres a sudden change
 you need to make at the base class level, it will create lots of problems with
 your inheriting classes.
 
@@ -157,16 +157,16 @@ allowed multiple inheritances. But this can be subverted by having 1 base
 class and multiple interfaces using it.
 Functionally an interface and inheriting class are different, However from a
 conceptual standpoint the two concepts are very similar. Ie, if you had an
-abstract base class that impliments no methods and you inherit from it, its
+abstract base class that implements no methods and you inherit from it, its
 conceptually the same as an interface.
 
 
-### Polymorphism
+## Polymorphism
 
 Polymorphism is a greek term meaning an object has the ability to take more
 than 1 form.
 
-Multiple methods have the same name, but have different behaviour in
+Multiple methods have the same name, but have different behavior in
 different instances. Functionally Polymorphism is the ability to process objects
 differently based on their type/class.
 
