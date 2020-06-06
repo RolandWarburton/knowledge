@@ -44,3 +44,12 @@ Monitors: 3
 ### OBS
 
 Getting virtual cameras working in OBS is super easy. Make sure you have **obs-v4l2sink** installed. Restart OBS and go to **tools -> v4l2sink** and select your virtual camera. Then go ahead and add a *video Capture Device* and select your video\[number\] device.
+
+
+### Testing
+Run mpv and point it at your virtual device to see it working in action. For web testing use a webcam testing site like [this one](https://webcamtests.com/) or even [this one](https://www.onlinemictest.com/webcam-test/).
+
+MPV testing
+```
+mpv av://v4l2:/dev/video[number]
+```
