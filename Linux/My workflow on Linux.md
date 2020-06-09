@@ -93,6 +93,16 @@ davidanson.vscode-markdownlint
 
 > Linting for markdown
 
+To ignore lint rules (such as MD010 no hard tabs in code fences) edit `~/.config/Code - OSS/User/settings.json` With the following.
+
+```json
+{
+	"markdownlint.config": {
+		"MD010": false
+	}
+}
+```
+
 #### React snippits
 
 burkeholland.simple-react-snippets
