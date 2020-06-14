@@ -1,8 +1,7 @@
 # Things to learn still
+
 - [ ] What's Polkit?
 - [ ] QT vs GTK. configs, what uses these (openbox with which one, or both?)
-- [ ] MERN Vs LAMP. Pros of using MERN stack and its applications for my projects (folio site)
-  - [ ] What is a style loader
 - [ ] What is conky?
 - [ ] Docker
 - [ ] rsync
@@ -12,10 +11,12 @@
 - [ ] actually learn git properly
 - [ ] VIM keys and VIM in general
 - [ ] UEFI/EFI/BIOS booting and all that stuff
-- [ ] Learn how to network boot arch for the worlds biggest flex
 - [ ] Learn About GPG keys
 - [ ] lsof command
   - [ ] maybe netstat (lsof can replace netstat but its good to know both)
+- [x] MERN Vs LAMP. Pros of using MERN stack and its applications for my projects (folio site)
+  - [x] What is a style loader. [reference](https://medium.com/a-beginners-guide-for-webpack-2/webpack-loaders-css-and-sass-2cc0079b5b3a)
+- [x] Learn how to network boot arch for the worlds biggest flex
 - [x] How to install an icon theme
 - [x] Debian/Ubuntu APT manager (should come back to this one again soon)
 - [x] Difference between ```sudo apt-get update``` and ```sudo apt update```

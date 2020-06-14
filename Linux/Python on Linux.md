@@ -1,5 +1,7 @@
 # PIP and Python
+
 ### Environments
+
 "aughhhh pip is a mess! I dont want pip packages installed globally!!!"\
 Create an environment for pip stuff in a folder (works with python3 only)
 
@@ -9,12 +11,16 @@ Create an environment for pip stuff in a folder (works with python3 only)
 4. to exit the venv. ```deactivate``` (another bash command)
 
 ### PIP packages are not recognised
+
 Install the python extension to python and use the bottom left menu titled 'python 3.x.x 64 bit' and click on it to change the environment.
 
 ### Cant import package thats nested in a folder
+
 use the syntax ```import foldername.somefile```.
 
 ### pip list Vs pip freeze
+
 without installing any extra packages there are 43 packages in pip list and 39 packages in pip freeze.
+
 * pip list is longer because it has the package *setuptools* and *pip* itself.
 * Pip freeze is used to generate the *requirements.txt* file for automatically installing a list of packages.

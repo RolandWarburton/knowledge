@@ -25,7 +25,7 @@ showkey -a
 
 * install xdotools (execute virtual key events) and xbindkeys (rebind keys to do things when you press them)
 You can check for Key IDs with either *xev* or *xbindkeys -k*
-* You can see xdotools in action with an example command: 
+* You can see xdotools in action with an example command:
   1. ```sleep 0.5 && xdotool click 2``` Click the middle mouse button
   2. ```sleep 0.5 && xdotool key 's'``` Type the S key
 * Run the config with ```xbindkeys```

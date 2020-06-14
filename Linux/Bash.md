@@ -1,9 +1,12 @@
 # Bash
+
 Theres a lot of more notes to add here 😧
 
-### Cant use echo in bash script.
+### Cant use echo in bash script
+
 Use printf instead.
-```
+
+```bash
 myVar="hello"
 printf 'test '${myVar}' test' ;
 ```

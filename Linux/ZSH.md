@@ -1,11 +1,14 @@
 # ZSH
 
 ### What is ZSH
+
 [ZSH](https://en.wikipedia.org/wiki/Z_shell) is an alternative shell to bash. Its very similar in syntax but comes with extra features that make it pretty neat.
 
 ### Setting up ZSH
+
 1. Install using your distros package manager (pacman, apt, brew, or even WSL).
 2. Set up a location to put your config files by exporting `$ZDOTDIR` through `~/.zshenv` in your home directory or /etc/zsh/zshenv.
+
 ```bash
 # Make the new location for config files
 mkdir -p ~/.config/zsh
@@ -17,6 +20,7 @@ touch ~/.config/zsh/.zshrc
 # Or move them
 cp ~/.zsh_aliases ~/.zshrc ~/.config/zsh
 ```
+
 3. Change your shell
 
 ```bash
@@ -25,9 +29,11 @@ chsh -s $(which zsh)
 # Change the shell for root
 sudo chsh -s $(which zsh)
 ```
+
 4. Start configuring!
 
 ### Setting up fpath
+
 *fpath* is like *$PATH* but just for *ZSH*, you can see your fpath by running `echo $fpath`.
 
 ```bash
@@ -38,7 +44,9 @@ sudo chsh -s $(which zsh)
 In the default zsh config you get some useful functions for manipulating your fpath.
 
 ### fpath prepend
+
 Prepend a directory to your fpath. You can now call functions from inside your fpath.
+
 ```bash
 function fpath-prepend {
     [[ -d "$1" ]] && fpath=($1 $fpath)
@@ -48,9 +56,10 @@ fpath-prepend "$HOME/.config/zsh/userFunctions"
 ```
 
 ### autoload functions
+
 Say you have a directory thats in your fpath and you want to lazy load (autoload) the function into zsh (source the function only when needed). More info [here](https://unix.stackexchange.com/questions/33255/how-to-define-and-load-your-own-shell-function-in-zsh).
 
-```
+```none
 .config/zsh/userFunctions/
 ├── bar
 ├── foo
@@ -67,7 +76,7 @@ echo "hello!"
 ```bash
 # .config/zsh/.zshrc
 #
-# With the -U flag, alias expansion is suppressed when the function is loaded. 
+# With the -U flag, alias expansion is suppressed when the function is loaded.
 # The flags -z and -k mark the function to be autoloaded using the zsh or ksh style.
 autoload -Uz hello
 

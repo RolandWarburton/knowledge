@@ -1,6 +1,7 @@
 # Working with files
 
 ### Working with TAR
+
 * Extract a file.tar.gz ```tar -xvzf file.tar.gz``` (e**X**tract, **V**erbose, **G**zip, **F**ile )
 * Extract a file.tar.gz the easier way ```gunzip file.tar.gz```
 * Extract a file.tar.gz to a location ```tar xvzf file.tar.gz -C /some/location/```

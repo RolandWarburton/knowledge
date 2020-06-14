@@ -28,7 +28,7 @@ Xorg and gvim use the + buffer ("+) to copy content to Xorgs clipboard
 
 You can make this faster by creating key bind for it in your `.vimrc`
 
-```
+```none
 " copy and paste in vim
 " visual non recursive remap ctrl-c to yank to + register (xorg)
 vnoremap <C-c> "+y
