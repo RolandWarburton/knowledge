@@ -127,7 +127,7 @@ Mirror: Singapore
 3. Follow the install instructions in the installer
 4. If you are installing on a laptop (like me) you will likely only have 1 eth port on your laptop, so you will need a switch to facilitate your internet modem, computer and other devices, and your laptop pfsense router. I am using a Cisco 3750 and have connected F0/0/1 -> modem, and F0/0/2 -> laptop router.
 
-## Setting up Basic Configuration
+### Setting up Basic Configuration
 
 * My current router is on 192.168.0.0/24
 * ISP/default gateway (telstra modem) = 192.168.0.1
@@ -136,7 +136,7 @@ Mirror: Singapore
 * PFSense WAN = re0.100	no ip
 * PFSense LAN = re0.200 192.168.0.200
 
-#### Switch Config
+### Switch Config
 
 ```none
 vlan 200
@@ -162,7 +162,7 @@ int f1/0/3
 	switchport mode access
 ```
 
-#### PFSense Config
+### PFSense Config
 
 1. Create Vlans -> yes
 2. Create 2 vlans on your single internet for WAN and LAN
@@ -189,13 +189,13 @@ You should now be able to connect to 192.168.0.200 (pfsense) from a computer on 
 * Secondary DNS = 8.8.4.4
 * Enable internal traffic, because the PFSense box is on the inside of the network
 
-#### Testing
+### Testing
 
 * You should be able to ping 192.168.0.10 (switch) -> 192.168.0.1 (modem)
 * 192.168.0.10 (switch) -> 192.168.0.200 (pfsense) and vice versa
 * You should be able to access 192.168.0.200 (pfsense) from a computer connected anywhere on 192.168.0.200
 
-#### Setting up SSH to connect to switch
+### Setting up SSH to connect to switch
 
 ```none
 username roland privilege 15 secret p@ssw0rd
@@ -207,7 +207,7 @@ line vty 0 15
 	login local
 ```
 
-#### Setting up SSH to connect to PFSense
+### Setting up SSH to connect to PFSense
 
 web interface -> system -> advanced -> Secure Shell.
 
