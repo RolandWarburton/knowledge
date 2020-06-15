@@ -81,6 +81,8 @@ For example my desktop PC is on my captive portal LAN interface, but outside the
 
 Another common example is if you are running services like PFBlockerNG that perform DNS filtering, by default the ip address that PFBlockerNG uses as its DNS is `10.10.10.1`. So you need to add this address to the list of allowed IPs (both directions as well) for DNS resolution to work on the captive portal.
 
+More useful debugging information for the captive portal can be found [here](https://docs.netgate.com/pfsense/en/latest/captiveportal/captive-portal-troubleshooting.html).
+
 ## PFSense on a laptop
 
 Ie. How to set up PFSense on a device with 1 port using vlans.
