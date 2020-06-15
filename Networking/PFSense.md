@@ -6,7 +6,7 @@ Log of PFSense notes.
 
 Make sure your DNS servers on linux are actually pointing to your PFSense router.
 
-```bash
+```none
 cat /etc/resolv.conf
 ```
 
@@ -16,11 +16,11 @@ The result of a non blocked website will return its correct IP from its domain n
 
 Example of successful domain resolution (domain **isnt** blocked)
 
-```bash
+```none
 drill isitblocked.org
 ```
 
-```bash
+```none
 ;; ANSWER SECTION:
 isitblocked.org.	3126	IN	A	74.208.236.124
 ```
@@ -29,11 +29,11 @@ Example of unsuccessful domain resolution (domain **is** blocked).
 
 The returned IP is the virtual IP of PFBlockerNG.
 
-```bash
+```none
 drill analytics.163.com
 ```
 
-```bash
+```none
 ;; ANSWER SECTION:
 analytics.163.com.	59	IN	A	10.10.10.1
 ```
