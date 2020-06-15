@@ -89,6 +89,22 @@ First create a new group under `System -> User Manager -> groups`. Call the grou
 
 Now go back to users and create a new user, Make sure to give them a password AND add give them group membership of the Captive_Portal group.
 
+### Captive portal vouchers
+
+Under `Services -> Captive Portal` click edit on your captive portal and then navigate to the vouchers tab.
+
+From the vouchers tab click the enable button and then click save.
+
+Now scroll back up to the top of the vouchers page and you should be able to click the `Add` button to create a new *Voucher Roll*
+
+You can give the roll any number you choose, if you give the new roll the number of a previous roll the old one will be overwritten and delete any unactivated/activated vouchers.
+
+Next pick the minuites per voucher, count (number of vouchers to generate in this particular roll), and an administrative comment.
+
+You can now go back to the main vouchers tab and click the export button on the row for the rolls you just generated.
+
+To test your vouchers copy one from the exported csv and go to `Status -> Captive Portal` and navigate to the `Test Vouchers` tab and paste in a voucher to see its elegibility and time remaining in the database.
+
 ## PFSense on a laptop
 
 Ie. How to set up PFSense on a device with 1 port using vlans.
