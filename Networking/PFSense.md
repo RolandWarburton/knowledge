@@ -83,6 +83,12 @@ Another common example is if you are running services like PFBlockerNG that perf
 
 More useful debugging information for the captive portal can be found [here](https://docs.netgate.com/pfsense/en/latest/captiveportal/captive-portal-troubleshooting.html).
 
+### Captive portal user authentication
+
+First create a new group under `System -> User Manager -> groups`. Call the group **Captive_Portal** and give it local scope. Next click the *Add* button on the same page and assign the group Captive_Portal group the **User - Services: Captive Portal login** permission.
+
+Now go back to users and create a new user, Make sure to give them a password AND add give them group membership of the Captive_Portal group.
+
 ## PFSense on a laptop
 
 Ie. How to set up PFSense on a device with 1 port using vlans.
