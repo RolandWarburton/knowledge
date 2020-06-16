@@ -15,6 +15,7 @@ inheritance) would be useful for this type of task where many objects need to
 be handled.
 
 Object Oriented Programming has 4 major principles. they are:
+
 * **Abstraction** - Using a focused representation of an actual item
 * **Encapsulation** - Hiding the internals of an object
 * **Inheritance** - Reusing code from an existing object
@@ -45,7 +46,6 @@ understood purpose. This makes Cohesion low. Similarly its not well
 decoupled (the opposite of coupled) as there are many different methods
 within the ‘game’ class that serve different purposes.
 
-
 ## Abstraction
 
 #### What is Abstraction
@@ -59,7 +59,6 @@ down to a model that can be better understood by a program.
 
 In more functional sense. An abstract class occurs when you don’t have
 enough specific information to summarize the same group of objects.
-
 
 #### Goals of Abstraction
 
@@ -81,7 +80,6 @@ A good comparison between Abstraction and encapsulation is to define
 Abstraction as the way your object interfaces out, And encapsulation is the
 way that other objects interface in to your object.
 
-
 ## Encapsulation
 
 Attribute accessors are restricted to either accessors or mutators, these fields
@@ -91,7 +89,6 @@ fields/states can be made available to other classes through the use of
 properties to expose them to be pseudo public, it allows the programmer to
 decide what data is visible to a program and what should be
 hidden/encapsulated within the object.
-
 
 #### Accessors and Mutators
 
@@ -150,7 +147,7 @@ a result the program could become over-abstracted. If theres a sudden change
 you need to make at the base class level, it will create lots of problems with
 your inheriting classes.
 
-#### Inheritance in C#
+#### Inheritance in C\#
 
 In C# you can only have 1 base class, this means you are effectively not
 allowed multiple inheritances. But this can be subverted by having 1 base
@@ -159,7 +156,6 @@ Functionally an interface and inheriting class are different, However from a
 conceptual standpoint the two concepts are very similar. Ie, if you had an
 abstract base class that implements no methods and you inherit from it, its
 conceptually the same as an interface.
-
 
 ## Polymorphism
 

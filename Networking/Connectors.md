@@ -4,7 +4,7 @@
 
 Positions and contacts can be abbreviated to 4P6C (4 positions, 6 contacts).
 
-Usually it only makes sense that a cable standard has the same number of positions as it has contacts. Though sometimes the numbers might be different. 
+Usually it only makes sense that a cable standard has the same number of positions as it has contacts. Though sometimes the numbers might be different.
 
 ### Common Jack Identifiers
 
@@ -61,7 +61,6 @@ Usually it only makes sense that a cable standard has the same number of positio
 * Used with T1 lines (1.544 Mbit/s)
 * Wired differently to the RJ-45
 
-
 ### UTP (Unshielded Twisted Pair) Coupler
 
 ![UTP_Coupler](/media/UTP_Coupler.png)
@@ -99,7 +98,7 @@ Literally an extender for coaxial cables
 
 ### IEEE 1934 (aka: Firewire)
 
-![](/media/IEEE_1394_firewire.png)
+![firewire](/media/IEEE_1394_firewire.png)
 
 * Commonly used to attach some types of peripherals such as: cameras, printers and network connections
 * Carries moderate power over the cable to charge cameras etc
@@ -148,7 +147,6 @@ Literally an extender for coaxial cables
   * DB-9
   * DB-25
 
-
 ## UPC vs APC fiber cable
 
 UPC and APC are types of connectors for connecting a **fiber cable** to another **fiber cable**.
@@ -156,12 +154,14 @@ UPC and APC are types of connectors for connecting a **fiber cable** to another 
 A UPC or APC couples the cables together in different ways to comply with different tolerances in data loss.
 
 ### Example 1
+
 **2 ST fiber cables equipped with UPC connectors:** As you make the connection between the two UPC connectors, their surfaces will make contact, however some light will bounce back due to imperfections in the surface (as seen below.) This creates signal loss.
 
 This type of manufacturing Is cheap and effective over short distances.
 ![UPC2UPC_Fiber](/media/UPC2UPC_Fiber.png)
 
 ### Example 2
+
 To reduce the signal loss in UPC, APC coupling was created.
 
 In this diagram **2 ST fiber cables equipped with APC connectors** are coupled with two slanted surfaces which **reduce** signal loss by bouncing the cable back into the wall of the cable.

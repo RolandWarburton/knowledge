@@ -11,6 +11,7 @@ Without further note, lets get started!
 ## Core concepts
 
 #### Theory
+
 * Subnets
 * L2 vs L3 switching
 * Binary
@@ -18,6 +19,7 @@ Without further note, lets get started!
 * Routers
 
 #### Configuration
+
 * VLANs
 * SSH
 * Router on a stick
@@ -28,12 +30,12 @@ Without further note, lets get started!
 * Portfast
 
 #### Preparing for assessments
+
 * Debugging
 * Midterm exam
 * Gotchas
 * Final skills exam questions / test bank
 * Case study
-
 
 ## Theory
 
@@ -42,6 +44,7 @@ This should account for around 15% of your knowledge/effort put into the unit. H
 ### Subnets
 
 You should understand these concepts
+
 * How to subnet (VLSM)
 * Describe subnet classes (classful subnetting)
 
@@ -65,7 +68,7 @@ The main difference is L2 cannot change a packets VLAN and L3 can. The applicati
 
 L2 switching is the most common type of switching within this unit. However its becoming less and less common in real life due to cost reductions of L3 switching.
 
-### What is L2 switching?
+### What is L2 switching
 
 L2 switching is switching performed on L2 of the OSI model (data link).
 
@@ -75,7 +78,7 @@ L2 switching limits the manipulation that a switch can perform on a packet. This
 
 L3 switching is performed on L3 of the OSI model (Network layer)
 
-L3 switching is a more performance (computationally) intensive task where the packet has to be de-encapsulated more that L2 to have its VLAN re-tagged. 
+L3 switching is a more performance (computationally) intensive task where the packet has to be de-encapsulated more that L2 to have its VLAN re-tagged.
 
 The most important thing to note is that there is a penalty in this unit for using a L3 switch on your mid semester exam as sometimes Jason will provision a L3 switch in your exam when most students are used to L2 switches. You will know if this is the case (given the hardware hasn't changed) in ATCs labs because your switches interfaces will be 3 numbers long, for example `f0/0/0`.
 
@@ -83,10 +86,9 @@ The most important thing to note is that there is a penalty in this unit for usi
 
 If you are a CS student you are likely doing CLE at the same time and know what binary is so ill skip it.
 
-You should understand binary while you are learning subnetting on a theory level only. If you are referring to my preferred method of subnetting with a pen and paper than you dont need it. 
+You should understand binary while you are learning subnetting on a theory level only. If you are referring to my preferred method of subnetting with a pen and paper than you dont need it.
 
 If you are using a different technique you may need to have to convert between up to 8 bits of binary to decimal for each octet of your IPv4 address. Make sure to include these tables in your bound reference book. It covers enough of the conversions that you can manually add or subtract any missing bits without making a fatal math error.
-
 
 | Bin       | Dec |
 | --------- | --- |
@@ -99,8 +101,6 @@ If you are using a different technique you may need to have to convert between u
 | 11111110  | 254 |
 | 11111111  | 255 |
 
-
-
 | Bin       | Dec |
 | --------- | --- |
 | 011111111 | 127 |
@@ -111,8 +111,6 @@ If you are using a different technique you may need to have to convert between u
 | 00000011  | 3   |
 | 00000001  | 1   |
 | 00000000  | 0   |
-
-
 
 | Bit | Val |
 | --- | --- |
@@ -129,33 +127,35 @@ If you are using a different technique you may need to have to convert between u
 
 To understand this concept you should be able to explain the purpose of a switch and a router. This section shouldn't take too much time or effort.
 
-### What is a switch?
+### What is a switch
 
 A switch connects computers together on an **internal** network by literally switching a packet from one computer to another.
 
 Switching happens over one network only.
 
 A network should be considered as either:
+
 * A single VLAN - A packet cannot be *tagged* for another vlan on a L2 switch (L2 switches are covered in Theory)
 * An uninterrupted portion of a network where a packet can travel from computer A to B without needing to cross over a router or change vlan
 
 Furthermore on networks. There are two types of networks that you should be aware of for the final exam. Logical and physical LANs. In the above list i say that a network can be defined within a VLAN, or virtual LAN. Compare this to a physical LANs where a *network* is separated by a router.
 
-### What is the purpose of using a switch?
+### What is the purpose of using a switch
 
 > The purpose of a switch is to connect multiple networked devices together over a physical medium
 
 ### Types of switches
+
 * Layer 2 (L2) switches
 * Layer 3 (L3) switches
 * Frame relay switches (not covered in this unit but you should be aware of their existence)
 
-### What is a router?
+### What is a router
 
 A router directs traffic from different networks within your internal network.
+
 * A router generally sits on the edge of a network and connects to the internet (this is the only type you will encounter in n&s)
 * A router may also NOT sit on the edge of your network and route traffic from internal network A to internal network B (this is not a focus of n&s)
-
 
 ## Configuration
 
@@ -173,7 +173,7 @@ Every switch has a default vlan (VLAN 1). VLAN 1 has **every** port assigned to 
 
 ![simpleVLAN](/media/simpleVLAN.png)
 
-```
+```none
 ! Select VLAN 10
 S1(config)#vlan 10
 ! Name VLAN 10 test
@@ -183,7 +183,7 @@ S1(config-if)#ip add 192.168.0.1 255.255.255.0
 S1(config-if)#no shut
 ```
 
-```
+```none
 ! PC 1
 !
 ! PC 1 has to have an ip within the 192.168.0.0/24 subnet
@@ -203,7 +203,8 @@ SSH uses RSA keys to authenticate a user (usually from a computer) to a switch o
 ![PT_SSH_Diagram](/media/PT_SSH_Diagram.png)
 
 ### Create a user on a switch to connect to from a remote location
-```
+
+```none
 ! Create a user from S1 to access from remote locations
 S1(config)#username [name] privilege 15 secret [pass]
 S1(config)#ip domain-name [domain.com]
@@ -238,7 +239,8 @@ From PC1 open up the SSH connection screen and type your username and password, 
 * limit auth retries `ip ssh authentication-retries`
 
 To remove SSH:
-```
+
+```none
 line vty 0 15
 transport input none
 no login
@@ -248,7 +250,7 @@ no login
 
 Telnet is SSHs\` keyless and exploitable (but easier to implement) brother.
 
-```
+```none
 line vty 0 15
 password [pass]
 ```
@@ -260,14 +262,15 @@ Then access telnet through the PC.
 ROS is one of the most important concepts in N&S.
 
 * ROS is **literally** just the .x on a router interface. For example `g0/0/1.10`.
-* After a `.10` **sub interface** has been applied, the routers physical `0/0/1` port is considered virtually split. 
+* After a `.10` **sub interface** has been applied, the routers physical `0/0/1` port is considered virtually split.
 * The `0/0/1.10` **sub interface** of `0/0/1` can now handle traffic from VLAN 10.
-* You can repeat this for every vlan you have, including the default VLAN 1 (`0/0/1.1`). 
+* You can repeat this for every vlan you have, including the default VLAN 1 (`0/0/1.1`).
 This removes the need to have a separate port for each VLAN.
 
 ![ROS](/media/ROS.png)
 
 ### Switch
+
 1. Create vlan 10
 2. The ip of VLAN 10 can be any internal IP - `192.168.0.2 255.255.255.0`
 3. Make sure the router side interface is trunking
@@ -275,11 +278,13 @@ This removes the need to have a separate port for each VLAN.
 5. The default gateway of the switch is the router - `ip default-gateway 192.168.0.1`
 
 ### Router
+
 1. Create subinterface 10 - int g0/0/1.10
 2. Set subinterface 10 to dot1Q [vlan number] - `encapsulation dot1q 10`
 3. Set the IP of the subinterface to an address in VLAN 10 - `ip add 192.168.0.1 255.255.255.0`
 
 ### PC
+
 1. The ip of the PC is an IP in the VLAN 10 range - `192.168.0.10/24`
 2. The default gateway is the IP of the **router** because the router is the exit point to the VLAN 10 network
 
@@ -292,12 +297,14 @@ A common gotcha is setting your port security before you configure the rest of y
 To configure port security, apply these commands to an interface - `int f0/x` or select a range of ports with `int range f0/x-y`.
 
 ### Set max MAC addresses
-```
+
+```none
 switchport port-security maximum [number]
 ```
 
 Then configure a violation when the max MACs are exceeded.
-```
+
+```none
 switchport port-security violation [restrict/protect/sticky]
 ! restrict - drop unknown macs and log it
 ! protect - drop unknown macs and dont log it
@@ -305,12 +312,14 @@ switchport port-security violation [restrict/protect/sticky]
 ```
 
 ### Allow specific MAC
-```
+
+```none
 switchport port-security mac-address xx-xx-xx-xx-xx-xx
 ```
 
 ### Check your port security
-```
+
+```none
 show port security
 
 ! if you are in config mode you can run
@@ -318,7 +327,8 @@ do show port security
 ```
 
 ### Enable console cable security
-```
+
+```none
 ! Create a user to authenticate with when logging in with
 username [name] privilege 15 secret [pass]
 
@@ -340,7 +350,7 @@ The only difference between PAGP and LACP is the key words used to define config
 
 ![PAGP](/media/PAGP.png)
 
-```
+```none
 ! Switch 1
 int range f0/1-2
 switchport mode trunk
@@ -352,12 +362,11 @@ switchport mode trunk
 channel group 1 mode auto
 ```
 
-
 ### LACP
 
 ![LACP](/media/LACP.png)
 
-```
+```none
 ! Switch 1
 int range f0/1-2
 switchport mode trunk
@@ -376,7 +385,7 @@ Etherchannel over 3 switches is exactly the same. Just make sure that you pick d
 1. Each link between switch A and B are **trunking**
 2. Each link on switch A and B are in the **same etherchannel group**
 3. A 3 switch etherchannel with have 2 dead links (caused by STP). This is normal
-4. If your packet tracer simulation starts to lab OR your links are all green you have caused a broadcast storm by reconfiguring the etherchannel (most likely an active/passive issue) 
+4. If your packet tracer simulation starts to lab OR your links are all green you have caused a broadcast storm by reconfiguring the etherchannel (most likely an active/passive issue)
 
 ![3SwitchEtherchannel](/media/3SwitchEtherchannel.png)
 
@@ -392,6 +401,7 @@ For example: Normal STP using ISL is called STP
 | Rapid         | RPSTP  | RPVSTP | RPVSTP+ |
 
 ### Some important notes
+
 * PVSTP and PVSTP+ are the default STP options
 * By default any switch on PVSTP should be changed to PVSTP+ for enhanced performance
   * `spanning-tree mode rapid-pvstp`
@@ -400,13 +410,14 @@ For example: Normal STP using ISL is called STP
 ### Desg Altn Root
 
 These describe what each port on your switch is doing. Have a look at this information through `show spanning-tree`
+
 * Desg [fwd] - Away from root switch
 * Altn [blk] - Backup route
 * Root [fwd] - Towards root
 
 ### Force a switch to become root
 
-```
+```none
 spanning-tree root primary
 ! OR
 spanning-tree root secondary
@@ -417,7 +428,7 @@ spanning-tree vlan 1,2,3... priority [priority]
 
 ### Change a ports cost
 
-```
+```none
 S1(conf-int)#spanning-tree cost [cost]
 
 ! You need to include the cost to undo this command
@@ -426,7 +437,7 @@ no spanning-tree cost [cost]
 
 ### Force a switch to be root on many VLANs
 
-```
+```none
 spanning-tree vlan 1,2,3... root primary
 
 ! or make it secondary
@@ -441,7 +452,7 @@ A BPDU guard is a CISCO feature that allows you to defend against a BPDU attack 
 
 A BPDU guard should only be places on an **access port**. If you place it on a trunking port it will break your network.
 
-```
+```none
 int f0/1
 spanning-tree bpduguard enable
 ```
@@ -452,7 +463,7 @@ Portfast is a small topic in N&S
 
 Portfast simply allows an **access port** to go into a forwarding state (see STP) faster. If you place it on a trunking port it will break your network.
 
-```
+```none
 int f0/1
 spanning-tree portfast
 ```
@@ -464,7 +475,8 @@ This should account for around 15% of your knowledge/effort put into the unit.
 This guide isnt really an be all end all solution and doesn't contain everything you need. As bad as the lectures are you should still watch them. But more importantly practice the labs. They will not only make your practical skills better but also prompt you to discover the answers to the exam questions as you solve your own practical problems through your google degree.
 
 The only bit of advice i have is to be aware of all the *'show'* commands. I have abbreviated them as much as possible for speed during the exam.
-```
+
+```none
 ! Show interfaces
 sh ip int br
 
@@ -484,7 +496,7 @@ sh port-security
 
 Another useful technique to make use of is performing a grep command on your running configuration. Cisco machines after all are compatible with some POSIX standards (heavy asterisk).
 
-```
+```none
 ! Eg. I want to see what type of STP i am running
 sh running-config | include spanning-tree mode
 
@@ -503,6 +515,7 @@ I plan on recording a live run through of the exams as its easier to practice by
 ## Gotchas
 
 ### Jason gives you a L3 switch for your exam
+
 sometimes Jason will provision a L3 switch in your exam when most students are used to L2 switches in their labs. You will know if this is the case (given the hardware hasn't changed) in ATCs labs because your switches interfaces will be 3 numbers long, for example `f0/0/0`.
 
 dont panic! Three numbers just means your switch has more than the 24 ports on the 2960 that ATCs labs currently have. `f0/0/0` works in the same way to `f0/0`.

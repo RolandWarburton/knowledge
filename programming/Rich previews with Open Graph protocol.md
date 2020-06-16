@@ -1,8 +1,10 @@
 # Rich previews with Open Graph protocol
-Rich previews are a great way to make a website appear more polished and professional by adding display cards to 'social graphs'. 
+
+Rich previews are a great way to make a website appear more polished and professional by adding display cards to 'social graphs'.
 This protocol is used by facebook, twitter, apple messenger, and other messenger/social platforms.
 
-# Rich previews in different apps
+## Rich previews in different apps
+
 A rich preview looks like this in messenger.
 
 ![Rich preview in messenger app](https://i.imgur.com/RKXh8v0.png)
@@ -11,11 +13,13 @@ A rich preview looks like this on twitter.
 
 ![Rich preview in twitter app](https://i.imgur.com/iEhb3C6.png)
 
-# Enabling rich previews
+### Enabling rich previews
+
 Simply add meta tags to your head tag.
 
-## og:image
-Make sure that the og:image is pointing to a static url on your webpage. 
+### og:image
+
+Make sure that the og:image is pointing to a static url on your webpage.
 Dynamic content that needs to be client side rendered will not work
 
 ```html
@@ -41,7 +45,8 @@ Dynamic content that needs to be client side rendered will not work
 </head>
 ```
 
-# Debugging previews
+### Debugging previews
+
 Facebook will cache your og:image. you can go [here](https://developers.facebook.com/tools/debug/) to ask facebook to crawl your site again.
 
 Twitter previews will only work in tweets and not in direct messages. You can debug to see if your meta tags are working [here](https://cards-dev.twitter.com/validator).

@@ -3,6 +3,7 @@
 A topology is how a network connects and communicates with different devices.
 
 ### Star Topology
+
 ![starTopology](/media/starTopology.png)
 
 * Most common topology
@@ -11,10 +12,11 @@ A topology is how a network connects and communicates with different devices.
 
 <!-- table -->
 | Pros                                                                     | Cons                                                                                             |
-|--------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
 | If a computer or cable fails. The other computers  will not be affected. | A single point of failure network. <br>ie. If the central hub or switch fails, everything fails. |
 
 ### Bus Topology
+
 ![busTopology](/media/busTopology.png)
 
 * Old technology not used today
@@ -25,10 +27,11 @@ A topology is how a network connects and communicates with different devices.
 
 <!-- table -->
 | Pros                        | Cons                                                                                                                                          |
-|-----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
 | Cheap and easy to implement | <br>Cables must be terminated on both ends with terminators. <br>If there is an open end, signal reflection will occur (disrupted data flow.) |
 
 ### Ring Topology
+
 ![ringTopology](/media/ringTopology.png)
 
 * Each computer is connected to each other in the shape of a ring (closed loop)
@@ -38,10 +41,11 @@ A topology is how a network connects and communicates with different devices.
 
 <!-- table -->
 | Pros                             | Cons                                                                                                        |
-|----------------------------------|-------------------------------------------------------------------------------------------------------------|
+| -------------------------------- | ----------------------------------------------------------------------------------------------------------- |
 | Easy to install and troubleshoot | <br>If one computer goes down or if there is a break in the cable. <br><br>All data flow will be disrupted. |
 
 ### Mesh Topology
+
 ![meshTopology](/media/meshTopology.png)
 
 * Little chance of total network failure
@@ -50,7 +54,7 @@ A topology is how a network connects and communicates with different devices.
 
 <!-- table -->
 | Pros                                    | Cons                                          |
-|-----------------------------------------|-----------------------------------------------|
+| --------------------------------------- | --------------------------------------------- |
 | Little chance of whole network failure. | Expensive and creates a high redundancy level |
 
 ### Hybrid Topologies
@@ -65,6 +69,7 @@ A topology is how a network connects and communicates with different devices.
   * Star ring (hybridTopologyB)
 
 ### Point to Point Topology
+
 ![point2pointTopology](/media/point2pointTopology.png)
 
 * 2 network devices connect to each other over a single cable
@@ -72,6 +77,7 @@ A topology is how a network connects and communicates with different devices.
 * Simplest topology
 
 ### Peer to Peer Topology
+
 ![peer2peerTopology](/media/peer2peerTopology.png)
 
 * Similar to Point to Point but with multiple computers
@@ -80,15 +86,16 @@ A topology is how a network connects and communicates with different devices.
 * No centralized server to connect to
 Typically found in homes and small businesses
 
-
 ### Client to Server Topology
+
 ![clientToServerTopology](/media/clientToServerTopology.png)
 
 * Clients connect **directly** to a central dedicated server rather than connecting to each other
 * Storage efficient, you don't need to store resources on each computer
 
 ### Point to Multipoint Topology
+
 ![point2multipointTopology](/media/point2multipointTopology.png)
 
-* A client connects to a  central wireless base station (access point) 
+* A client connects to a  central wireless base station (access point)
 * Similar to a star network in that clients cannot directly communicate to each other

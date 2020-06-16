@@ -28,7 +28,7 @@
 * White orange
 * Orange
 * White green
-* Blue 
+* Blue
 * White blue
 * Green
 * White brown
@@ -43,7 +43,6 @@
 * Both ends are using the **same standard**
 * Signal travels straight through the cable
 * Most common type of cable standard
-
 
 ### Crossover Cable
 

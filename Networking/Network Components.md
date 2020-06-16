@@ -1,4 +1,5 @@
 # Network Components
+
 Stuff that you put on a network.
 
 ## Routers and Modems
@@ -10,7 +11,6 @@ Stuff that you put on a network.
 * A modem has **few** ports. to connect the outside (ISP) to a router/switch (internal)
 * A modem connects to the ISP from very edge of the network.
 * A modem handles the external IP
-
 
 * A router is a modem and a switch combined into one
 * A router has **many** ports (around 5)
@@ -41,7 +41,7 @@ Stuff that you put on a network.
 * A smart hub
 * A switch learns the physical addresses of the devices connected which means it only sends 1 packet to the intended receiver by building an ARP table (among other things)
 * Most switches operate at level 2 of the OSI model, however this isn't always the case
-  * Multilayer switch - This switch can operate at layer 2 and layer 3 
+  * Multilayer switch - This switch can operate at layer 2 and layer 3
   * Content switch - This switch can operate at levels 4 through 7. Its expensive and can do advanced filtering and load balancing
 
 ### Bridges
@@ -61,7 +61,9 @@ A bridge is used to separate networks that have hubs on either side to prevent c
 A device that joins 2 networks together when a different protocol (**NOT a different medium**) is used on each side
 
 ### CSU/DSU
+
 A Channel Service Unit / Data Service Unit is a single piece of hardware that translates between LAN to WAN.
+
 * It needs to exist to ensure that the WAN link between LANs is clocked the same
 * A CSU/DSU exists on either side of the WAN
 

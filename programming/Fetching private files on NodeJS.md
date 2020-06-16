@@ -8,6 +8,7 @@ How to fetch a file from a private repo on github
 ![Select Scope](https://i.imgur.com/VFujIC0.png)
 
 2. Your token is 40 characters long. To perform a fetch request on nodejs you should fetch the webpage like this
+
 ```javascript
 fetch('https://TOKEN@raw.githubusercontent.com/USER/REPO/BRANCH/FILENAME.EXT')
 	.then(res => res.text())
