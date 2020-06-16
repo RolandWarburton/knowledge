@@ -17,7 +17,7 @@ xev | awk -F'[ )]+' '/^ButtonRelease/ { a[NR+2] } NR in a { printf "%-3s %s\n", 
 
 #### Keyboard Only
 
-```bash
+```none
 showkey -a
 ```
 
@@ -33,13 +33,13 @@ You can check for Key IDs with either *xev* or *xbindkeys -k*
 Here is an example of an xbindkeys config.
 
 ```bash
-! /home/roland/.xbindkeysrc
+# /home/roland/.xbindkeysrc
 
-! When you press a mouse button take a screenshot
+# When you press a mouse button take a screenshot
 "flameshot gui"
     m:0x0 + b:12   (mouse)
 
-! When you press a mouse button press another mouse button
+# When you press a mouse button press another mouse button
 "sleep 0.2 && xdotool click 2"
     m:0x0 + b:10   (mouse)
 ```
@@ -48,13 +48,13 @@ Here is an example of an xbindkeys config.
 
 Set libinput Button Scrolling Button (283) to 9 *(9 is the mouse button number)*
 
-```bash
+```none
 sudo xinput set-prop 12 283 9
 ```
 
 Then set libinput Scroll Method Enabled (281) to 0, 0, 1
 
-```bash
+```none
 sudo xinput set-prop 12 281 0, 0, 1
 ```
 

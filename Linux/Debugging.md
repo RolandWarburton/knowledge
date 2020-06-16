@@ -22,8 +22,11 @@ when you string commands together you have 2 options
 # The problem...
 mystring = "hello world"
 grep "bleh" ${mystring}
+```
 
-# Output:
+outputs:
+
+```none
 "hello" => no matches found
 "world" => no matches found
 ```
@@ -109,7 +112,7 @@ Other common flags are.
 
 A common command for shredding a drive is to **-f**orce and only iterate once (-n1)
 
-```bash
+```none
 sudo shred -f -n1 /dev/sdx
 ```
 

@@ -69,7 +69,7 @@ Modify your `~/.xinitrc` to contain `exec feh --bg-fill /home/roland/Media/Backg
 Configure the global variable $ZDOTDIR to change where zsh looks for its config files.
 
 ```bash
-/etc/zsh/zshenv
+#/etc/zsh/zshenv
 export ZDOTDIR=$HOME/.config/zsh
 ```
 

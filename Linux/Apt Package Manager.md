@@ -43,7 +43,7 @@ When you run `sudo apt update`. What do these things mean?
 Every third party package has a key (called an APT or GPT key). review the list of keys with `sudo apt-key list`\
 The last 8 digits is the key ID (058F 8B6B)
 
-```bash
+```none
 /etc/apt/trusted.gpg
 --------------------
 pub   rsa4096 2018-04-18 [SC] [expires: 2023-04-17]
@@ -77,7 +77,7 @@ Snap is an alternative way to package software. It was developed by canonical (w
 You can check what snap packages are currently installed with `snap list`.
 Example Output:
 
-```bash
+```none
 Name  Version    Rev   Tracking  Publisher   Notes
 code  26076a4d   23    stable    vscode✓     classic
 core  16-2.42.5  8268  stable    canonical✓  core

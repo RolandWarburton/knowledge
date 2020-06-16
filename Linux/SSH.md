@@ -4,7 +4,7 @@
 
 Modify */etc/issue.net* and write a cool message in there. then make sure banners are enabled.
 
-``` none
+```none
 #/etc/ssh/sshd_config
 Banner /etc/issue.net
 ```
