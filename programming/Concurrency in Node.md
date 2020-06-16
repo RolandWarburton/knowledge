@@ -4,14 +4,14 @@
 
 Typically javascript on the browser is single threaded only, moreover what is the difference between an ajax request and a concurrent process.
 
-Firstly
-
 What about concurrency vs asynchronous code? They are the same!
 asynchronous code is just another name for "code that runs multiple threads" (gross underexplanation but its good enough for understanding the basics)
 
 What about promises and ajax? Simply put, promises are the **tool** for managing and asynchronous method (eg ajax). Ajax is just a type of asynchronous method, more specifically ajax is achieved by providing a callback for your code to "jump back to" once its resolved, or as discussed prior, through the promise interface inside the browser, the keyword being that its **inside** the browser, ajax does not exist on nodes framework because it doesnt need to - Node comes with concurrent capabilities, ie using multiple threads at the same time already.
 
 Because only one call stack is avaliable to the javascript in your browser. An ajax uses an "execution stack" for each function that is provided, and managed, by the browser to keep track of requests outside of regular javascripts call stack, of which only one of can exist in a FIFO manner.
+
+![diagram](/media/Concurrency.png)
 
 TL;DR
 
