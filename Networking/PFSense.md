@@ -105,6 +105,121 @@ You can now go back to the main vouchers tab and click the export button on the 
 
 To test your vouchers copy one from the exported csv and go to `Status -> Captive Portal` and navigate to the `Test Vouchers` tab and paste in a voucher to see its elegibility and time remaining in the database.
 
+### Captive portal custom login page
+
+The captive login page is located at `/var/etc` on the router. To get there, ssh into the router and select option 8 (shell). To copy files you can sftp to your own computer once connected and move images etc over.
+
+Here is an example of a decent looking captive portal page.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>login</title>
+</head>
+
+<body>
+
+	<div id="form-wrapper">
+		<form method="post" action="$PORTAL_ACTION$">
+			<div id="login-box">
+				<input name="auth_user" type="text" placeholder="Name">
+				<input name="auth_pass" type="password" placeholder="Password">
+			</div>
+			<div id="voucher-box" style="display: none;">
+				<input name="auth_voucher" type="text" placeholder="voucher">
+				<div id="voucher-info">
+					<img src="./question.svg" alt="?" width="25px" height="25px">
+					Vouchers are a single use token that enable access to the internet for a limited time.
+				</div>
+			</div>
+			<input name="accept" id="submit" type="submit" value="Continue">
+			<input name="redirurl" type="hidden" value="$PORTAL_REDIRURL$">
+			<input name="zone" type="hidden" value="$PORTAL_ZONE$">
+			<a href="#" onClick="toggleVoucher(this)" id="toggle-voucher">I have a voucher</a>
+			<p id="version">v1.0</p>
+		</form>
+	</div>
+
+	<style>
+		body {
+			background-color: #2F303A;
+			font-family: 'Roboto', sans-serif;
+			margin: 0;
+			padding: 0;
+		}
+
+		* {
+			margin: 0;
+			padding: 0;
+		}
+
+		#form-wrapper {
+			background-color: #585961;
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			justify-content: center;
+			margin: auto 0;
+			box-shadow: 0 6px 10px black;
+			height: 300px;
+			width: 300px;
+		}
+
+		form {
+			margin: 4ch;
+		}
+
+		form input {
+			box-sizing: border-box;
+			margin: 2ch 0;
+			width: 100%;
+		}
+
+		#toggle-voucher {
+			text-decoration: none;
+			color: #dedede;
+			position: absolute;
+			padding: 1ch;
+			bottom: 0;
+			left: 0;
+		}
+
+		#version {
+			position: absolute;
+			bottom: 0;
+			right: 0;
+			padding: 1ch;
+			margin: 0 auto;
+			bottom: 0;
+			color: #dedede;
+		}
+	</style>
+
+	<script>
+		const toggleVoucher = (event) => {
+			const voucherBox = document.querySelector("#voucher-box");
+			const loginBox = document.querySelector("#login-box");
+
+			const voucherIsHidden = (voucherBox.style.display == "block") ? false : true;
+			if (voucherIsHidden) {
+				voucherBox.style.display = "block";
+				loginBox.style.display = "none";
+			} else {
+				voucherBox.style.display = "none";
+				loginBox.style.display = "block";
+			}
+		}
+	</script>
+</body>
+
+</html>
+```
+
 ## PFSense on a laptop
 
 Ie. How to set up PFSense on a device with 1 port using vlans.
