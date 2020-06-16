@@ -6,7 +6,7 @@
 
 **Solution:** put your regex in quotes.
 
-```bash
+```none
 # WRONG
 cat a.txt | grep -E word.*
 # CORRECT
@@ -17,7 +17,7 @@ cat a.txt | grep -E 'word.*'
 
 **Problem:** no colors on matched regex.
 
-**Solution:** use the ```--color``` tag. Perhaps make an alias for it in zsh to use it automatically.
+**Solution:** use the `--color` tag. Perhaps make an alias for it in zsh to use it automatically.
 
 ```bash
 #~/.zshrc

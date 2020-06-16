@@ -2,12 +2,12 @@
 
 ### Hardening SSH access (WIP)
 
-limit connection attempts per minute ```sudo apt-get install ufw && sudo ufw limit OpenSSH```
+limit connection attempts per minute `sudo apt-get install ufw && sudo ufw limit OpenSSH`
 
 ### Log in with no password with SSH
 
-1. Generate a new rsa key with ```ssh-keygen```. Do not specify a password when asked.
-2. Add this key to the list of keys that ssh will ask when authenticating ```ssh-add ~/.ssh/id_nopass_rsa```. This list is a global list of possible ssh keys that your client will try against the server.
+1. Generate a new rsa key with `ssh-keygen`. Do not specify a password when asked.
+2. Add this key to the list of keys that ssh will ask when authenticating `ssh-add ~/.ssh/id_nopass_rsa`. This list is a global list of possible ssh keys that your client will try against the server.
 3. Give correct file permissions. **700 on .ssh** and **640 on authorized_keys**.
 
 ### Debugging SSH

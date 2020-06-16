@@ -12,7 +12,10 @@ The defult for Xresources is 80 lines * 24 columns.
 
 Its useful to know the keycodes when you are mapping buttons to do things.
 
-```showkey -a```
+```none
+showkey -a
+```
+
 Example:
 
 ```none
@@ -26,10 +29,10 @@ c 	99 0143 0x63
 
 ##### TermInfo files
 
-```ls /usr/share/terminfo/x```\
-List of supported terminals. use ```echo $TERM``` to what terminal the system thinks its using.\
+`ls /usr/share/terminfo/x`\
+List of supported terminals. use `echo $TERM` to what terminal the system thinks its using.\
 You can export a new $TERM from the list above.
 
 ### Copy and paste in URxvt
 
-install ```urxvt-perls``` then enable the clipboard pearl by adding ```URxvt.perl-ext-common:  clipboard``` to your ~/.Xresources (along with any other extensions you need)
+install `urxvt-perls` then enable the clipboard pearl by adding `URxvt.perl-ext-common:  clipboard` to your ~/.Xresources (along with any other extensions you need)

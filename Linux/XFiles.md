@@ -16,7 +16,7 @@ fi
 
 xinit is a more bare bones version of startx. xinit only starts the X server and runs anything in the users xinitrc. you will get a black screen and no DE or WM if nothing is specified in your xinitrc.
 
-startx starts the X server and looks for additional files. Have a look at ```which startx``` to see the  startx script.
+startx starts the X server and looks for additional files. Have a look at `which startx` to see the  startx script.
 
 ### .xsession
 
@@ -25,9 +25,9 @@ Though xsession can be used as a fallback if no .xinitrc is found.
 
 Runs when a graphical environment starts. Its purpose is to contain user configuration and may contain
 
-* Environment variables. ```export VARIABLE=thing```
-* Calling other scripts to run ```if [ -r ~/.runascript ]; then . ~/.runascript; fi```
-* starting programs ```chromium```
+* Environment variables. `export VARIABLE=thing`
+* Calling other scripts to run `if [ -r ~/.runascript ]; then . ~/.runascript; fi`
+* starting programs `chromium`
 
 Though it is considered *advanced* (and therefore had no great documentation), xsession may also start your DE or WM like how you would run it in xinitrc. This avoids the need for a .xinitrc and using the *startx* command which is deprecated on some distros (openSUSE).
 

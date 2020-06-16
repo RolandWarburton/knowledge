@@ -89,7 +89,7 @@ If you are using a different technique you may need to have to convert between u
 
 
 | Bin       | Dec |
-|-----------|-----|
+| --------- | --- |
 | 100000000 | 128 |
 | 11000000  | 192 |
 | 11100000  | 224 |
@@ -102,7 +102,7 @@ If you are using a different technique you may need to have to convert between u
 
 
 | Bin       | Dec |
-|-----------|-----|
+| --------- | --- |
 | 011111111 | 127 |
 | 00111111  | 63  |
 | 00011111  | 31  |
@@ -115,7 +115,7 @@ If you are using a different technique you may need to have to convert between u
 
 
 | Bit | Val |
-|-----|-----|
+| --- | --- |
 | 1   | 1   |
 | 2   | 2   |
 | 3   | 4   |
@@ -387,7 +387,7 @@ The types of spanning tree protocols are listed below. Read the table on X and Y
 For example: Normal STP using ISL is called STP
 
 | Encapsulation | 802.1q | ISL    | both    |
-|---------------|--------|--------|---------|
+| ------------- | ------ | ------ | ------- |
 | Normal        | STP    | PVSRP  | PVSTP+  |
 | Rapid         | RPSTP  | RPVSTP | RPVSTP+ |
 

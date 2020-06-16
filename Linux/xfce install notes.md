@@ -1,11 +1,23 @@
 # xfce install notes
 
 1. Install xfce
-```sudo pacman -S xfce4 xfce4-settings```
+
+```none
+sudo pacman -S xfce4 xfce4-settings
+```
+
 2. Add xfce to start at boot in xinitrc
-```exec startxfce3```
+
+```none
+exec startxfce3
+```
+
 3. Add keyboard shortcut to dmenu
-```Applications -> settings -> keyboard -> Application Shortcuts -> "dmenu_run" bound to ALT+SPACE```
+
+```none
+Applications -> settings -> keyboard -> Application Shortcuts -> "dmenu_run" bound to ALT+SPACE
+```
+
 4. Change the taskbar panel options
    1. Run xfce4-settings-manager (if you have removed the 'Applications' launcher from the taskbar already)
    2. navigate to panel and change settings to how you like

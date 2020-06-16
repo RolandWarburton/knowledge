@@ -19,4 +19,4 @@
 - [x] Learn how to network boot arch for the worlds biggest flex
 - [x] How to install an icon theme
 - [x] Debian/Ubuntu APT manager (should come back to this one again soon)
-- [x] Difference between ```sudo apt-get update``` and ```sudo apt update```
+- [x] Difference between `sudo apt-get update` and `sudo apt update`

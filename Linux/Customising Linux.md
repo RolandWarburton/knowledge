@@ -6,8 +6,8 @@ This encompasses both fixing bugs in common workflows, setting up minimal themes
 
 ### Set the background color like a real hackerman
 
-Dont use any programs to change your background color. When using an X display server you can simply append ```xsetroot -solid "#121212"``` to your xinitrc.
-Another way to do this is ```exec --no-startup-id xsetroot -solid "#121212"```
+Dont use any programs to change your background color. When using an X display server you can simply append `xsetroot -solid "#121212"` to your xinitrc.
+Another way to do this is `exec --no-startup-id xsetroot -solid "#121212"`
 
 ### Style QT applications like GTK ones
 
@@ -18,15 +18,15 @@ I learnt how to use GTK themes before QT ones. So i needed a way to use my prefe
 ### Set a desktop background (image) like a real hackerman
 
 This can be frustrating to figure out on some desktop environments (like openbox) where the background is set in a config file hidden somewhere.
-In Openbox's case you need to modify ```vim /usr/lib/openbox/openbox-autostart``` and comment out the code block from ```#Set a background color```.
+In Openbox's case you need to modify `vim /usr/lib/openbox/openbox-autostart` and comment out the code block from `#Set a background color`.
 
 The lightest weight method (that supports dual screen) is to use [feh](https://www.archlinux.org/packages/extra/x86_64/feh/).
-Modify your ```~/.xinitrc``` to contain ```exec feh --bg-fill /home/roland/Media/Backgrounds/Catlesstail_portrait.png /home/roland/Media/Backgrounds Catlesstail.png &```. Optionally uou can pass seperate image paths to set multiple monitors.
+Modify your `~/.xinitrc` to contain `exec feh --bg-fill /home/roland/Media/Backgrounds/Catlesstail_portrait.png /home/roland/Media/Backgrounds Catlesstail.png &`. Optionally uou can pass seperate image paths to set multiple monitors.
 
 ### Get all the emojis
 
-* Install the correct packages for emojis ```sudo pacman -S noto-fonts-emoji```.
-* Then modify either ```/etc/fonts/local.conf``` for global font config or ```~/.config/fontconfig/fonts.conf``` for per user config.
+* Install the correct packages for emojis `sudo pacman -S noto-fonts-emoji`.
+* Then modify either `/etc/fonts/local.conf` for global font config or `~/.config/fontconfig/fonts.conf` for per user config.
 * Create a config file to favour the font emoji.
 
 ```xml
@@ -85,12 +85,12 @@ lxappearance is part of Xappearance: *XAppearance — Desktop independent GTK 2 
 
 #### Make thunar dark theme on xfce4
 
-run ```xfce4-appearance-settings``` and change the GTK theme through there
+run `xfce4-appearance-settings` and change the GTK theme through there
 
 ### Install an icon theme
 
 The best way i found to do this is through lxappearance.\
-Icons should be in the ```/usr/share/icons``` folder for all users, or the ```~/icons/``` folder for local users. Avoid putting icon themes in the home directory.
+Icons should be in the `/usr/share/icons` folder for all users, or the `~/icons/` folder for local users. Avoid putting icon themes in the home directory.
 
 1. Install an icon theme through the repos or AUR
 2. use the icon-theme tab on lxappearance to select that theme, it should appear there automatically

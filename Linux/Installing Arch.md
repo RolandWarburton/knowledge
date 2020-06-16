@@ -21,12 +21,12 @@ useradd -g users -G wheel,storage,power -m roland
 
 * Rolands primary group is users
 * His secondary groups are wheel(sudo),storage, and power
-* Create a home directory folder for Roland with ```-m```
-* Dont forget to allow roland (and other members of wheel) access to sudo by enabling access in ```/etc/sudoers```
+* Create a home directory folder for Roland with `-m`
+* Dont forget to allow roland (and other members of wheel) access to sudo by enabling access in `/etc/sudoers`
 
 #### Getting the desktop going
 
-After installing your WM/DE of choice copy startx config from ```/etc/X11/xinit/xinitrc``` to ```~/.xinitrc``` and then refer to [startx debugging](https://github.com/RolandWarburton/knowledge/Debugging) because i dont think i have ever gotten startx to work first try without wanting to poke my eyes out.
+After installing your WM/DE of choice copy startx config from `/etc/X11/xinit/xinitrc` to `~/.xinitrc` and then refer to [startx debugging](https://github.com/RolandWarburton/knowledge/Debugging) because i dont think i have ever gotten startx to work first try without wanting to poke my eyes out.
 
 #### Setting a hostname
 

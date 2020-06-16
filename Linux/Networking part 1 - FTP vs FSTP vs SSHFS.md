@@ -9,8 +9,8 @@
 ### Prevent timeout for SSH/FTP/SFTP sessions
 
 Use client AND server side configuration.\
-**Client:** ```echo "ServerAliveInterval 60" >> ~/.ssh/config```.\
-**Server:** ```echo "ClientAliveInterval 120\nClientAliveCountMax 720" >> /etc/ssh/sshd_config```.\
+**Client:** `echo "ServerAliveInterval 60" >> ~/.ssh/config`.\
+**Server:** `echo "ClientAliveInterval 120\nClientAliveCountMax 720" >> /etc/ssh/sshd_config`.\
 Server makes client send 1 null packet every 120s a maximum of 720 times. 120*720=24 hours.
 
 Heres the copy pasta version for configuration!
@@ -40,15 +40,15 @@ Match group sftp
 
 1. Install UFW for an internet condom (though this isnt required)
 2. Install a FTP server. vsftpd is good :)
-3. Allow only some special local hosts ```/etc/hosts.allow``` should contain ```vsftpd: 192.168.0.0/255.255.255.0```.
-4. Set up ```anonymous_enable=NO``` and ```write_enable=YES``` on the host. no config required on the client.
-5. Start and stop ```vsftpd.service``` when you need FTP (emphasis on stopping it if you are too lazy to secure it like me)
+3. Allow only some special local hosts `/etc/hosts.allow` should contain `vsftpd: 192.168.0.0/255.255.255.0`.
+4. Set up `anonymous_enable=NO` and `write_enable=YES` on the host. no config required on the client.
+5. Start and stop `vsftpd.service` when you need FTP (emphasis on stopping it if you are too lazy to secure it like me)
 
-To transfer files you can initiate ftp or sftp by typing ```ftp destination-ip``` or ```sftp destination-ip```. The prompt will change to show you you are in ftp/sftp mode.
+To transfer files you can initiate ftp or sftp by typing `ftp destination-ip` or `sftp destination-ip`. The prompt will change to show you you are in ftp/sftp mode.
 
-* To Download a file to your machine (from the *destination-ip*) type ```get some-file.txt```.
-* To move a file from your machine (to the *destination-ip*) type ```put some-file.txt```.
-* To transfer multiple files or folders use ```-r``` and ```/*```. For example ```get /home/roland/folder/* /home/roland/local_location -r```
+* To Download a file to your machine (from the *destination-ip*) type `get some-file.txt`.
+* To move a file from your machine (to the *destination-ip*) type `put some-file.txt`.
+* To transfer multiple files or folders use `-r` and `/*`. For example `get /home/roland/folder/* /home/roland/local_location -r`
 
 ### Securing VSFTPD (WIP)
 
@@ -56,11 +56,11 @@ will do this later
 
 ### SSHFS config
 
-1. Make sure port 22 is open on the server you are connecting to ```sudo ufw status``` and enable port 22 if needed with ```sudo ufw allow 22```. Also make sure you have the packages openssh, sshfs, openssh-server, and fuse.
+1. Make sure port 22 is open on the server you are connecting to `sudo ufw status` and enable port 22 if needed with `sudo ufw allow 22`. Also make sure you have the packages openssh, sshfs, openssh-server, and fuse.
 
-2. The next thing to do is make sure ```/etc/ssh/sshd_config``` contains the correct path to your sftp server. On my current system (ubuntu 18.04) the rule i have is ```Subsystem       sftp    /usr/lib/openssh/sftp-server```. A hint to finding the location is to use ```whereis sftp-server```.
+2. The next thing to do is make sure `/etc/ssh/sshd_config` contains the correct path to your sftp server. On my current system (ubuntu 18.04) the rule i have is `Subsystem       sftp    /usr/lib/openssh/sftp-server`. A hint to finding the location is to use `whereis sftp-server`.
 
-3. Create a SSH key and copy it to the server to make logging in secure and easier in the future. ```ssh-keygen``` ```ssh-copy-id roland@11.22.33.44```. Then Create an entry in ~/.ssh/config with an alias for the server because sshfs reads the *ssh pub key* from this config to authenticate with the server.
+3. Create a SSH key and copy it to the server to make logging in secure and easier in the future. `ssh-keygen` `ssh-copy-id roland@11.22.33.44`. Then Create an entry in ~/.ssh/config with an alias for the server because sshfs reads the *ssh pub key* from this config to authenticate with the server.
 
 ```none
 Host TestServer
@@ -70,5 +70,5 @@ Host TestServer
   IdentityFile /home/roland/.ssh/id_rsa
 ```
 
-To Mount the remote filesystem on your device run the command ```sshfs -F /home/roland/.ssh/config roland@45.77.236.124:/home/roland mount/```. Add
-```-o debug``` to enable debugging information
+To Mount the remote filesystem on your device run the command `sshfs -F /home/roland/.ssh/config roland@45.77.236.124:/home/roland mount/`. Add
+`-o debug` to enable debugging information

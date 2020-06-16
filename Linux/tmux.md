@@ -2,7 +2,7 @@
 
 ### Tmux basics
 
-```tmux new -s mySession```
+`tmux new -s mySession`
 
 ### Configuring tmux
 

@@ -21,4 +21,4 @@ You can then start a normal project with `npm init -y` and work from there.
 
 ### Managing node modules
 
-node modules are located at: ```/usr/local/lib/node_modules```
+node modules are located at: `/usr/local/lib/node_modules`
