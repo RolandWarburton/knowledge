@@ -21,6 +21,25 @@ Then "redetect" your network devices
 sudo modprobe vmnet && sudo vmware-networks --start
 ```
 
+### vmmon issues
+
+Try following these instructions.
+
+```none
+==> Before using VMware, you need to reboot or load vmw_vmci and vmmon kernel modules (in a terminal on root: modprobe -a vmw_vmci vmmon)
+==> You may also need to enable some of these services:
+- vmware-networks.service: to have network access inside VMs
+- vmware-usbarbitrator.service: to connect USB devices inside VMs
+- vmware-hostd.service: to share VMs on the network
+```
+
+```none
+sudo modprobe -a vmw_vmci vmmon
+sudo systemctl start vmware-networks.service
+sudo systemctl start vmware-usbarbitrator.service
+sudo systemctl start vmware-hostd.service
+```
+
 ## ESXI 6.5
 
 ### Installation
