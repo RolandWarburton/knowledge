@@ -42,4 +42,13 @@ cat /etc/group
 
 ### Add a new group to a user
 
-`usermod -G sudo,sftp,anothergroup roland`
+```none
+su -
+usermod -G sudo,sftp,anothergroup roland
+````
+
+Or append that user to the sudo group
+
+```none
+usermod -aG sudo roland
+```
