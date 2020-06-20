@@ -420,9 +420,9 @@ Pick a strong password! and log in, you are now on the dash. Good luck!
 
 ## Debugging
 
-### WordPress - Vlank white page
+### WordPress - Blank white page
 
-In the event that you get a blank white page after configuring wordpress, and by observice the page source and seeing the following code.
+In the event that you get a blank white page after configuring wordpress, and by observing the page source and seeing the following code.
 
 ```php
 <?php
