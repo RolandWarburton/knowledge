@@ -136,7 +136,7 @@ sudo vim /etc/apache2/sites-available/\[domain_name\].conf
 
 <VirtualHost *:80>
     ServerName your_domain
-    ServerAlias www.your_domain
+    ServerAlias www.your_domain (change this to an IP address if you dont have a domain)
     ServerAdmin webmaster@localhost
     DocumentRoot /var/www/your_domain
     ErrorLog ${APACHE_LOG_DIR}/error.log
@@ -417,3 +417,63 @@ DB_CHARSET: 'change me'
 Next navigate to your site and complete the install process.
 
 Pick a strong password! and log in, you are now on the dash. Good luck!
+
+## Debugging
+
+### WordPress - Vlank white page
+
+In the event that you get a blank white page after configuring wordpress, and by observice the page source and seeing the following code.
+
+```php
+<?php
+/**
+ * Front to the WordPress application. This file doesn't do anything, but loads
+ * wp-blog-header.php which does and tells WordPress to load the theme.
+ *
+ * @package WordPress
+ */
+
+/**
+ * Tells WordPress to load the WordPress theme and output it.
+ *
+ * @var bool
+ */
+define( 'WP_USE_THEMES', true );
+
+/** Loads the WordPress Environment and Template */
+require __DIR__ . '/wp-blog-header.php';
+```
+
+It is very likely that you do not have php installed or enabled.
+
+To install PHP
+
+```none
+sudo apt install php
+```
+
+to enable PHP. Replace with the version of PHP that you install.
+
+```none
+sudo a2enmod php7.3
+```
+
+Then restart apache
+
+```none
+sudo systemctl restart apache2
+```
+
+### WordPress - Your PHP installation appears to be missing the MySQL extension which is required by WordPress
+
+You do not have the required extension, install it with the following (replace with your version number)
+
+```none
+apt-get install php7.3-mysql
+```
+
+Alternatively.
+
+```none
+sudo apt install php-mysql
+```
