@@ -477,3 +477,19 @@ Alternatively.
 ```none
 sudo apt install php-mysql
 ```
+
+### The address of the wordpress host changes
+
+This happened to me while testing on my local network, i changed the address of my VM from 192.168.0.31 to 192.168.0.50 and my WordPress site stopped working.
+
+This is caused by a misconfigured option in the wordpress maria database. To fix this i installed a graphical database manager (dbeaver) and navigated to the wp_options table and manually updated the IP address.
+
+You could also try using an SQL command, though this is risky as i do not know if the `siteurl` and `home` rows are always going to be `option_id` 1 and 2 respectively.
+
+In this example "*wordpress*" is the name of the table.
+
+```sql
+UPDATE wordpress.wp_options
+	SET option_value='http://192.168.0.50'
+	WHERE option_id=1
+```
