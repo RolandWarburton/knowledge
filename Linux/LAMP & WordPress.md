@@ -62,6 +62,8 @@ Install mariaDB which replaces MySQL
 sudo apt install mariadb-server
 ```
 
+On arch systems you need to install `mariadb` and then run `mariadb-install-db --user=mysql --basedir=/usr --datadir=/var/lib/mysql`. Then start the mariadb daemon with `/usr/bin/mysqld_safe --datadir='/var/lib/mysql'`
+
 Secure the database
 
 ```none
@@ -134,7 +136,7 @@ sudo vim /etc/apache2/sites-available/\[domain_name\].conf
 
 <VirtualHost *:80>
     ServerName your_domain
-    ServerAlias www.your_domain 
+    ServerAlias www.your_domain
     ServerAdmin webmaster@localhost
     DocumentRoot /var/www/your_domain
     ErrorLog ${APACHE_LOG_DIR}/error.log
