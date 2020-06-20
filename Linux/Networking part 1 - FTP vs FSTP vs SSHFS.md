@@ -72,3 +72,38 @@ Host TestServer
 
 To Mount the remote filesystem on your device run the command `sshfs -F /home/roland/.ssh/config roland@45.77.236.124:/home/roland mount/`. Add
 `-o debug` to enable debugging information
+
+### Setting up SFTP
+
+Add the following to the bottom of your `sudo vim /etc/ssh/sshd_config`.
+
+```none
+Match group sftp
+	ChrootDirectory /
+	PermitRootLogin yes <- Allow root to log in
+	X11Forwarding no
+	AllowTcpForwarding no
+	ForceCommand internal-sftp
+```
+
+Next create a user to use sftp.
+
+```none
+sudo addgroup sftp
+sudo useradd -m sftpuser -g sftp
+sudo passwd sftpuser
+sudo chmod 7000 /home/sftpuser
+```
+
+You can also append sftp group privilages to an existing user.
+
+```none
+sudo usermod -aG sftp roland
+sudo usermod -aG sftp root
+```
+
+Then restart ssh.
+
+```none
+sudo systemctl restart ssh
+```
