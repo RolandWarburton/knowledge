@@ -62,7 +62,7 @@ Install mariaDB which replaces MySQL
 sudo apt install mariadb-server
 ```
 
-On arch systems you need to install `mariadb` and then run `mariadb-install-db --user=mysql --basedir=/usr --datadir=/var/lib/mysql`. Then start the mariadb daemon with `/usr/bin/mysqld_safe --datadir='/var/lib/mysql'`
+On arch systems you need to install `mariadb` and then run `mariadb-install-db --user=mysql --basedir=/usr --datadir=/var/lib/mysql`. Then start the mariadb daemon with `/usr/bin/mysqld_safe --datadir='/var/lib/mysql'`. Lastly enable the service with `sudo systemctl start mariadb`.
 
 Secure the database
 
