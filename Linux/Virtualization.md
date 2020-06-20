@@ -40,6 +40,32 @@ sudo systemctl start vmware-usbarbitrator.service
 sudo systemctl start vmware-hostd.service
 ```
 
+### Installing VMWare tools on Debian 10 (Buster)
+
+Ensure that you have the CD/DVD hardware installed on your VM by right clicking on the vm in the left hand list of VMs and clicking on settings, then adding the CD/DVD drive if needed. Next make sure that you are pointing the CD/DVD drive to `/usr/lib/vmware/isoimages/linux.iso`.
+
+Next, mount the drive and extract the installer.
+
+```none
+mkdir -p /mnt/cdrom
+mount /dev/cdrom /mnt/cdrom
+tar -zxpf /mnt/cdrom/VMwareTools-xx.y.zz-xxxxxx.tar.gz
+```
+
+Then navigate to the directory that VMwareTools extracted into (directory is called)
+
+```none
+cd vmware-rools-distrib/
+```
+
+Execute the installer
+
+```none
+sudo ./vmware-install.pl
+```
+
+Restart the VM and you are good to go!
+
 ## ESXI 6.5
 
 ### Installation
