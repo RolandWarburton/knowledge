@@ -307,3 +307,11 @@ Pipe the command into bash (like running it as sudo in bash normally).\
 Preserve the environment variables in my bash environment\
 `someCommand | sudo -E bash **-**`\
 Substitute the result of someCommand into '-'
+
+### NVENC codec - OBS
+
+The error `Failed to open NVENC codec: Unknown error occurred` occurs when you have updated your linux version and not restarted.
+
+To verify that this is causing the issue run the commands `pacman -Q linux` and `uname -r` and check that they match.
+
+If they do not match, then to resolve this you can restart and in 9/10 cases it will fix and they will match.
