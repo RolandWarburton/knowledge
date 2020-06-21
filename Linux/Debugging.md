@@ -315,3 +315,22 @@ The error `Failed to open NVENC codec: Unknown error occurred` occurs when you h
 To verify that this is causing the issue run the commands `pacman -Q linux` and `uname -r` and check that they match.
 
 If they do not match, then to resolve this you can restart and in 9/10 cases it will fix and they will match.
+
+### Setting up John The Ripper in arch
+
+There is a small gotcha with the current john package provided on the Arch repos.
+
+On the current version `john 1.9.0.jumbo1-2` a user may get this error when trying to run certain john commands (eg pdf2john.pl).
+
+```none
+Can't locate ExifTool.pm in @INC (you may need to install the ExifTool module) (@INC contains: /usr/lib/john/lib /usr/lib/perl5/5.30/site_perl /usr/share/perl5/site_perl /usr/lib/perl5/5.30/vendor_perl /usr/share/perl5/vendor_perl /usr/lib/perl5/5.30/core_perl /usr/share/perl5/core_perl) at /usr/lib/john/pdf2john.pl line 39.
+BEGIN failed--compilation aborted at /usr/lib/john/pdf2john.pl line 39.
+```
+
+This is caused by the ExifTool.pm module that perl usually relies on to be too new for the version that john is using, therefore john normally provides this older exif tool, however for whatever reason it is not installed from the arch package.
+
+This is solved by going to [this](https://github.com/magnumripper/JohnTheRipper/tree/bleeding-jumbo/run/lib) directory of the john official repo and downloading the 3 perl module files onto your own computer. Next copy these files over to the the correct location so that the include (@INC) path of the pdf2john.pl script can find them. IE. `sudo cp *.pm /usr/lib/john/lib/` will move each file over.
+
+Next verify that you can run the command, i have only successfully got this running by pointing at the perl file by its full path as there is no way for arch to know where to find these modified files, essentially they are not included in the $PATH. You may add `/usr/lib/john/lib/` to the path, however it will not clean itself up once you uninstall john so i have not done this personally.
+
+You can verify that `/usr/lib/john/lib/` by running `echo $PATH` and observing the former path not being present.
