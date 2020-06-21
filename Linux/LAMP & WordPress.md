@@ -418,6 +418,49 @@ Next navigate to your site and complete the install process.
 
 Pick a strong password! and log in, you are now on the dash. Good luck!
 
+### WordPress Templates
+
+These instructions will go over how you can bootstrap a brand new template in WordPress.
+
+First start by creating some required, and optional directories in your wordpress direction located in `/var/www/mydomain/`. You can find your templates inside the `wp-content/themes` directory. Start by creating a new directory here.
+
+The required files are `index.php` and `styles.css`.
+
+I also created additional optional files and directories as seen below.
+
+```none
+.
+├── 404.php
+├── archive.php
+├── assets
+│   ├── css
+│   ├── fonts
+│   ├── images
+│   └── js
+├── classes
+├── comments.php
+├── footer.php
+├── functions.php
+├── header.php
+├── home.php
+├── inc
+├── index.php
+├── page.php
+├── readme.txt
+├── screenshot.png
+├── search.php
+├── single.php
+├── style.css
+├── template-parts
+└── templates
+
+9 directories, 13 files
+```
+
+#### WP Hierarchy
+
+The website [WPHierarchy](https://wphierarchy.com/) explains the purpose for the above files and how they are displayed within WP.
+
 ## Debugging
 
 ### WordPress - Blank white page
