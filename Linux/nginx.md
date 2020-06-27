@@ -248,7 +248,7 @@ Make sure you have the correct *A records* in your DNS settings on your nameserv
 \
 
 | Type     | Host | Value          | TTL       |
-|----------|------|----------------|-----------|
+| -------- | ---- | -------------- | --------- |
 | A Record | @    | 149.28.174.161 | Automatic |
 | A Record | api  | 149.28.174.161 | Automatic |
 | A Record | www  | 149.28.174.161 | Automatic |
@@ -291,6 +291,27 @@ server {
 	index index.html;
 	server_name api.roaming.host;
 	root /var/www/api.roaming.host;
+}
+```
+
+### AutoIndex styles
+
+Nginx has the ability to inject files before or after the main body. By using the `add_after_body` or `add_before_body` statement you can point to a html file thats absolute to your location.
+
+In this example my `location = /files` and has an alias to `/home/roland/files` so the style file is placed somewhere inside `/home/roland/files`. The location of the actual file will therefore be `/home/roland/files/.assets/fancyindex.html`.
+
+A gotcha is to make sure to include the the /files in the add_after_body statement.
+
+```none
+location /files {
+	# go to this dir instead of /files
+	alias /home/roland/files;
+		# ignore index.html
+		index _;
+		# enable autoindex
+		autoindex on;
+		# my own css
+		add_after_body /files/.assets/fancyindex.html;
 }
 ```
 
