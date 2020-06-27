@@ -315,6 +315,22 @@ location /files {
 }
 ```
 
+Heres an example of how your fancyindex.html could look like.
+
+```html
+<style>
+body {
+	background: #121212 !important;
+	color: #dedede !important;
+	font-size: 1.25em;
+}
+a, a:visited  {
+	color: #dedede;
+}
+</style>
+
+```
+
 ### Debugging
 
 #### Disable HTTPS redirects
