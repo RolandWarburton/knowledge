@@ -122,6 +122,18 @@ http_access allow authenticated
 http_access deny all
 ```
 
+### Configure UFW for squid
+
+Add either the 'Squid' suite or the port you allowed through your firewall through either of the following commands.
+
+```none
+# Allow Squid if you didnt change the port
+sudo ufw allow 'Squid'
+
+# Allow squid if you changed the port
+sudo ufw allow 1234/tcp
+```
+
 ### Configure your browser
 
 Now that you have squid configured, you need to tell your browser to use the proxy.
