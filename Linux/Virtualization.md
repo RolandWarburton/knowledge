@@ -155,3 +155,71 @@ vim /run/media/roland/USB/syslinux.cfg
 sudo umount ~/mount
 sudo umount /run/media/roland/USB
 ```
+
+### Adding NFS datastores
+
+This is a critical step for automating the deployment of new virtual machines.
+
+First create a Network File Server on your host system. For arch linux users check [here](https://wiki.archlinux.org/index.php/NFS) for a great resource.
+
+#### Creating a NFS server on your computer
+
+In general follow these steps To create a file share to serve ISOs from.
+
+In this example i am service Debian 10 Buster.
+
+```none
+sudo vim /etc/exports
+```
+
+```none
+/srv/nfs/Debian10       192.168.0.110/24(no_subtree_check,rw,async)
+```
+
+Then mount the ISO and copy its contents into /srv/nfs/Debian10
+
+```none
+sudo mount ~/Debian10_Buster.iso ~/mount
+
+sudo cp -r ~/mount/* /srv/nfs/Debian10
+```
+
+Then export your NFS
+
+```none
+exportfs -arv
+```
+
+Then start the NFS server and check its status
+
+```none
+sudo systemctl start nfs-server
+sudo systemctl status nfs-server
+```
+
+```output
+● nfs-server.service - NFS server and services
+     Loaded: loaded (/usr/lib/systemd/system/nfs-server.service; disabled; vendor preset: disabled)
+     Active: active (exited) since Thu 2020-07-09 02:06:27 AEST; 12min ago
+    Process: 5265 ExecStartPre=/usr/sbin/exportfs -r (code=exited, status=0/SUCCESS)
+    Process: 5266 ExecStart=/usr/sbin/rpc.nfsd (code=exited, status=0/SUCCESS)
+   Main PID: 5266 (code=exited, status=0/SUCCESS)
+
+Jul 09 02:06:27 Arch-Desktop systemd[1]: Starting NFS server and services...
+Jul 09 02:06:27 Arch-Desktop systemd[1]: Finished NFS server and services.
+```
+
+#### Add the NFS on ESXi
+
+In this example i am not using authentication and restriction to the NFS server should be done on an IP basis in `/etc/nfsconf`.
+
+A datastore is created under **Storage -> Datastores -> New datastore**...
+
+The ESXi settings are below worked for me:
+
+```none
+Name: Debian10
+NFS Server: 192.168.0.100
+NFS Share: /srv/nfs/Debian10
+NFS Version: NFS 3
+```
