@@ -66,6 +66,14 @@ sudo ./vmware-install.pl
 
 Restart the VM and you are good to go!
 
+#### open-vm-tools
+
+In some cases open-vm-tools packages can be obtained from the OS vendor (eg debian) and can be installed from there. This is the preferred option if avaliable.
+
+```none
+sudo apt install open-vm-tools
+```
+
 ## ESXI 6.5
 
 ### Installation
@@ -82,7 +90,7 @@ sudo pacman -S syslinux
 
 ```
 
-2. Check which drive is the USB you are installing to witn `lsblk`. In this case its `/dev/sdc`
+2. Check which drive is the USB you are installing to with `lsblk`. In this case its `/dev/sdc`
 
 3. partition the disk as a FAT32 drive
 
@@ -94,11 +102,11 @@ sudo fdisk /dev/sdc
 "d" Delete all existing partitions (repeat until all are removed)
 "n" Create 1 primary partition that extends the entire disk
 "t" Set the type of drive to FAT32 (hex = b)
-"a" Set the parition you just made to active
+"a" Set the partition you just made to active
 "p" Verify your partition table is correct
 ```
 
-Example of correct parition table for USB stick
+Example of correct partition table for USB stick
 
 ```none
 Disk /dev/sdc: 14.45 GiB, 15502147584 bytes, 30277632 sectors
@@ -223,3 +231,7 @@ NFS Server: 192.168.0.100
 NFS Share: /srv/nfs/Debian10
 NFS Version: NFS 3
 ```
+
+#### Connect ISO to new VM
+
+Under Virtual Machines -> your virtual machine name. You can *Edit* the VM which will bring up a window that has 2 tabs (Virtual Hardware, and VM Options). Select Virtual Hardware -> CD/DVD Drive 1 and select the Datastore ISO file from the dropdown menu, make sure to connect the drive and power cycle the VM. You may need to do this a few times for it to register.
