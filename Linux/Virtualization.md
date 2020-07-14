@@ -235,3 +235,142 @@ NFS Version: NFS 3
 #### Connect ISO to new VM
 
 Under Virtual Machines -> your virtual machine name. You can *Edit* the VM which will bring up a window that has 2 tabs (Virtual Hardware, and VM Options). Select Virtual Hardware -> CD/DVD Drive 1 and select the Datastore ISO file from the dropdown menu, make sure to connect the drive and power cycle the VM. You may need to do this a few times for it to register.
+
+### ESXi Networking
+
+These are some notes that i took when setting up a vlan for testing and development on my network.
+
+#### Current network topology
+
+My current setup contains:
+
+1. PF box with 1 switch connected
+2. The switch is uplinked to PF on an untagged port (a quirk with my edge switch prevents it from being a trunk i think)
+3. The switch facilitates a tagged port (f0/3) to ESXi on vlan 100
+4. The switch facilitates an untagged port (f0/1) to ESXi
+5. The switch facilitates an untagged port to my PC
+
+I have 2 networks:
+
+1. My main network. Vlan 0 192.168.0.0/24
+2. My net testing network. Vlan 100 192.168.100.0/24
+
+#### Create port group in ESXi
+
+This step is the easiest to do so we will do it first.
+
+On ESXi, navigate to `Networking -> Port Groups` and click Add Port Group, specifying the VLAN ID.
+
+Next ensure that your Guest VM is connected to the correct Port Group by going to the VM tab and "editing" the VMs settings to change the networking details.
+
+#### Create my new vlan
+
+On my PFSense router i have gone to `Interfaces -> Assignments -> Vlans` and created a new vlan with ID 100.
+
+I then went to `Interfaces -> Assignments` and Created OPT1 interface on my lan parent LAN interface (in my case msk), so the new interface should be called **msk.100**. Make sure you are assigning the correct interface.
+
+Next click on OPT1 to configure it.
+
+1. Enable interface -> Checked
+2. IPv4 Configuration Type -> Static IPV4
+3. IPv4 Address -> 192.168.100.1/24
+4. Do NOT assign a gateway to this interface
+
+Next go to Services DHCP server and select the OPT1 tab for configuration. If you dont see OPT1 as an option you likely forgot to set the SN mask for OPT1 and it defaulted to /32 which is incorrect in this (and most) situations.
+
+**Make sure to set the gateway, and be prepared to set the DG manually**. I have had some headaches caused by the DG not being set on the host by the DHCP server so try and manually specify it.
+
+The DG IP will be the address of the interface. IE. OPT1 = 192.168.100.1 and my DG will be the same.
+
+At this stage you should **check for connectivity**, however be prepared for it to fail. If it does continue onto the next steps.
+
+#### Configure the switch to carry traffic for VL100
+
+Next go to your switches interface. I have a Ubiquity EdgeMax that has a web interface.
+
+Under the Vlans settings set the following. Be warned that coming from cisco IoS can throw you off as cisco calls its port types as *"Trunk"* and *"Access"* However other manufacturers call them untagged or tagged.
+
+* Tagged = Trunked
+* Untagged = Access
+
+Use the picture for reference.
+
+![Switch VL Settings](https://i.imgur.com/VPrdDtj.png)
+
+#### Manually add firewall rules for OPT and LAN to communicate
+
+At this step you should check if you can ping again before proceeding.
+
+If ping still fails try looking at firewall rules next and adding allow rules where needed.
+
+![LAN FW Rules](https://i.imgur.com/yNUA9bH.png)
+
+![OPT FW Rules](https://i.imgur.com/gra9G4c.png)
+
+#### Manually add the IP
+
+At this step you should check if you can ping again before proceeding.
+
+The next step is to look at the machine itself.
+
+Start by looking at the current IP address of the machine using `ip a` or `ip addr`. I have found that all of my debian 10  machines have ens192 as their interface name.
+
+The below is a working config for the ip settings, mostly just ensure that the machine has a correct IP and a correct subnet.
+
+```output
+2: ens192: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default qlen 1000
+    link/ether 00:0c:29:5f:2d:09 brd ff:ff:ff:ff:ff:ff
+    inet 192.168.100.100/24 scope global ens192
+       valid_lft forever preferred_lft forever
+    inet6 fe80::20c:29ff:fe5f:2d09/64 scope link
+       valid_lft forever preferred_lft forever
+```
+
+If the information is incorrect issue a command to set the ip address, for example.
+
+```none
+ip addr add 192.168.100.100/24 dev ens192
+```
+
+#### Manually add Default gateway
+
+The next Guest setting to check is the default gateway.
+
+By using the `route` command (if you have it) you can see the known routes for the guest VM. If you dont have the route command you can also try `ip route` which will work in 99.99% of cases.
+
+Heres an example of a working config.
+
+```output
+172.17.0.0/16 dev docker0 proto kernel scope link src 172.17.0.1 linkdown
+172.18.0.0/16 dev br-582b597f70ba proto kernel scope link src 172.18.0.1
+192.168.100.0/24 dev ens192 proto kernel scope link src 192.168.100.100
+```
+
+If you are missing a 192.168.100.x route then issue the following commands to add one.
+
+Using the net-tools package which may or may not be avaliable to you.
+
+```none
+route add default gw 192.168.100.1 eth0
+```
+
+If you dont have net-tools you can always fall back on trusty ip.
+
+```none
+ip route add 192.168.100.1/24 dev eth0
+```
+
+On an off note you can also re-route traffic this way.
+
+```none
+ip route add 192.168.100.1/24 via 192.168.0.1
+```
+
+Test your connection again. If you still dont have a connection then something is super wrong and i dont know how to fix it most likely, my inspiration for writing this is for self reference so i will add more issues and gotchas as i encounter them.
+
+#### Some extra things to try
+
+1. Can you ping from your PC, or your Router to the VM?
+2. Can the VM ping anything? Check it can ping the router first on any gateway IP.
+3. Run the packet capture debug tool on PF itself, or run it on your PC to look for clues
+4. Use the traffic graphs to look for signs of life in PF
