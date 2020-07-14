@@ -236,7 +236,7 @@ NFS Version: NFS 3
 
 Under Virtual Machines -> your virtual machine name. You can *Edit* the VM which will bring up a window that has 2 tabs (Virtual Hardware, and VM Options). Select Virtual Hardware -> CD/DVD Drive 1 and select the Datastore ISO file from the dropdown menu, make sure to connect the drive and power cycle the VM. You may need to do this a few times for it to register.
 
-### ESXi Networking
+## ESXi Networking
 
 These are some notes that i took when setting up a vlan for testing and development on my network.
 
