@@ -61,3 +61,11 @@ Download Windows Admin Center [here](https://www.microsoft.com/en-us/windows-ser
 You can read more about Windows Admin Center [here](https://docs.microsoft.com/en-us/windows-server/manage/windows-admin-center/overview).
 
 Once installed you can search for and start *"Server Manager"* and navigate to *manage* -> *Add Servers* too add the DC that we created above.
+
+### GPO
+
+Following [this video for reference](https://www.youtube.com/watch?v=00t18BsXl9I)
+
+Under *tools -> Group Policy Management -> Forrest -> Domains -> your_domain.com -> Your_network -> Group Policy Objects* You can create a new group policy object, then follow the video to create the policy.
+
+Once you have created the policy object, drag and drop it into the Users folder that you want to apply the policy to. Remember that policy is hierarchal so sub organizational units inside the  Users directory will also inherit this policy.
