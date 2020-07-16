@@ -62,6 +62,19 @@ You can read more about Windows Admin Center [here](https://docs.microsoft.com/e
 
 Once installed you can search for and start *"Server Manager"* and navigate to *manage* -> *Add Servers* too add the DC that we created above.
 
+#### Refresh error
+
+```output
+The refresh failed because WinRM is not running and could not be started
+```
+
+The solution is to do the following the the remote windows machine to enable the WinRM services.
+
+1. Run cmd as admin
+2. navigate to `cd \WIndows\System32\wbem\AutoRecover`
+3. run `for /f %s in ('dir /b \*.mof \*.mfl') do mofcomp %s
+4. Restart the *Server Manager*
+
 ### GPO
 
 Following [this video for reference](https://www.youtube.com/watch?v=00t18BsXl9I)
