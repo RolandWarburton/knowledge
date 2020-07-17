@@ -358,6 +358,10 @@ If you dont have net-tools you can always fall back on trusty ip.
 
 ```none
 ip route add 192.168.100.1/24 dev eth0
+
+OR a default gateway
+
+ip route add default via 192.168.100.1 dev eth0
 ```
 
 On an off note you can also re-route traffic this way.
