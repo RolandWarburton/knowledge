@@ -35,7 +35,7 @@ Once you have backed up, edit the users file `vim /etc/raddb/users`. Set the lin
 On line 87 there is an example user. Create a new user under the example user.
 
 ```none
-roland Cleartext-Password := "rhinos"
+roland Cleartext-Password := "myPassword"
 ```
 
 ### Step 3. Creating clients
@@ -85,7 +85,7 @@ Then try and authenticate as a user. A successful authentication will return an 
 3. from the new terminal run the `radtest username password 127.0.0.1 0 HelloWorld` command below for your created user
 
 ```none
-radtest roland rhinos 127.0.0.1 0 HelloWorld
+radtest roland myPassword 127.0.0.1 0 HelloWorld
 ```
 
 If you get an `Access-Accept` back then its successful! According the the [FreeRADIUS getting started guide](https://wiki.freeradius.org/guide/Getting-Started) the following authentication methods will work.
