@@ -8,9 +8,10 @@ This guide is for CentOS 8 but most likely also works on RHEL 8 and other enterp
 
 ```none
 dnf install freeradius*
+```
 
-or to install just freeradius
-
+```none
+# or to install just freeradius
 dnf install freeradius
 ```
 
@@ -235,4 +236,35 @@ systemctl mask --now firewalld
 ```none
 # To unmask the service (once finished testing)
 systemctl unmask --now firewalld
+```
+
+### Logging
+
+Logging is enabled in `/etc/raddb/radiusd.conf`.
+
+Create a backup of the config file first.
+
+```none
+cp /etc/raddb/radiusd.conf /etc/raddb/radiusd.conf.bak
+```
+
+Next edit the config file and change auth to `auth=yes` on line 304.
+
+```none
+vim /etc/raddb/radiusd.conf
+# :304 -> change to yes
+# :312 -> change to yes to log failed auths
+# :313 -> change to yet to log success auths
+```
+
+Log files will be stored in the following location.
+
+```none
+less /var/log
+```
+
+An example of a log event from the user **roland** logging in through client **ubnt-ap**.
+
+```output
+Sat Jul 18 19:07:29 2020 : Auth: (32) Login OK: [roland/<via Auth-Type = eap>] (from client ubnt-ap port 0 cli 22-FC-93-19-0D-EF)
 ```
