@@ -28,6 +28,12 @@ Then run the following command from the Poppler Library.
 pdfunite 1.pdf 2.pdf 3.pdf output.pdf
 ```
 
+You can also collect a list of PDFs in a text file to copy paste into the pdfunite command with the following find command.
+
+```none
+find . -type f -iname "*.pdf" -exec echo \"{}\" \\ >> pdfs.txt \;
+```
+
 ### applying and removing passwords to/from PDFs
 
 There are two types of passwords that a PDF can have.
