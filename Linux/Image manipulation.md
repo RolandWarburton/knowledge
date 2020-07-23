@@ -2,7 +2,7 @@
 
 Notes on manipulating images. Mostly including ffmpeg and imagemagick.
 
-### Converting from gif to to image series
+## Converting from gif to to image series
 
 coalesce means *merge a sequence of images*
 
@@ -10,13 +10,13 @@ coalesce means *merge a sequence of images*
 convert target.gif -coalesce Frames/output_%02d.png
 ```
 
-### Converting from image series to a gif
+## Converting from image series to a gif
 
 ```none
 convert -delay 20 fullBody_*.png -loop 0 fullBody.gif
 ```
 
-### Concatenating PDFs
+## Concatenating PDFs
 
 Sometimes you just need to string PDFs together. For example making a mega document of all your uni lectures for revision purposes.
 
@@ -34,7 +34,7 @@ You can also collect a list of PDFs in a text file to copy paste into the pdfuni
 find . -type f -iname "*.pdf" -exec echo \"{}\" \\ >> pdfs.txt \;
 ```
 
-### applying and removing passwords to/from PDFs
+## applying and removing passwords to/from PDFs
 
 There are two types of passwords that a PDF can have.
 
