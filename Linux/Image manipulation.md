@@ -52,6 +52,12 @@ To crack an owner password is very straightforward using qpdf. This isnt actuall
 qpdf --decrypt password.pdf decrypted.pdf
 ```
 
+You can use the find command to recursively check for every PDF and run the qpdf command above with the `--replace-input` tag to intentionally overwrite the input file
+
+```none
+find . -type f -iname "*.pdf" -exec qpdf --decrypt --replace-input {} \;
+```
+
 #### User Password
 
 This is a more restrictive password that **removes all read and write access** from a pdf, requiring the owner and user to enter it before any type of reading or modification can be made. This is a more permanent method of locking a pdf down, as such it encrypts the entire document resulting in the PDF being undecipherable without the password.
