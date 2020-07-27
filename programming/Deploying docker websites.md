@@ -4,11 +4,11 @@ Docker is a new tool that i have pledged to look at personally to better underst
 
 This post coverers my process of setting up **docker-letsencrypt-nginx-proxy-companion** along with a node application such as an API or other micro service.
 
-![docker-letsencrypt-nginx-proxy-companion-diagram.svg](media/docker-letsencrypt-nginx-proxy-companion-diagram.svg)
+![docker-letsencrypt-nginx-proxy-companion-diagram.svg](/media/docker-letsencrypt-nginx-proxy-companion-diagram.svg)
 
 ### Resources
 
-I Read the following stuff to get a better understanding of how i should structure the task.
+I Read the following stuff myself to understand how to structure the task.
 
 1. [Server Wise](https://blog.ssdnodes.com/blog). - Hosting multiple SSL-enabled sites with Docker and Nginx. [link](https://blog.ssdnodes.com/blog/host-multiple-ssl-websites-docker-nginx/).
 2. [nginx-proxy](https://github.com/nginx-proxy). - docker letsencrypt nginx proxy companion README.md [link](https://github.com/nginx-proxy/docker-letsencrypt-nginx-proxy-companion).
@@ -53,7 +53,7 @@ docker network create nginx-proxy
 
 Make a new directory to create your various proxy services in at `./nginx-proxy`.
 
-```none
+```output
 ├── app
 │   └── ...
 └── nginx-proxy <- We are working here
@@ -129,7 +129,7 @@ The job of *nginx-proxy* is to take the encrypted request from the client and th
 
 The job of its companion is to set up SSL for HTTPS only, these two services work together to manage and redirect traffic over the *nginx-proxy* network.
 
-![media/webproxy-network.svg](media/webproxy-network.svg)
+![media/webproxy-network.svg](/media/webproxy-network.svg)
 
 The nginx-proxy and proxy-companion services can now be started using `docker-compose up -d`. Note that i PREFER using docker-compose where possible as i feel it makes services easier to understand, however the official docker-letsencrypt-nginx-proxy-companion repo provides a `start.sh` and `.env.sample` which you can use to run without needing docker-compose, though i did not use it for this experiment so YMMV.
 
@@ -176,7 +176,7 @@ In step 4 we will create a test site using **ExpressJS** and **NodeJS** to test 
 
 Start by creating a new directory outside of nginx-proxy called **app**
 
-```none
+```output
 ├── app <- We are working here
 │   └── ...
 └── nginx-proxy
@@ -185,7 +185,7 @@ Start by creating a new directory outside of nginx-proxy called **app**
 
 Next Create a nested directory for a vanilla node project, you will need npm installed for this. Install NPM with `apt install npm` on debian based systems, and `pacman -S npm` for arch based systems.
 
-```none
+```output
 ├── app
 │   ├── website <- We are working here
 │   │   └── ...
@@ -222,7 +222,7 @@ app.listen(port, () =>
 
 We should now have a complete example website inside *./app/website*. Your files should look like this.
 
-```none
+```output
 ├── app
 │   ├── app
 │   │   ├── app.js
