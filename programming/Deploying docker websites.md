@@ -55,12 +55,12 @@ Make a new directory to create your various proxy services in at `./nginx-proxy`
 
 ```output
 ├── app
-│   └── ...
+│   └── .
 └── nginx-proxy <- We are working here
-    └── ...
+    └── .
 ```
 
-Copy or create the docker-compose.yaml file to ./nginx-proxy.
+Then create the docker-compose.yaml file to ./nginx-proxy.
 
 ```yaml
 version: '3'
@@ -178,9 +178,9 @@ Start by creating a new directory outside of nginx-proxy called **app**
 
 ```output
 ├── app <- We are working here
-│   └── ...
+│   └── .
 └── nginx-proxy
-    └── ...
+    └── .
 ```
 
 Next Create a nested directory for a vanilla node project, you will need npm installed for this. Install NPM with `apt install npm` on debian based systems, and `pacman -S npm` for arch based systems.
@@ -188,10 +188,10 @@ Next Create a nested directory for a vanilla node project, you will need npm ins
 ```output
 ├── app
 │   ├── website <- We are working here
-│   │   └── ...
-│   └── ...
+│   │   └── .
+│   └── .
 └── nginx-proxy
-    └── ...
+    └── .
 ```
 
 ```none
@@ -228,12 +228,12 @@ We should now have a complete example website inside *./app/website*. Your files
 │   │   ├── app.js
 │   │   ├── package.json
 │   │   └── package-lock.json
-│   └── ...
+│   └── .
 └── nginx-proxy
-    └── ...
+    └── .
 ```
 
-### Step 6 - Add package.json scripts
+### 5 - Add package.json scripts
 
 When we create a docker container for this example website its important to be able to boil the website down into a npm script. Add the following commands to package.json to allow starting the server from npm scripts.
 
@@ -256,7 +256,7 @@ When we create a docker container for this example website its important to be a
 
 ```
 
-### Step 7 - Test example website locally
+### Step 6 - Test example website locally
 
 Before you move on to dockerizing this example website make sure it works correctly by running it as a standalone app.
 
@@ -271,7 +271,7 @@ Test you can connect over localhost:80. If not you may either...
 3. May be accessing it from outside the VPS network (move the ./app directory to your local machine to test the functionality would be the easiest way of testing, however be aware that there may still be a problem with the VPS itself)
 4. Make sure NodeJS and NPM are installed for local testing
 
-### Step 8 - Dockerizing the example website
+### Step 7 - Dockerizing the example website
 
 Great! Finally onto the last stretch.
 
@@ -283,7 +283,7 @@ touch ./app/dockerfile
 touch ./app/nginx.conf
 ```
 
-#### 8.1 Configure nginx.conf
+#### 7.1 Configure nginx.conf
 
 Create a simple forwarding *server block* to forward traffic to your node app to serve instead of the default nginx static files.
 
@@ -311,7 +311,7 @@ http {
 }
 ```
 
-#### 8.2 Configure dockerfile
+#### 7.2 Configure dockerfile
 
 Next use the dockerfile below to get started configuring an image.
 
@@ -329,7 +329,7 @@ CMD ["npm", "start"]
 USER node
 ```
 
-#### 8.3 Configure docker-compose
+#### 7.3 Configure docker-compose
 
 Lastly use this as your docker-compose
 
@@ -351,7 +351,7 @@ networks:
             name: nginx-proxy
 ```
 
-### 9 - Running the example website
+### 8 - Running the example website
 
 Build the website image before running by using the docker build command inside *./app*.
 
