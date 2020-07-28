@@ -20,7 +20,7 @@ First ill go over a high level overview of what we will be building in this exam
 
 ```output
 ├── app
-│   ├── app
+│   ├── website
 │   │   ├── app.js
 │   │   ├── package.json
 │   │   └── package-lock.json
@@ -224,7 +224,7 @@ We should now have a complete example website inside *./app/website*. Your files
 
 ```output
 ├── app
-│   ├── app
+│   ├── website
 │   │   ├── app.js
 │   │   ├── package.json
 │   │   └── package-lock.json
@@ -268,18 +268,18 @@ Test you can connect over localhost:80. If not you may either...
 
 1. Have a conflicting port (check the error message)
 2. Not have express installed (check package.json dependencies)
-3. May be accessing it from outside the VPS network (move the ./app directory to your local machine to test the functionality would be the easiest way of testing, however be aware that there may still be a problem with the VPS itself)
+3. May be accessing it from outside the VPS network (move the ./website directory to your local machine to test the functionality would be the easiest way of testing, however be aware that there may still be a problem with the VPS itself)
 4. Make sure NodeJS and NPM are installed for local testing
 
 ### Step 7 - Dockerizing the example website
 
 Great! Finally onto the last stretch.
 
-Create the following files in *./app* directory.
+Create the following files in *./website* directory.
 
 ```none
-touch ./app/docker-compose.yaml
-touch ./app/dockerfile
+touch ./website/docker-compose.yaml
+touch ./website/dockerfile
 touch ./app/nginx.conf
 ```
 
@@ -321,7 +321,7 @@ COPY nginx.conf /etc/nginx/nginx.conf
 
 FROM node:latest
 WORKDIR /app
-COPY app/package.json /app
+COPY website/package.json /app
 RUN npm install
 COPY ./app /app
 EXPOSE 3000
