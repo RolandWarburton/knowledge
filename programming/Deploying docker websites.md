@@ -323,7 +323,7 @@ FROM node:latest
 WORKDIR /app
 COPY website/package.json /app
 RUN npm install
-COPY ./app /app
+COPY ./website /app
 EXPOSE 3000
 CMD ["npm", "start"]
 USER node
