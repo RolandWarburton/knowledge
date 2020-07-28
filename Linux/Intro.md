@@ -6,7 +6,7 @@ picked up over time while working with linux.
 ## Current Configuration
 
 OS: Arch Linux\
-DE: openbox\
+DE: xfce4\
 Shell: zsh\
-Terminal: urxvt/alacritty\
+Terminal: alacritty\
 Dots: [Dots!](https://github.com/RolandWarburton/dotfiles)
