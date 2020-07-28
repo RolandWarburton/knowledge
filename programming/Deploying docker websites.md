@@ -116,7 +116,7 @@ volumes:
   html:
   certs:
 
-# Do not forget to 'docker network create nginx-proxy' before launch, and to add '--network nginx-proxy' to proxied containers. 
+# Do not forget to 'docker network create nginx-proxy' before launch, and to add '--network nginx-proxy' to proxied containers.
 
 networks:
   default:
