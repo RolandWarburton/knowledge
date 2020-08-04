@@ -215,7 +215,7 @@ const port = 3000;
 app.get("/", (req, res) => res.send("Hello World!"));
 
 app.listen(port, () =>
-	console.log(`Example app listening at http://localhost:${port}`)
+    console.log(`Example app listening at http://localhost:${port}`)
 );
 
 ```
@@ -239,19 +239,19 @@ When we create a docker container for this example website its important to be a
 
 ```json
 {
-	"name": "website",
-	"version": "1.0.0",
-	"description": "",
-	"main": "app.js",
-	"scripts": {
-		"start": "node app.js"
-	},
-	"keywords": [],
-	"author": "roland",
-	"license": "ISC",
-	"dependencies": {
-		"express": "^4.17.1"
-	}
+    "name": "website",
+    "version": "1.0.0",
+    "description": "",
+    "main": "app.js",
+    "scripts": {
+        "start": "node app.js"
+    },
+    "keywords": [],
+    "author": "roland",
+    "license": "ISC",
+    "dependencies": {
+        "express": "^4.17.1"
+    }
 }
 
 ```
@@ -294,20 +294,20 @@ pid /run/nginx.pid;
 include /etc/nginx/modules-enabled/*.conf;
 
 events {
-	worker_connections 1024;
+    worker_connections 1024;
 }
 
 http {
-	server {
-		server_name localhost;
-		listen 3000 default_server;
-		server_name DOMAIN.host localhost 127.0.0.1;
+    server {
+        server_name localhost;
+        listen 3000 default_server;
+        server_name DOMAIN.host localhost 127.0.0.1;
 
-		location / {
-			proxy_pass http://website3:3000;
-			proxy_set_header X-Forward-For $remote_addr;
-		}
-	}
+        location / {
+            proxy_pass http://website3:3000;
+            proxy_set_header X-Forward-For $remote_addr;
+        }
+    }
 }
 ```
 
@@ -368,3 +368,96 @@ docker-compose up
 Now navigate to your website and pray that it all works.
 
 Congrats!!!
+
+## Other notes
+
+### Running with nodemon
+
+Nodemon has a hard time working when you are editing files that are mapped to a volume and nodemon is monitoring them through the volume because of docker.
+
+To fix this heres what i did.
+
+In my project i used a folder structure like...
+
+```output
+.
+├── app
+│   ├── package.json
+│   └── app.js
+├── docker
+│   └── nginx.conf
+├── docker-compose.yaml
+├── dockerfile
+├── mongo-volume
+│   └── "this container is a volume"
+└── README.md
+```
+
+My docker-compose needs to mount the entire app as a volume using the `volumes` option.
+
+```yaml
+services:
+    website:
+        container_name: blogwatcher
+        image: blogwatcher
+        ports:
+            - "8080:3000"
+        volumes:
+        # we are interested in this bit
+        # map the app bundle (./app) on the host to the app inside the docker container
+            - ./app:/usr/src/app
+```
+
+This type of mapping should only be done when you need to use nodemon to monitor the files, or for other development related stuff.
+
+Next change the `package.json` start command to include legacy filesystem support `-L` which is an inefficient but only way of polling files with docker.
+
+For reference heres my package.json. Not i am also enabling DEBUG options and enabling debug color support which is useful for debugging inside docker as it better matches what text looks like outside of the docker environment.
+
+```json
+{
+	"name": "blogwatcher",
+	"version": "1.0.0",
+	"description": "",
+	"main": "./server/server.js",
+	"scripts": {
+		"start": "DEBUG=blogWatcher:* DEBUG_COLORS=true nodemon -L ./server/server.js"
+	},
+	"keywords": [],
+	"author": "",
+	"license": "ISC",
+	"dependencies": {
+		"express": "^4.17.1"
+	},
+	"devDependencies": {
+		"nodemon": "^2.0.4"
+	}
+}
+
+```
+
+And here is my dockerfile
+
+```dockerfile
+FROM nginx:latest
+EXPOSE 3000
+EXPOSE 27017
+COPY ./docker/nginx.conf /etc/nginx/nginx.conf
+
+FROM node:latest
+
+# Create app directory
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+# Install dependencies
+COPY ./app/package.json /usr/src/app
+RUN npm install
+
+# Bundle app source
+COPY ./app /usr/src/app
+
+# Exports
+EXPOSE 3000
+CMD [ "npm", "run", "start" ]
+```
