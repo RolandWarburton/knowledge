@@ -30,7 +30,15 @@ chsh -s $(which zsh)
 sudo chsh -s $(which zsh)
 ```
 
-4. Start configuring!
+4. Set your .zshenv
+
+Tell zsh where to look per account by setting the .zshenv inside $HOME/.zshenv
+
+```none
+echo "EXPORT ZDOTDIR=$HOME/.config/zsh" >> $HOME/.zshenv
+```
+
+5. Start configuring!
 
 ### Setting up fpath
 
