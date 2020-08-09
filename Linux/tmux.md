@@ -52,7 +52,11 @@ Switch panes with `ctrl+a <-` or ->
 
 Make a new Vertical pane `ctrl+a "`.
 
+#### Manipulating panes
+
 If you need to move a 2 panes from vert to horz, select the 2nd panel and use `ctrl+a space`.
+
+Rotating panes can be done with `ctrl+a, o` press ctrl+a and keep holding `ctrl` and press `o` with ctrl held down.
 
 #### Creating windows
 
