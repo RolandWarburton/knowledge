@@ -41,7 +41,7 @@ Attach to a session with `tmux attach -t session_name`.
 
 List the sessions running with `tmux ls`.
 
-Rename a session with `tmux rename-session -t session_name new_name`. This can be done inside a session as well as outside.
+Rename a session with `tmux rename-session -t session_name new_name`. This can be done inside a session as well using `tmux rename-session session_name`.
 
 Remove a session with `tmux kill-session -t session_name`.
 
@@ -51,6 +51,8 @@ Make a new horizontal pane `ctrl+a %`.
 Switch panes with `ctrl+a <-` or ->
 
 Make a new Vertical pane `ctrl+a "`.
+
+If you need to move a 2 panes from vert to horz, select the 2nd panel and use `ctrl+a space`.
 
 #### Creating windows
 
