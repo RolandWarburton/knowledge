@@ -1,5 +1,11 @@
 # Laravel Bootstrap Notes
 
+## Useful Extensions
+
+* **kokororin.vscode-phpfmt** - PHP Formatting.
+* **onecentlin.laravel-blade** - Laravel Blade Snippets.
+* **felixbecker.php-intellisense** - PHP Intellisense.
+
 ## Get composer
 
 ```none
@@ -436,3 +442,30 @@ Then in the same style, copy the exact same content from `pages/home.blade.php` 
 And update the route in `/routes/web.php` to reflect the change in view location (`return return view("pages/about")`).
 
 Now you have two pages, both extend index.html and each page can contain some unique text using the *partials/hero* component we wrote above.
+
+## Controllers
+
+Lets get started on the controller portion of MVC. Observe `/app/HTTP/controllers` to see where controllers are placed, by default there is a default controller called *Controller.php*. Generate a new controller with `php artisan make:controller FrontEndController` to create a controller for the front end routing.
+
+Now lets add some functionality to that controller.
+
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class FrontEndController extends Controller
+{
+	public function home () {
+		return view("pages/home");
+	}
+}
+```
+
+Now modify the routes to use this as a handler. FrontEndController is the class name and home is the method name.
+
+```php
+Route::get('/', 'FrontEndController@home')->name("root");
+```
