@@ -329,3 +329,29 @@ web interface -> system -> advanced -> Secure Shell.
 * Enable Secure Shell = true
 * Allow Agent Forwarding = true
 * SSHd Key Only = Password or Public Key
+
+### Resolve PFSense using named
+
+After setting up named on my network to resolve some common VM names, i decided to add my pfsense to that list, however i ran into the "potential DNS rebind attack" warning when i set up
+an A record for "pf" at its location.
+
+To fix this i renamed the entry in named to "pfsense" which matches the name hostname of the pfsense box. If you want to change the name to something else you can change it under `system -> general`.
+
+Heres a sample for the reverse and forward zones respectively. Just as a reminder.
+
+* reverse: ip -> nameserver
+* forward: nameserver -> ip
+
+```sh
+; Reverse zone
+;
+; Router
+pfsense	IN	PTR	pf.lab.lan
+```
+
+```none
+; Forward zone
+;
+; Router
+pfsense		IN	A	192.168.0.1
+```
