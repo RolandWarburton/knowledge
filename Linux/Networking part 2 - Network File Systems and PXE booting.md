@@ -72,5 +72,61 @@ Start by running `sudo darkhttpd /srv/pxearch`
 
 ### Missing pxelinux.0 file error
 
-if you run into an error pened to me, it can be identified by looking at `journalctl -u dnsmasq`.
+if you run into an pxelinux error, it can be identified by looking at `journalctl -u dnsmasq`.
 To solve this copy the file to its expected location `sudo cp /mnt/archiso/arch/boot/syslinux/lpxelinux.0 /srv/pxelinux/pxelinux.0`
+
+### Chroot nfs-server share
+
+Instructions for the server...
+
+```none
+vim /etc/exports
+```
+
+```none
+/mnt/lacie 10.10.10.0/24(rw,sync,subtree_check)
+```
+
+---
+
+```none
+useradd -g sftp_users -s /bin/false -m -d /home/sftp sftp
+passwd sftp
+```
+
+```none
+chown root: /home/sftp
+sudo chown root: /home/sftp
+```
+
+```none
+mkdir /home/sftp/test
+chmod 755 /home/sftp/test
+chown sftp:sftp_users /home/sftp/test
+```
+
+```none
+vim /etc/ssh/sshd_config
+```
+
+```output
+# CHANGE
+Subsystem sftp /usr/lib/openssh/sftp-server
+# TO
+Subsystem sftp internal-sftp
+```
+
+Then add a chroot for sftp_users.
+
+```none
+Match Group sftp_users
+	ChrootDirectory %h
+	ForceCommand internal-sftp
+	AllowTcpForwarding no
+	X11Forwarding no
+```
+
+```none
+systemctl restart sshd
+systemctl status sshd
+```
