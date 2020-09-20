@@ -378,3 +378,48 @@ Test your connection again. If you still dont have a connection then something i
 2. Can the VM ping anything? Check it can ping the router first on any gateway IP.
 3. Run the packet capture debug tool on PF itself, or run it on your PC to look for clues
 4. Use the traffic graphs to look for signs of life in PF
+
+### Enabling passthrough for external storage (USB drives)
+
+SSH into the controller and ensure that the USB arbitrator service is running.
+
+Here i want to connect the LaCi drive in passthrough for a host, however the arbitrator service is disabled.
+
+```none
+esxcli hardware usb passthrough device list
+```
+
+```output
+[root@lab-esxi-01:~] esxcli hardware usb passthrough device list
+Bus  Dev  VendorId  ProductId  Enabled  Can Connect to VM                  Name
+---  ---  --------  ---------  -------  ---------------------------------  ---------------------------------------------
+1    3    4791      8064         false  no (usbarbitrator is not running)  Western Digital, G-Tech G-DRIVE mobile SSD
+                                                                           R-Series
+1    2    59f       105e         false  no (usbarbitrator is not running)  LaCie, Ltd
+```
+
+If its not running start it with the following command.
+
+```none
+/etc/init.d/usbarbitrator start
+```
+
+After that you might be prompted to restart hostd. Do that with the following command.
+
+```none
+/etc/init.d/hostd restart
+```output
+watchdog-hostd: Terminating watchdog process with PID 2098417
+hostd stopped.
+hostd started.
+```
+
+Then restart your UI (wait 1min and then refresh the page).
+
+Before connecting the device you should shut down the VM if you can (avoid bad jujus). Now you should be able to select the vm and go to **edit** and then under the virtual hardware tab select "Add other device" and then "USB device". You should now see the new device on the hardware list. Make sure you select the correct device, they are labeled human friendly so in my case i used the drop down and selected the "LaCie Ltd" drive from the list.
+
+i did have some issues with the passthrough, sometimes its a good idea to create a whole new VM and test until it works. I know for sure that the above notes work on a fresh vm with the following settings:
+
+* USB Controller: USB 3.0 (despite the not supported warning)
+* Only 1 USB device
+* Tested on Debian 10 Buster
