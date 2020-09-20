@@ -79,15 +79,25 @@ To solve this copy the file to its expected location `sudo cp /mnt/archiso/arch/
 
 Instructions for the server...
 
+Install nfs-server package.
+
+```none
+apt install nfs-server.
+```
+
+Edit the exports file to share a directory.
+
 ```none
 vim /etc/exports
 ```
 
 ```none
-/mnt/lacie 10.10.10.0/24(rw,sync,subtree_check)
+/some/location/to/share 10.10.10.0/24(rw,sync,subtree_check)
 ```
 
 ---
+
+Create a special user to chroot. Or add your own user, if you use your own user you could mess up existing settings so its good to test on this user first, make sure they can sftp. Also note that the sftp user **cannot** use ssh with these settings. Have separate users for ssh and for sftp.
 
 ```none
 useradd -g sftp_users -s /bin/false -m -d /home/sftp sftp
@@ -116,15 +126,17 @@ Subsystem sftp /usr/lib/openssh/sftp-server
 Subsystem sftp internal-sftp
 ```
 
-Then add a chroot for sftp_users.
+Then add a chroot for sftp user. I have had trouble using the `Match Group sftp_users` command but it seems to work on a per user basis.
 
 ```none
-Match Group sftp_users
+Match User sftp
 	ChrootDirectory %h
 	ForceCommand internal-sftp
 	AllowTcpForwarding no
 	X11Forwarding no
 ```
+
+Then restart and hope it works.
 
 ```none
 systemctl restart sshd
