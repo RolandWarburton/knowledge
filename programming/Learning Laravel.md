@@ -445,7 +445,7 @@ Now you have two pages, both extend index.html and each page can contain some un
 
 ## Controllers
 
-Lets get started on the controller portion of MVC. Observe `/app/HTTP/controllers` to see where controllers are placed, by default there is a default controller called *Controller.php*. Generate a new controller with `php artisan make:controller FrontEndController` to create a controller for the front end routing.
+Lets get started on the controller portion of MVC. Observe `/app/Http/controllers` to see where controllers are placed, by default there is a default controller called *Controller.php*. Generate a new controller with `php artisan make:controller FrontEndController` to create a controller for the front end routing.
 
 Now lets add some functionality to that controller.
 
@@ -464,8 +464,30 @@ class FrontEndController extends Controller
 }
 ```
 
-Now modify the routes to use this as a handler. FrontEndController is the class name and home is the method name.
+Now modify the routes to use this as a handler. FrontEndController is the class name and home is the method name. **IN OLD LARAVEL VERSIONS (<=7>)** the RouteServiceProvider had its namespace removed. To fix this you would have to use the Fully Qualified Class Name for your Controllers when referring to them in your routes when not using the namespace prefixing. [source](https://stackoverflow.com/questions/63807930/target-class-controller-does-not-exist-laravel-8).
 
 ```php
-Route::get('/', 'FrontEndController@home')->name("root");
+// "FrontEndController" matching the controller we made
+// "home" matching the public function we put in "FrontEndController"
+Route::get('/', [FrontEndController::class, 'home'])->name("root");
+```
+
+## Bulma
+
+Install bulma.
+
+```none
+npm i bulma
+```
+
+Then import modular components from node_modules/bulma using the `~` prepend in sass files. **Make sure to include ~bulma/sass/utilities/_all**.
+
+```scss
+// example importing buttons only
+@import "~bulma/sass/utilities/_all";
+@import "~bulma/sass/elements/button";
+```
+
+```html
+<button class="button is-primary is-green">Boop the button</button>
 ```
