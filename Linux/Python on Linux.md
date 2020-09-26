@@ -2,15 +2,34 @@
 
 ### Environments
 
-"aughhhh pip is a mess! I dont want pip packages installed globally!!!"\
+> "aughhhh pip is a mess! I dont want pip packages installed globally!!!"\
 Create an environment for pip stuff in a folder (works with python3 only)
 
-1. Create an environment `python -m venv pythonEnvironment`
-2. Switch source `source pythonEnvironment/bin/activate`. 'source is a built in shell command, it runs the content that the venv command generated to change the source of python'
-3. verify that you switched environments `which python` => `some/files/pythonEnvironment/bin/python`
-4. to exit the venv. `deactivate` (another bash command)
+Install venv using `apt`. On Arch install any of these packages [source](https://wiki.archlinux.org/index.php/Python/Virtual_environment).
 
-### PIP packages are not recognised
+* Python 3.3+: python
+* Python 3: python-virtualenv
+
+```none
+# Debian install
+sudo apt install python3-venv
+```
+
+Create a venv in the current directory
+
+```none
+python3 -m venv .
+```
+
+Activate the venv
+
+```none
+source bin/activate
+```
+
+Once you are finished you can exit by running `deactivate`.
+
+### PIP packages are not recognized
 
 Install the python extension to python and use the bottom left menu titled 'python 3.x.x 64 bit' and click on it to change the environment.
 
