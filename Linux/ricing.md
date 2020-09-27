@@ -57,12 +57,12 @@ tab-icon-image:not([pinned]) {
 }
 
 tab-icon-image {
-	margin-inline: 0px !important;
-	margin: 0px !important;
+	margin-inline: 6px !important;
+	/* margin: 0px !important; */
 }
 
 .tab-icon-image:not([pinned]) {
-	margin-inline-end: 0px !important;
+	margin-inline-end: 6px !important;
 }
 ```
 
