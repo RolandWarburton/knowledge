@@ -138,3 +138,7 @@ Instead to actually do this (ie disable a language). Go to prettier.ignored lang
 #### Set require config
 
 Next search for *prettier.require* in the settings and check the *prettier: require config* box. This will make sure you are pointing to the default formatter (or any formatter).
+
+### Vim commenting
+
+Go to start of line and press `ctrl+v`. Then move the cursor up and down with arrow/hjkl. Then press `ctrl+shift+i` and type #. Then `Esc` and see all lines get commented.
