@@ -140,3 +140,10 @@ Then reference the theme inside `config.json`
   "theme": "~/.config/powerline-shell/themes/default.py"
 }
 ```
+
+### Reverse and forward search
+
+`ctrl+r` to **reverse search**.\
+`ctrl+r r r...` to keep going back.\
+`ctrl+s` to **forward search**.\
+forward search can be done while in a reverse search to navigate through command history.
