@@ -423,3 +423,52 @@ i did have some issues with the passthrough, sometimes its a good idea to create
 * USB Controller: USB 3.0 (despite the not supported warning)
 * Only 1 USB device
 * Tested on Debian 10 Buster
+
+### ESXi USB Passthrough debugging
+
+SSH into the ESXi Host. Run `esxcli hardware usb passthrough device list` to list the connected external drives. The idea of this is to pass an external USB drive straight through to a particular VM so that it can be mounted.
+
+```output
+Bus  Dev  VendorId  ProductId  Enabled  Can Connect to VM  Name
+---  ---  --------  ---------  -------  -----------------  -------------------------------------------------------------
+1    2    4791      8064          true  yes                Western Digital, G-Tech G-DRIVE mobile SSD R-Series
+1    3    59f       105e          true  yes                LaCie, Ltd
+```
+
+I believe the device type of my external drive is NTFS. This is confirmed with `lsblk /dev/sdb2 --output-all`.
+
+```output
+roland@debian:~$ `mount | grep "^/dev"`
+/dev/sdb2 on /home/sftp/lacie type fuseblk (rw,relatime,user_id=0,group_id=0,allow_other,blksize=4096)
+```
+
+The drive is formatted like so
+
+```output
+sdb      8:16   0  2.7T  0 disk
+├─sdb1   8:17   0  200M  0 part
+└─sdb2   8:18   0  2.7T  0 part
+```
+
+Make sure to start the USB arbitrator with the following command... Optionally you can enable it as well.
+
+```none
+/etc/init.d/usbarbitrator start
+/etc/init.d/usbarbitrator enable
+```
+
+Then restart hostd.
+
+```none
+/etc/init.d/hostd restart
+```
+
+To debug a drive that was once working (showing up) and is now dead (orphaned) after an unexpected reboot or power outage try these following commands.
+
+Check the dead mpaths. [Source](https://kb.vmware.com/s/article/2145752). If you see a dead drive reported then the easiest option is to reboot.
+
+```none
+esxcfg-mpath -L | grep dead
+```
+
+After rebooting the host itself, make sure to verify the settings of the virtual machine, i selected a USB controller for USB 3.0 and made sure that i had added a new USB drive device added under `virtual hardware > add another device`.
