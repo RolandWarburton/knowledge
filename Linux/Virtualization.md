@@ -236,6 +236,32 @@ NFS Version: NFS 3
 
 Under Virtual Machines -> your virtual machine name. You can *Edit* the VM which will bring up a window that has 2 tabs (Virtual Hardware, and VM Options). Select Virtual Hardware -> CD/DVD Drive 1 and select the Datastore ISO file from the dropdown menu, make sure to connect the drive and power cycle the VM. You may need to do this a few times for it to register.
 
+#### Debugging NFS if it doesn't mount
+
+> This is an ongoing issue for me. I believe if you try and mount a device on a different network (eg ESXi host = 192.168.0.10/24 and NFS share = 10.10.10.14/24).
+
+Using the command line you can show the currently mounted NFS devices with `esxcli storage nfs list`. Heres an example of a successfully mounted NFS device on the 192.168.0.0/24 network (the esxi host is also on the 192.168.0.0/24 network).
+
+```output
+Volume Name  Host           Share          Accessible  Mounted  Read-Only   isPE  Hardware Acceleration
+-----------  -------------  -------------  ----------  -------  ---------  -----  ---------------------
+ISOs         192.168.0.100  /srv/nfs/ISOs       false     true      false  false  Unknown
+```
+
+To add a new datastore use the following command. [Source](https://kb.vmware.com/s/article/1005057). In this example i have moved my ISOs to the ESXi network (10.10.10.0/24) and need to mount the new NFS share.
+
+```none
+esxcli storage nfs add -H NFS_IP|NFS_HOSTNAME -s Share_mount_point_on_the_NFS -v DatastoreName
+```
+
+```none
+esxcli storage nfs add -H 10.10.10.14 -s /home/sftp/lacie/ISO -v FS_ISOs
+```
+
+```none
+tail /var/log/vmkernel.log
+```
+
 ## ESXi Networking
 
 These are some notes that i took when setting up a vlan for testing and development on my network.
