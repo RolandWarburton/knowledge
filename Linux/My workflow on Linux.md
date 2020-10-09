@@ -1,5 +1,89 @@
 # Workflow
 
+## MPV
+
+### MPV Scripting
+
+I use these scripts for MPV
+
+#### Delete File
+
+[Source](https://github.com/zenyd/mpv-scripts).\
+
+`ctrl + DEL`: mark/unmark file to be deleted
+
+#### Locate File
+
+[Source](https://github.com/nimatrueway/mpv-locatefile-lua-script).\
+
+Copy the `locate-current-file.lua` script to *~/.config/mpv/scripts*.\
+Create a key bind in *~/.config/mpv/input.conf*, for example `Alt+f script_message locate-current-file`.
+
+#### MPV-Splicer
+
+[Source](https://github.com/pvpscript/mpv-video-splice).\
+
+* `Alt+t` Start slice at this timestamp.
+* `Alt+t` Finish a slice at this timestamp.
+* `Alt+c` Export these slices.
+
+Other stuff:
+
+* `Alt+p` Print the number of slices.
+* `ALt+d` Enter slice deletion mode, then hold `Alt+NUM` to delete that slice.
+
+#### Rubber band helper
+
+[Source](https://github.com/jgreco/mpv-scripts/).\
+
+Minimize unintelligible voices at high playback speeds at the cost of CPU.
+
+#### Control and Redo playback
+
+[Source](https://github.com/Eisa01/mpv-scripts).\
+
+Seek previous positions in a video that have been visited by scrubbing. Use `Ctrl+z` and `Ctrl+y`, acts as you would expect.
+
+#### Auto save progress
+
+Store a history of videos in a *"watch later"* style playlist and automatically resume where you left off.
+
+#### Recent
+
+[Source](https://github.com/hacel/mpv-scripts).\
+
+Store a log of recently watched videos and select them for playback. Open the recently played menu with the **`** key by default.
+
+#### Next and Previous file
+
+[Source](https://github.com/jonniek/mpv-nextfile).\
+
+`Shift+Left/Right` and move between files in the current directory.
+
+#### Persist Properties
+
+[Source](https://github.com/d87/mpv-persist-properties).\
+
+Keep selected values like volume between player sessions.
+
+Modify `~/.config/mpv/script-opts/persist_properties.conf` with which properties you would like, for example.
+
+```none
+properties=volume,sub-scale
+```
+
+## Thunar
+
+#### Trash Prompter
+
+A small thunar user action that fixes the lack of delete prompt in thunar. A moment of silence for the lost files that have been put into the trash by accident.
+
+Install `trash-cli` with `pacman -S trash-cli` or `apt install trash-cli`, and install zenity to prompt for deleting with a GUI. Then add this script to Thunar under *Edit->Configure Custom Actions*.
+
+* Add new action.
+* Name: "Delete Prompt" (any name will do).
+* Command: `zenity --question --text="Delete %N?" && trash-put %F`.
+
 ## VIM
 
 Come back soon. I dont know enough vim to make this yet.
