@@ -8,20 +8,20 @@ I use these scripts for MPV
 
 #### Delete File
 
-[Source](https://github.com/zenyd/mpv-scripts).\
+[Source](https://github.com/zenyd/mpv-scripts).
 
 `ctrl + DEL`: mark/unmark file to be deleted
 
 #### Locate File
 
-[Source](https://github.com/nimatrueway/mpv-locatefile-lua-script).\
+[Source](https://github.com/nimatrueway/mpv-locatefile-lua-script).
 
 Copy the `locate-current-file.lua` script to *~/.config/mpv/scripts*.\
 Create a key bind in *~/.config/mpv/input.conf*, for example `Alt+f script_message locate-current-file`.
 
 #### MPV-Splicer
 
-[Source](https://github.com/pvpscript/mpv-video-splice).\
+[Source](https://github.com/pvpscript/mpv-video-splice).
 
 * `Alt+t` Start slice at this timestamp.
 * `Alt+t` Finish a slice at this timestamp.
@@ -34,13 +34,13 @@ Other stuff:
 
 #### Rubber band helper
 
-[Source](https://github.com/jgreco/mpv-scripts/).\
+[Source](https://github.com/jgreco/mpv-scripts/).
 
 Minimize unintelligible voices at high playback speeds at the cost of CPU.
 
 #### Control and Redo playback
 
-[Source](https://github.com/Eisa01/mpv-scripts).\
+[Source](https://github.com/Eisa01/mpv-scripts).
 
 Seek previous positions in a video that have been visited by scrubbing. Use `Ctrl+z` and `Ctrl+y`, acts as you would expect.
 
@@ -50,19 +50,19 @@ Store a history of videos in a *"watch later"* style playlist and automatically 
 
 #### Recent
 
-[Source](https://github.com/hacel/mpv-scripts).\
+[Source](https://github.com/hacel/mpv-scripts).
 
 Store a log of recently watched videos and select them for playback. Open the recently played menu with the **`** key by default.
 
 #### Next and Previous file
 
-[Source](https://github.com/jonniek/mpv-nextfile).\
+[Source](https://github.com/jonniek/mpv-nextfile).
 
 `Shift+Left/Right` and move between files in the current directory.
 
 #### Persist Properties
 
-[Source](https://github.com/d87/mpv-persist-properties).\
+[Source](https://github.com/d87/mpv-persist-properties).
 
 Keep selected values like volume between player sessions.
 
