@@ -64,3 +64,9 @@ Make a new window with `ctrl+b c`.
 Switch windows using `ctrl+b 0` 1,2,3... etc.
 
 Rename a window using `ctrl+b ,`.
+
+#### Scrolling without a mouse
+
+In a vim like way, scrolling through output can be done with the keyboard. Use `ctrl+a b` to enter the scrollback mode, tmux will give you a cursor to navigate with and you can move around with hjkl
+and vim commands such as `ctrl+u/d` to scroll half a page up or down.
+
