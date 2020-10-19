@@ -86,6 +86,184 @@ Install `trash-cli` with `pacman -S trash-cli` or `apt install trash-cli`, and i
 
 Come back soon. I dont know enough vim to make this yet.
 
+### Vim splits
+
+#### Splitting basics
+
+**hsplit** with `:split` and **vsplit** `:vsplit`. You can shortcut this to `:sp` and `:vsp` respectively. A split can be created with different controls as well such as `10sp` to create a split thats 10 lines tall, or `sp file.txt` to split to another file.
+
+Navigate between windows using `ctrl+w hjkl`, for speed you should remap these to use just `ctrl+hjkl`.
+
+```vim
+" Remap splits navigation to just CTRL + hjkl
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+```
+
+By default when you create splits the default behavior creates splits on the wrong side (spawn on top or on right), change this to spawn below and to left with the following command for your ~/.vimrc config.
+
+```none
+" Window splits
+set splitbelow splitright
+```
+
+#### Splitting manipulation
+
+Resize window basics can be done with the `:resize` command, resize can take an absolute value or relative value, for example `:resize +5` or `:resize 5`. Vertical windows can be controlled with `:vertical resize <number>`.
+
+Heres some keybinds for these using `Ctrl+left right up down`.
+
+```none
+" Adjust window sizes with keybind
+noremap <silent> <C-Left> :vertical resize +3<CR>
+noremap <silent> <C-Left> :vertical resize -3<CR>
+noremap <silent> <C-Up> :resize +3<CR>
+noremap <silent> <C-Down> :resize -3<CR>
+```
+
+Basically all window navigation or manipulation commands require the `Ctrl+w` prefix. Here are some useful examples.
+
+* `Ctrl+w _` ^W then press underscore will maximize the focused window and reduce all other windows to 1 line in height.
+* `Ctrl+w =` Not shift+= (just =) - Will equalize all panes evenly
+
+To change the split from horizontal to vertical you can use the `TK` and `TH` commands i created below.
+
+```none
+" Go from horz to vert split
+command TK wincmd K
+" Go from vert horz to split
+command TH wincmd H
+```
+
+To remove the pipe symbol on a vsplit use the following option. Note the whitespace after the \\.
+
+```none
+" Remove the pipe char on vsplits
+set fillchars+=vert:\ 
+```
+
+#### Tabs
+
+Now that ive covered splitting, next up is tabbing.
+
+Create a tab with the `:tabnew` command.
+
+Heres a key bind for it.
+
+```none
+" Create a new tab
+noremap <silent> <Leader>c :tabnew<CR>
+```
+
+#### Vim multi cursors
+
+[Source](https://github.com/mg979/vim-visual-multi).
+
+* `ctrl+n` Select a work, repeat `ctrl+n` to find more of that word
+* `ctrl+up/down` Select lines up or down
+* `ctrl+n` then `q` to skip this selection and select the next one
+* `ctrl+n` then `Q` to undo this selection and go back to the previous one (reverse of above)
+
+#### Vim quote strings
+
+[Source](https://github.com/tpope/vim-surround).
+
+* With the cursor on a word **without** quotes run `ysiw"` iw is for "in-between word"
+* With the cursor on a word **with** quotes run `cs'"` to change a single quote *'* to a double *"*
+* Quote a whole line with `yss"`
+* Delete a quotes word/line with `ds"`
+* You can also write complex multi char quotes such as `ysiw<strong>`
+
+### Vim Explorer
+
+Use the `Explore` command to go into vims inbuilt file browser. In this mode you can rename, delete, and browse files and folders.
+
+A great use of this is to use the Explore functionality when choosing a file to split into, use the `:split ./` and then *return* to bring up the file explorer instead of `:split <tab>` to tab through a list.
+
+When scrolling files its important to remember how to scroll faster using the following keys. I only really use the half screen scrolls to reduce the chance of getting lost in a document.
+
+* `ctrl+d` - Scroll down half screen
+* `ctrl+u` - Scroll up half screen
+* `ctrl+f` - Scroll 1 page down
+* `ctrl+v` - Scroll 1 page up
+
+### Opening files in vim - The find and buffer command
+
+#### Opening files
+
+To open a new file whilst in vim use the `:edit <filename>` command, `:e#` will take you back to the file you were editing before you jumpedj. To enable tab completion make sure you see the *wildmenu* code block in the next section (finding files).
+
+#### Finding Files
+
+using `:find <filename>` i am able to open a file while inside of vim, the find is not relative to the working directory so you should run find with `./` for the first directory you opened your file in.
+
+For example to "set a workspace" run `vim .` in the directory you want to be the workspace root, this will bring up vims explorer and you can pick a file that way, or use the `:find filename` command straight from explorer.
+
+```none
+" Ignore node_modules when finding files and such
+set wildignore+=**/node_modules/**
+
+" Display all matching files when tab completing
+set wildmenu
+filetype plugin on
+```
+
+Once you have opened some files "into the buffer" - IE opened them at least once, you can use the `:b` command to search through the buffer for unique file names. For example:
+
+```none
+.
+├── afilehere.txt
+├── bfilehere.txt
+└── init.vim
+```
+
+I run vim on `.` and then open afilehere, after that i then run `:find ./bfile<tab>` and open *bfilehere*, then i can navigate between them using `:b afile` and `:b bfile` to open these buffered files. The former find command also supports wildcards, so for example to find all text files `:find ./*.txt`.
+
+Make sure to have `set wildmenu` and `filetype plugin on` enabled so that tab completion is displayed when running the find command. See below.
+
+```none
+" Display all matching files when tab completing
+set wildmenu
+filetype plugin on
+```
+
+To see the currently open files you can run the `:ls` command to see the buffered files. You can also navigate to these files from this menu too.
+
+```output
+:ls
+  3 %a   "~/.config/nvim/init.vim"      line 1
+  4 #    "./afilehere.txt"              line 1
+Press ENTER or type command to continue
+```
+
+```none
+:ls
+  3 %a   "~/.config/nvim/init.vim"      line 1
+  4 #    "./afilehere.txt"              line 1
+:b 3
+```
+
+```none
+:ls
+  3 %a   "~/.config/nvim/init.vim"      line 1
+  4 #    "./afilehere.txt"              line 1
+:b afile
+```
+
+#### Gutentag - Ctags
+
+Gutentag ([ludovicchabant/vim-gutentags](https://github.com/ludovicchabant/vim-gutentags)) is a plugin for generating Ctags and traversing through them.
+
+Make sure you have installed `ctags` before installing gutentag with vim-plug or whatever you choose to use for vim plugin management.
+
+Instruction to use
+
+* `ctrl+]` Go to definition
+* `ctrl+t` go back (pop tag off stack) - On a similar not `ctrl+o` will also go back but its manipulating the jump list, not the tag list.
+
+
 ### Using VIM in VSCode
 
 I am still learning VIM. I am using the VIM [extension](https://github.com/VSCodeVim/Vim) for VSC.
