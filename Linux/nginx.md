@@ -333,14 +333,24 @@ a, a:visited  {
 
 ### Round robin example
 
-Place this one in `/etc/nginx/nginx.conf`
+Place this one in `/etc/nginx/nginx.conf`.
+
+By default the upstream algorithm is round-robin.
+If you require state in your application (like authentication sessions) then add `ip_hash` to your upstream to make an ip->server connection sticky.
+
+```none
+upstream allbackend {
+				ip_hash;
+                server 127.0.0.1:3001;
+                server 127.0.0.1:3002;
+        }
+```
 
 ```none
 http {
         upstream allbackend {
                 server 127.0.0.1:3001;
                 server 127.0.0.1:3002;
-
         }
 
         server {
