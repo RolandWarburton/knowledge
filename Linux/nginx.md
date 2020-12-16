@@ -331,6 +331,39 @@ a, a:visited  {
 
 ```
 
+### Round robin example
+
+Place this one in `/etc/nginx/nginx.conf`
+
+```none
+http {
+        upstream allbackend {
+                server 127.0.0.1:3001;
+                server 127.0.0.1:3002;
+
+        }
+
+        server {
+                listen 80 default_server;
+                listen [::]:80 default_server;
+
+                root /var/www/html;
+
+                # Add index.php to the list if you are using PHP
+                index index.html index.htm index.nginx-debian.html;
+
+                server_name _;
+
+                location / {
+                        proxy_pass http://allbackend/;
+                }
+        }
+}
+events {
+
+}
+```
+
 ### Debugging
 
 #### Disable HTTPS redirects
