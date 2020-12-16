@@ -331,7 +331,7 @@ a, a:visited  {
 
 ```
 
-### Round robin example
+### Simple upstream backend (round-robin example)
 
 Place this one in `/etc/nginx/nginx.conf`.
 
@@ -366,6 +366,47 @@ http {
 
                 location / {
                         proxy_pass http://allbackend/;
+                }
+        }
+}
+events {
+
+}
+```
+
+#### Using multiple backends
+
+Elaborating on the previous codeblock, lets add two upstreams and route to them.
+
+Again, because we are using the http block here, this file is `/etc/nginx/nginx.conf`, not an `sites-avaliable`.
+
+```none
+http {
+        upstream app1 {
+                server 127.0.0.1:3001;
+        }
+
+        upstream app2 {
+                server 127.0.0.1:3002;
+        }
+
+        server {
+                listen 80 default_server;
+                listen [::]:80 default_server;
+
+                root /var/www/html;
+
+                # Add index.php to the list if you are using PHP
+                index index.html index.htm index.nginx-debian.html;
+
+                server_name _;
+
+                location /app1 {
+                        proxy_pass http://app1/;
+                }
+
+                location /app2 {
+                        proxy_pass http://app2/;
                 }
         }
 }
