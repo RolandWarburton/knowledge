@@ -570,7 +570,7 @@ http {
         access_log  /var/log/nginx/access.log  main;
         sendfile        on;
 
-        # proxy behaviour
+        # proxy behavior
         # https://www.nginx.com/resources/wiki/start/topics/examples/forwarded/
         proxy_redirect off;
         # this is VERY important to allow rev proxying to any port
