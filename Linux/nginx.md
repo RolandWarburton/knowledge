@@ -546,10 +546,45 @@ services:
 ```
 
 Here is a sample nginx config for reverse proxying our two example docker container [express apps](https://github.com/RolandWarburton/nodeTidbits/tree/master/proxyStuff/webServers).
-Pay attention to the domain name in use here as well in nginx.conf.
+
+Pay attention to the domain name in use here as well in nginx.conf. Ive left comments about what each bit is doing. Refer to [this](https://www.youtube.com/watch?v=WC2-hNNBWII) amazing video for more guidance on this config, in particular to understand the basics of reverse proxying and the function of the `upstream` block.
 
 ```none
+user  nginx;
+worker_processes  1;
+
+error_log  /var/log/nginx/error.log warn;
+pid        /var/run/nginx.pid;
+
+events {
+    worker_connections  1024;
+}
+
 http {
+        # here we include some default nginx bits
+        include       /etc/nginx/mime.types;
+        default_type  application/octet-stream;
+        log_format  main  '$remote_addr - $remote_user [$time_local] "$request" '
+                      '$status $body_bytes_sent "$http_referer" '
+                      '"$http_user_agent" "$http_x_forwarded_for"';
+        access_log  /var/log/nginx/access.log  main;
+        sendfile        on;
+
+        # proxy behaviour
+        # https://www.nginx.com/resources/wiki/start/topics/examples/forwarded/
+        proxy_redirect off;
+        # this is VERY important to allow rev proxying to any port
+        proxy_set_header   Host             $http_host;
+        # make the "real ip"  the client address instead of the gateway
+        proxy_set_header   X-Real-IP        $remote_addr;
+        # append $remote_addr to any incoming X-Forwarded-For headers
+        proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+        # for large requests that dont fit into $proxy_buffers we need to govern the maximum size of the temp file that nginx will create
+        proxy_max_temp_file_size 1024m;
+
+
+        # give nginx some upstream servers to use for load balancing
+        # you can define multiple of these in each upstream group and round robin or ip_hash (sticky ip) them
         upstream app1 {
                 server 127.0.0.1:3001;
         }
@@ -558,23 +593,37 @@ http {
                 server 127.0.0.1:3002;
         }
 
+        ################
+        #   0x8.host   #
+        ################
         server {
                 listen 80 default_server;
                 listen 443 ssl http2 default_server;
                 listen [::]:80 default_server;
 
+                # we mount these certificates into the container and run certbot on the host
                 ssl_certificate /etc/letsencrypt/live/0x8.host/fullchain.pem;
                 ssl_certificate_key /etc/letsencrypt/live/0x8.host/privkey.pem;
 
                 ssl_protocols TLSv1.3;
 
-                root /var/www/html;
+                # we are going to share files from here
+                root /usr/share/nginx/html;
+                autoindex on;
 
                 # Add index.php to the list if you are using PHP
                 index index.html index.htm index.nginx-debian.html;
 
+                # define the server name so nginx knows to route requests for this domain here
                 server_name 0x8.host;
 
+                # serve some example content on root
+                location / {
+                        root   /usr/share/nginx/html;
+                        index  index.html index.htm;
+                }
+
+                # proxy requests to their own webserver instances
                 location /app1 {
                         proxy_pass http://app1/;
                 }
@@ -583,9 +632,6 @@ http {
                         proxy_pass http://app2/;
                 }
         }
-}
-events {
-
 }
 ```
 
@@ -601,9 +647,38 @@ Your final folder structure should look similar to this.
 └── nginx.conf
 ```
 
-### Debugging
+### Putting it all together
 
-#### Disable HTTPS redirects
+Ok, lets run our two template services, start the gateway and check that everything works.
+
+Build your gateway container
+
+```output
+docker build -t gateway .
+```
+
+Start your backend services.
+
+```output
+cd backendContainers
+docker-compose up -d
+```
+
+Then start your gateway, start without -d for now to investigate any issues, 50x, 40x errors etc.
+
+```output
+docker-compose up
+```
+
+### Hurdles/Problems/gotchas
+
+**Incorrect permissions on files** - Some common problems/hurdles i faced when running the project was either getting a 404 on the index, this was caused by a user permissions issue with the index.html file and possibly the directory permissions so be sure to check those.
+
+**couldn't access backend services from gateway** - The gateway couldn't access backend service containers on localhost, this was caused because the gateway's localhost is not the hosts localhost, therefore the services were inaccessible through gateway specifying 127.0.0.1.
+
+## Debugging
+
+### Disable HTTPS redirects
 
 Heres the situation. I have 2 server blocks. Server block `roaming.host` is listening on port 443 for HTTPS traffic and server block `api.roaming.host` is listening on port 80 for HTTP traffic.
 
