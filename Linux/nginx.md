@@ -1,6 +1,8 @@
 # Nginx
 
-## Server Blocks
+## The basics
+
+### Server Blocks
 
 Server blocks are used to define different websites on the same server.
 
@@ -14,7 +16,7 @@ Server blocks are used to define different websites on the same server.
 └── roaming.host
 ```
 
-## Server block files
+### Server block files
 
 A server block may be wrapped in `http{...}` but depending on if you should wrap your website in http depends on how your `/var/www/*` is set up.
 
@@ -242,7 +244,7 @@ server{
 }
 ```
 
-### Full Config Example
+### The basics - Full Config Example
 
 Make sure you have the correct *A records* in your DNS settings on your nameserver. In this example namecheap is the domain host so the @ represents an empty field (ie roaming.host with no subdomain or www).
 \
@@ -331,7 +333,34 @@ a, a:visited  {
 
 ```
 
-### Simple upstream backend (round-robin example)
+### Theory - The gateway
+
+#### Reverse proxy vs Load balancer
+
+A reverse proxy hides the backend infrastructure from the request. On layer 7 (http) the request is terminated at the rev proxy and a new one is made (proxied) to the target based
+on the routing rules present in the reverse proxy (examples below - "Simple upstream backend").
+
+A reverse proxy layer allows for many architectural benefits
+
+* Caching requests
+* Canary deployment - you can pick which version of a service a request should go to based on the requests properties, eg for enabling legacy support
+* Enhanced security - screening traffic before it reaches your services
+* Isolation - isolates services from the internet allowing for more microservice goodness
+* Single entry url - lets you play games with urls to run lots of things on one url (when operating on http)
+* Load balancing - **all** reverse proxies can be load balancers, load balancers are a subset of reverse proxies when considering features
+
+Furthermore, for better clarification. All gateways are reverse proxies, a reverse proxy hides 1+ services from the internet, and a load balancer is a subset feature of a reverse proxy that provides redundancy for a service by hiding 2+ identical/similar services and distributing load through an algorithm.
+
+A load balancer is a type of reverse proxy (or a feature of a reverse proxy) that allows an algorithm to split traffic between different servers, or otherwise provide some form of
+high availability / redundancy for a service or set of services. TLDR a load balancer is a gateway with two or more services sitting behind it, the load balancer knows meta information about
+these services and uses an algorithm to distribute traffic.
+
+Because the main difference between if you should be using a load balancer or reverse proxy is mostly based on the structure of the application/s you want to run
+Some important differentiating factors to easily identify if an architecture should be a full fat reverse proxy (like nginx) or a load balancer (like HA proxy) is to look at these following properties. Given that these days nginx can provide full layer 7 and layer 4 reverse proxying features, its generally a safer bet, conversely pick HA when you are concerned about data availability, scalability, and serving many requests to a single service at once.
+
+#### Simple upstream backend (round-robin example)
+
+This is part of a gateway architecture pattern for reverse proxying multiple services/applications behind one gateway.
 
 Place this one in `/etc/nginx/nginx.conf`.
 
@@ -413,6 +442,163 @@ http {
 events {
 
 }
+```
+
+## Lets encrypt - HTTPS
+
+This section will be covering what ive learnt about provisioning a website with SSL/TLS certificates through lets encrypt.
+I also talk about this under [/notes/writing/Deploying_docker_websites](deploying docker websites) where i take a different approach to applying certificates to sites. In the mentioned notes
+i am using a per-site ssl certificate to separate each domain into a more self sustaining site while implementing a nginx reverse proxy through a docker container.
+
+In the following sections i am going over another pattern that i learnt more recently that i believe to be easier to understand and set up for single moderately sized projects, ie. anything hosted on one domain.
+
+### Prerequisites - Ask LE for a certificate
+
+The first step is to install certbot onto your server and acquire a certificate for your domain.
+Make sure to use the `--standalone` flag to avoid modification of any configs, we will manually configure it later.
+
+```none
+sudo certbot certonly --standalone
+```
+
+Then enter your domain name and locate the certificate files.
+
+![generated keys](https://i.imgur.com/ekiUqvI.png)
+
+next place these config options within the `server` block of your config.
+
+```none
+ssl_certificate /etc/letsencrypt/live/0x8.host/fullchain.pem;
+ssl_certificate_key /etc/letsencrypt/live/0x8.host/privkey.pem;
+```
+
+You can now pretty much run nginx installed with your certificates and any configuration you see above.
+
+Another additional line of configuration you may want to add to your `server` or `https` block is a redirect for all http to https traffic.
+
+```none
+server {
+	server_name 0x8.host;
+	return 301 https://foo.com$request_uri;
+}
+```
+
+## Docker and Nginx with LE
+
+This config is a little more complex and needs some docker knowledge to set up.
+
+First, lets create some simple backends to implement a reverse proxy architecture. Clone my template containers from [here](https://github.com/RolandWarburton/nodeTidbits/tree/master/proxyStuff/webServers) and spin them up using the provided shell commands. Or if you would like, use your own backend services.
+
+### Building the reverse proxy gateway
+
+Next lets work on the reverse proxy gateway pattern to proxy the requests.
+
+The end goal is to secure our backend `webserver` like this.
+
+```output
++------------+               +-------------+              +-----------+
+|    WWW     |  <- https ->  |             |  <- http ->  |           |
+| Internet   +---------------+ gateway     +--------------+ webserver |
+|            |               |             |              |           |
++------------+               +-------------+              +-----------+
+```
+
+Create the following files.
+
+Here is the dead simple dockerfile. Its base image is nginx and we just demonstrate copying over some custom html file.
+We also reference a *nginx.conf* that will be created later.
+
+Once you have finished creating all your files, build the container image with `docker build -t gateway .` while inside the directory with the dockerfile.
+
+```docker
+FROM nginx:latest
+
+USER root
+# place in some custom html stuff here
+COPY ./html /usr/share/nginx/html
+
+# place in the custom nginx config
+COPY nginx.conf /etc/nginx/nginx.conf
+EXPOSE 80
+EXPOSE 443
+```
+
+Here is the *docker-compose.yaml*, here we reference our gateway container we just created, we are exposing the appropriate ports, we are also
+using the hosts networking as our `networking mode` which allows us to access our services exposed locally to the host on `127.0.0.1:port`.
+
+Another implementation that i would like to look at is by placing the gateway and service in the same docker network. But this is what works for now so its good enough.
+
+Lastly we mount our certificates into the container, make sure to **change the domain name** of the fullchain/privkey.
+
+```yaml
+version: "3.0"
+services:
+    gateway:
+        container_name: "gateway"
+        image: gateway
+        ports:
+            - "80:80"
+            - "443:443"
+        network_mode: "host"
+        volumes:
+            - "/etc/letsencrypt/live/0x8.host/fullchain.pem:/etc/letsencrypt/live/0x8.host/fullchain.pem"
+            - "/etc/letsencrypt/live/0x8.host/privkey.pem:/etc/letsencrypt/live/0x8.host/privkey.pem"
+```
+
+Here is a sample nginx config for reverse proxying our two example docker container [express apps](https://github.com/RolandWarburton/nodeTidbits/tree/master/proxyStuff/webServers).
+Pay attention to the domain name in use here as well in nginx.conf.
+
+```none
+http {
+        upstream app1 {
+                server 127.0.0.1:3001;
+        }
+
+        upstream app2 {
+                server 127.0.0.1:3002;
+        }
+
+        server {
+                listen 80 default_server;
+                listen 443 ssl http2 default_server;
+                listen [::]:80 default_server;
+
+                ssl_certificate /etc/letsencrypt/live/0x8.host/fullchain.pem;
+                ssl_certificate_key /etc/letsencrypt/live/0x8.host/privkey.pem;
+
+                ssl_protocols TLSv1.3;
+
+                root /var/www/html;
+
+                # Add index.php to the list if you are using PHP
+                index index.html index.htm index.nginx-debian.html;
+
+                server_name 0x8.host;
+
+                location /app1 {
+                        proxy_pass http://app1/;
+                }
+
+                location /app2 {
+                        proxy_pass http://app2/;
+                }
+        }
+}
+events {
+
+}
+```
+
+Once you have finished creating all your files, build the container image with `docker build -t gateway .` while inside the directory with the dockerfile.
+Your final folder structure should look similar to this.
+
+```output
+├── docker-compose.yaml
+├── dockerfile
+├── html
+│   ├── favicon.ico
+│   └── index.html
+└── nginx.conf
 ```
 
 ### Debugging
