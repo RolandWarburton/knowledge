@@ -505,6 +505,70 @@ The end goal is to secure our backend `webserver` like this.
 
 Create the following files.
 
+### Creating the backend service containers
+
+Here is an example dockerfile, code for these containers can be found in [webservers](https://github.com/RolandWarburton/nodeTidbits/tree/master/proxyStuff/webServers).
+
+```docker
+FROM node:14
+
+# Create app directory
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+# create a place for certificates to be mounted
+RUN mkdir -p /usr/src/app/certs/0x8.host
+
+# Install dependencies
+COPY ./app/package.json /usr/src/app
+RUN npm install
+
+# Bundle app source
+COPY ./app /usr/src/app
+
+# Exports
+EXPOSE 3000
+CMD [ "npm", "run", "start" ]
+```
+
+Here is an example config to spin up two template express webservers. You can download the code for these [here](https://github.com/RolandWarburton/nodeTidbits/tree/master/proxyStuff/webServers) as stated above.
+
+We are exposing port 300x to the host, however we will be using the gateway_network as the glue to route requests from the gateway when we are finished.
+
+```yaml
+version: "3"
+services:
+    template01:
+        container_name: template01
+        image: express
+        environment:
+            - PORT=3000
+            - LABEL=3001
+        ports:
+            - 127.0.0.1:3001:3000
+    template02:
+        container_name: template02
+        image: express
+        environment:
+            - PORT=3000
+            - LABEL=3002
+        ports:
+            - 127.0.0.1:3002:3000
+
+networks:
+    default:
+        external:
+            name: gateway_network
+```
+
+Next lets go ahead and create that gateway_network.
+
+```none
+docker network create gateway_network
+```
+
+### Creating the gateway container
+
 Here is the dead simple dockerfile. Its base image is nginx and we just demonstrate copying over some custom html file.
 We also reference a *nginx.conf* that will be created later.
 
@@ -523,11 +587,6 @@ EXPOSE 80
 EXPOSE 443
 ```
 
-Here is the *docker-compose.yaml*, here we reference our gateway container we just created, we are exposing the appropriate ports, we are also
-using the hosts networking as our `networking mode` which allows us to access our services exposed locally to the host on `127.0.0.1:port`.
-
-Another implementation that i would like to look at is by placing the gateway and service in the same docker network. But this is what works for now so its good enough.
-
 Lastly we mount our certificates into the container, make sure to **change the domain name** of the fullchain/privkey.
 
 ```yaml
@@ -539,15 +598,19 @@ services:
         ports:
             - "80:80"
             - "443:443"
-        network_mode: "host"
         volumes:
             - "/etc/letsencrypt/live/0x8.host/fullchain.pem:/etc/letsencrypt/live/0x8.host/fullchain.pem"
             - "/etc/letsencrypt/live/0x8.host/privkey.pem:/etc/letsencrypt/live/0x8.host/privkey.pem"
+
+networks:
+    default:
+        external:
+            name: gateway_network
 ```
 
-Here is a sample nginx config for reverse proxying our two example docker container [express apps](https://github.com/RolandWarburton/nodeTidbits/tree/master/proxyStuff/webServers).
+Here is a sample nginx config for reverse proxying our two example docker container [express apps](https://github.com/RolandWarburton/nodeTidbits/tree/master/proxyStuff/webServers) through our [nginx gateway](https://github.com/RolandWarburton/nodeTidbits/tree/master/proxyStuff/nginxGateway).
 
-Pay attention to the domain name in use here as well in nginx.conf. Ive left comments about what each bit is doing. Refer to [this](https://www.youtube.com/watch?v=WC2-hNNBWII) amazing video for more guidance on this config, in particular to understand the basics of reverse proxying and the function of the `upstream` block.
+Pay attention to the domain name in use here as well in nginx.conf. Ive left comments about what each bit is doing. Refer to [this](https://www.youtube.com/watch?v=WC2-hNNBWII) amazing video for more guidance on this config, in particular to understand the basics of reverse proxying and the function of the `upstream` block, as well have a look at this [free code camp article](https://www.freecodecamp.org/news/docker-nginx-letsencrypt-easy-secure-reverse-proxy-40165ba3aee2/) which i used to set the correct proxy header values.
 
 ```none
 user  nginx;
@@ -570,27 +633,40 @@ http {
         access_log  /var/log/nginx/access.log  main;
         sendfile        on;
 
-        # proxy behavior
+        # proxy behaviour documentation from nginx
         # https://www.nginx.com/resources/wiki/start/topics/examples/forwarded/
-        proxy_redirect off;
-        # this is VERY important to allow rev proxying to any port
-        proxy_set_header   Host             $http_host;
-        # make the "real ip"  the client address instead of the gateway
-        proxy_set_header   X-Real-IP        $remote_addr;
-        # append $remote_addr to any incoming X-Forwarded-For headers
-        proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
-        # for large requests that dont fit into $proxy_buffers we need to govern the maximum size of the temp file that nginx will create
-        proxy_max_temp_file_size 1024m;
 
+        # read about why i use these settings in particular (i stole them from this article)
+        # https://www.freecodecamp.org/news/docker-nginx-letsencrypt-easy-secure-reverse-proxy-40165ba3aee2/
+
+        # this header is added so you can see which IP is actually requesting your service. (instead of the GW)
+        proxy_set_header    X-Real-IP           $remote_addr;
+        # store array of forwarded clients the client has been proxied through
+        proxy_set_header    X-Forwarded-For     $proxy_add_x_forwarded_for;
+        # write what protocol is being used between client and server (http/https)
+        proxy_set_header    X-Forwarded-Proto   $scheme;
+        # set the host for reverse dns lookups (ip -> domain name) to work correctly
+        proxy_set_header    Host                $host;
+        # shows what the real host of the request is instead of the reverse proxy.
+        proxy_set_header    X-Forwarded-Host    $host;
+        # Helps identify what port the client requested the server on.
+        proxy_set_header    X-Forwarded-Port    $server_port;
+        
 
         # give nginx some upstream servers to use for load balancing
         # you can define multiple of these in each upstream group and round robin or ip_hash (sticky ip) them
         upstream app1 {
-                server 127.0.0.1:3001;
+                # why this is template01:3000...
+                # from the perspective of template01 its address is localhost:3000
+                # from the perspective of the host OS its address is localhost:3001 (because 3001 is exposed to the host)
+                # from the perspective of the gateway template01 is on 3000 because its INSIDE the "docker_network" network
+                # therefore when we want to PROXY to this service from the gateway, we are INSIDE the shared docker network so we use port 3000
+                # and the containers name (not localhost), each docker network has its own dns to route the request to the container
+                server template01:3000;
         }
 
         upstream app2 {
-                server 127.0.0.1:3002;
+                server template02:3000;
         }
 
         ################
@@ -606,6 +682,7 @@ http {
                 ssl_certificate_key /etc/letsencrypt/live/0x8.host/privkey.pem;
 
                 ssl_protocols TLSv1.3;
+		gzip on;
 
                 # we are going to share files from here
                 root /usr/share/nginx/html;
@@ -633,6 +710,7 @@ http {
                 }
         }
 }
+
 ```
 
 Once you have finished creating all your files, build the container image with `docker build -t gateway .` while inside the directory with the dockerfile.
@@ -651,22 +729,28 @@ Your final folder structure should look similar to this.
 
 Ok, lets run our two template services, start the gateway and check that everything works.
 
-Build your gateway container
+If you haven't yet, Create your external docker network to allow container to access each other across different docker-compose files.
 
 ```output
+docker network create gateway_network
+```
+
+Start your backend services. Use your own services or the provided template servers in `/webServers`.
+Start your gateway without `-d` for now to investigate any issues, 50x, 40x errors etc.
+
+Build your web service backends.
+
+```output
+cd webServers
+docker build -t express .
+docker-compose up
+```
+
+Build and run your gateway container.
+
+```output
+cd nginxGateway
 docker build -t gateway .
-```
-
-Start your backend services.
-
-```output
-cd backendContainers
-docker-compose up -d
-```
-
-Then start your gateway, start without -d for now to investigate any issues, 50x, 40x errors etc.
-
-```output
 docker-compose up
 ```
 
