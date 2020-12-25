@@ -334,3 +334,16 @@ This is solved by going to [this](https://github.com/magnumripper/JohnTheRipper/
 Next verify that you can run the command, i have only successfully got this running by pointing at the perl file by its full path as there is no way for arch to know where to find these modified files, essentially they are not included in the $PATH. You may add `/usr/lib/john/lib/` to the path, however it will not clean itself up once you uninstall john so i have not done this personally.
 
 You can verify that `/usr/lib/john/lib/` by running `echo $PATH` and observing the former path not being present.
+
+### Fans not appearing on sensors
+
+When running the `sensors` command from `lm_sensors` i had a problem where fan speeds were not reported. These are the debugging steps that i remember 
+that resolved the issue.
+
+Firstly, re-run `sensors-detect` and answer **YES** or **NO** where it asks you to, then select **YES** when asked to write to `/etc/modules` (on debian) or `/etc/conf.d/lm_sensors` (on arch linux).
+
+Lastly, observe the various drivers in the output from sensors-detect and if required load these modules in with `modprobe <driver name>`. For example i needed to run the following command to fix fans not appearing in sensors.
+
+```none
+sudo modprobe nct6775
+```
