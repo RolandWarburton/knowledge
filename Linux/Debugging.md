@@ -342,6 +342,8 @@ that resolved the issue.
 
 Firstly, re-run `sensors-detect` and answer **YES** or **NO** where it asks you to, then select **YES** when asked to write to `/etc/modules` (on debian) or `/etc/conf.d/lm_sensors` (on arch linux).
 
+Next start `/etc/init.d/kmod start`.
+
 Lastly, observe the various drivers in the output from sensors-detect and if required load these modules in with `modprobe <driver name>`. For example i needed to run the following command to fix fans not appearing in sensors.
 
 ```none
