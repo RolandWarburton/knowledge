@@ -205,3 +205,22 @@ sudo chgrp -R demoGroup /srv/samba/demo
 
 sudo chmod 2775 /srv/samba/guest
 sudo chmod 2770 /srv/samba/demo -->
+
+### Sharing homes (improved version)
+
+This version is different one from the default provided by samba (in debian 10).
+My fixed version changes the write permissions to fix the "unable to write files/dirs" issue.
+
+```none
+[homes]
+comment = Home Directories
+path = /home/%S
+valid users = %S
+read only = No
+create mask = 0700
+directory mask = 0700
+browseable = No
+# follow symlinks
+follow symlinks = yes
+wide links = yes
+```
