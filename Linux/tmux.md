@@ -70,3 +70,17 @@ Rename a window using `ctrl+b ,`.
 In a vim like way, scrolling through output can be done with the keyboard. Use `ctrl+a b` to enter the scrollback mode, tmux will give you a cursor to navigate with and you can move around with hjkl
 and vim commands such as `ctrl+u/d` to scroll half a page up or down.
 
+#### Copy and paste
+
+Copy paste with the mouse has changed in recent versions of tmux (2.6+).
+
+* Use `ctrl + shift` and then drag the mouse to select text
+* Use `ctrl+shift+c` to copy the selected text
+* Use `ctrl+v` to paste the text, or use `middle mouse`.
+
+Copy paste with the keyboard is as follows.
+
+* Use `prefix + [` to enter copy mode
+* Press `space` to enter text selection mode
+* Press `enter` to exit text selection mode
+* Use `prefix + ]` to paste
