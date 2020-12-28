@@ -43,6 +43,8 @@ sudo systemctl start udisks2
 
 ## Monitoring
 
+### Cockpit
+
 Next i want to easily monitor different services and the status of the machine so in install *cockpit*
 
 ```none
@@ -51,6 +53,40 @@ sudo systemctl enable cockpit
 ```
 
 server_ip:9090 will now serve cockpit.
+
+### sysstat
+
+using `iostat` command from sysstat i am monitoring the disk activity as i was noticing high usage at idle on my mounted NAS drives (6 mib/s).
+
+First install sysstat.
+
+```none
+sudo apt install sysstat
+```
+
+Then enable it
+
+```none
+/etc/default/sysstat
+---
+# Should sadc collect system activity informations? Valid values
+# are "true" and "false". Please do not put other values, they
+# will be overwritten by debconf!
+ENABLED="true"
+```
+
+Then restart sysstat.
+
+```none
+sudo service sysstat restart
+```
+
+Then observe any problems using `iostat`. In my situation i can see that the write speed is unusually high (~6 kB_wrtn/s at idle) however i dont have an explanation for this right now.
+
+Some other iostat commands...
+
+* `iostat -p sda` - Target one device only (-p device)
+* `iostat -N` - Summarize LVM (no partitions, sda, sdb only)
 
 ## File shares
 
@@ -88,6 +124,66 @@ DHCP=no
 [Address]
 Address=10.10.10.15/24
 ``` -->
+
+## Misc drive management tools
+
+Other than the `iostat` and other sysstat commands like...
+
+sysstat normally takes a sample every X seconds, Y times. This is what the 2 numbers mean on the each of sysstat commands.
+If there is just 1 number it means the command will take N samples every 1 seconds forever.
+
+### pidstat - Process ID statistic monitoring
+
+* `pidstat` - See running processes (CPU)
+* `pidstat -d 2` - See running IO related process (2 is the refresh interval)
+* `pidstat -R` - See realtime priority and scheduling information
+
+### sar - System activity statistic monitoring
+
+Use `sar` to schedule cron reporting. For these examples we will run manually.
+
+* `sar -u -o sarfile 2 5` - Read cpu usage (-u) and save it to ./sarfile (bin file) in the current directory
+* `sar -dh -o sarfile 2 5` - Read disk usage (-d disk usage) (-h human readable (see disk monitoring in more details))
+* `sar -F 2 4` - Report disk usage (how full each partition (sda1, sdb2, etc) is)
+* `sar -n DEV 1 3` - Report network usage (DEV is not a placeholder, use it literally in the command)
+* `sar -rh 1 3` - Report RAM usage
+
+### sar disk monitoring in more details
+
+A command like `sar -d --human 1 3` is good at showing you numbers, but what if you need to map a volume like `dev8-0` or `dev8-16` back to its `/dev/sdx` name.
+
+This can be done (technically speaking) through `ls -l /dev/sd*` and looking at the major (8) numbers and the minor numbers (16, 32, 48, etc).
+
+```output
+roland@debian:~$ ls -l /dev/sd*
+brw-rw---- 1 root disk 8,  0 Dec 28 14:14 /dev/sda
+brw-rw---- 1 root disk 8,  1 Dec 28 14:14 /dev/sda1
+brw-rw---- 1 root disk 8,  2 Dec 28 14:14 /dev/sda2
+brw-rw---- 1 root disk 8,  3 Dec 28 14:14 /dev/sda3
+brw-rw---- 1 root disk 8,  4 Dec 28 14:14 /dev/sda4
+brw-rw---- 1 root disk 8, 16 Dec 28 14:14 /dev/sdb
+brw-rw---- 1 root disk 8, 17 Dec 28 14:14 /dev/sdb1
+brw-rw---- 1 root disk 8, 32 Dec 28 14:14 /dev/sdc
+brw-rw---- 1 root disk 8, 33 Dec 28 14:14 /dev/sdc1
+brw-rw---- 1 root disk 8, 34 Dec 28 18:07 /dev/sdc2
+brw-rw---- 1 root disk 8, 48 Dec 28 14:14 /dev/sdd
+```
+
+However, there is a better way! Simply use the `-p` flag with sar and it will do the translation for you.
+
+```none
+sar -dp --human 1 3
+```
+
+```output
+Average:          DEV       tps     rkB/s     wkB/s   areq-sz    aqu-sz     await     svctm     %util
+Average:          sda      0.00      0.0k      0.0k      0.0k      0.00      0.00      0.00      0.0%
+Average:          sdb    116.00      0.0k    110.1M    972.1k      3.65     32.23      5.05     58.5%
+Average:          sdc    954.33    118.1M      0.0k    126.7k      1.53      1.62      1.03     98.1%
+Average:          sdd      0.00      0.0k      0.0k      0.0k      0.00      0.00      0.00      0.0%
+```
+
+Read a sarfile with `sar -f ./sarfile`.
 
 ## Formatting drives
 
