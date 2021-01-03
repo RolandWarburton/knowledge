@@ -93,3 +93,48 @@ By defaut Snap packages check for updates 4 times a day and will update themselv
 `sudo snap set system refresh.timer=4:00-7:00,19:00-22:10` and defining your own times.
 
 Manually updating a snap package: `snap refresh myPackage` or check for updates on all packages with `snap refresh`.
+
+### Installing nvidia drivers
+
+Refer to the [Nvidia Graphics Drivers](https://wiki.debian.org/NvidiaGraphicsDrivers) documentation here.
+
+#### Update kernel
+
+Because i am on debian buster testing branch i need to update my kernel from debian backports using the `-t` flag.
+
+```none
+apt install -t buster-backports linux-headers-amd64
+```
+
+This configuration for `/etc/apt/sources.list` seems to have the correct sources to install the nvidia-driver into.
+
+The guide from debian seems to want you to use `deb http://deb.debian.org/debian buster-backports main contrib non-free` especially (for buster backports).
+
+```none
+deb http://deb.debian.org/debian/ testing main non-free
+deb-src http://deb.debian.org/debian/ testing main non-free
+
+deb http://security.debian.org/debian-security buster/updates main
+deb-src http://security.debian.org/debian-security buster/updates main
+
+# buster-updates, previously known as 'volatile'
+deb http://deb.debian.org/debian/ buster-updates main non-free
+deb-src http://deb.debian.org/debian/ buster-updates main non-free
+
+# This system was installed using small removable media
+# (e.g. netinst, live or single CD). The matching "deb cdrom"
+# entries were disabled at the end of the installation process.
+# For information about how to configure apt package sources,
+# see the sources.list(5) manual.
+
+deb http://deb.debian.org/debian buster-backports main contrib non-free
+deb-src http://ftp.au.debian.org/debian/ buster main non-free
+```
+
+Then run this command to target the buster-backports repo and install the required stuff.
+
+```none
+sudo apt update
+sudo apt upgrade
+apt install -t buster-backports nvidia-driver firmware-misc-nonfree
+```
