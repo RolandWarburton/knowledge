@@ -349,3 +349,10 @@ Lastly, observe the various drivers in the output from sensors-detect and if req
 ```none
 sudo modprobe nct6775
 ```
+
+See more information about this under my "NAS setup" log
+
+### Prevent gnome from creating Videos, Documents, Desktop etc
+
+Edit `/etc/xdg/user-dirs.conf` and set the first variable line to "False".
+
