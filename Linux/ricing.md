@@ -70,3 +70,16 @@ tab-icon-image {
 6. Set `toolkit.legacyUserProfileCustomizations.stylesheets = true`
 7. restart firefox.
 8. Profit!
+
+## xfce4
+
+### Remove all window borders
+
+Create an empty theme.
+
+```none
+sudo mkdir -p /usr/share/themes/empty/xfwm4/
+sudo touch /usr/share/themes/empty/xfwm4/themerc
+```
+
+Then apply that theme through `settings manager -> window manager -> style (tab)`. Setting your theme to "empty".
