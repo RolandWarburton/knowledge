@@ -107,3 +107,12 @@ Then restart ssh.
 ```none
 sudo systemctl restart ssh
 ```
+
+### Mounting sshfs on boot
+
+Use these options on boot
+
+```none
+sshfs#roland@sftp:/ /home/roland/sftp fuse defaults,allow_other,IdentityFile=/home/roland/.ssh/id_nopass_rsa 0 0
+```
+
