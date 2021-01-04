@@ -356,3 +356,125 @@ See more information about this under my "NAS setup" log
 
 Edit `/etc/xdg/user-dirs.conf` and set the first variable line to "False".
 
+### Fixing terminal keys
+
+I may have covered this before, however (in zsh) i have found the best solution and will describe the steps to fixing the problem of incorrectly mapped keys below.
+
+#### The problem
+
+When some interesting keys are pressed, instead of performing their action, a keycode is sent, for example `OH` or `OF` for home and end respectively.
+
+#### Diagnosing a solution
+
+##### 1. Inspecting your keycodes
+I only have a good solution for this in zsh (using zkbd). Firstly however, you need to investigate what keycodes you are currently using. to do this use either of these methods (i used ctrl + v).
+
+1. Use `ctrl + v, any_key` to print its keycode
+2. Or, use `od -c` to print keycodes from stdin
+3. Or, use `cat` and then type your keys
+
+So for example the home key returns `OH`, note this down as you will encounter this later.
+
+##### 2. Inspecting your $TERM
+
+Next check your $TERM in various states, firstly check what $TERM is in your preffered terminal, i am using urxvt and urxvt reports that `echo $TERM` is `rxvt-unicod` whilst not in tmux, and `screen-256color` while in tmux.
+
+Remember it is **not your job** to set TERM, do not use any rc file to influence $TERM.
+
+In .Xresources (for urxvt) use this.
+
+```none
+URxvt*termName: rxvt-unicode
+```
+
+In .tmux.conf use this.
+
+```none
+# when using urxvt
+set -g default-terminal "screen-256color"
+
+# in some other cases you may try
+set -g default-terminal 'tmux-256color'
+```
+
+##### 3. Inspecting /etc/inputrc
+
+This section is largely not important for me as all the provided config below in this section is within an `$if mode=emacs` block, and im not using emacs so... However its worth reviewing for any garbage values etc.
+
+inputrc is responsible for instructing some terminals about what key-codes should do what.
+
+1. Check the global mappings
+
+```none
+# mappings for Ctrl-left-arrow and Ctrl-right-arrow for word moving
+"\e[1;5C": forward-word
+"\e[1;5D": backward-word
+"\e[5C": forward-word
+"\e[5D": backward-word
+"\e\e[C": forward-word
+"\e\e[D": backward-word
+```
+
+2. Check any terminal specific configurations, note that rxvt != urxvt so if you see the following, you can ignore it
+
+```none
+$if term=rxvt
+"\e[7~": beginning-of-line
+"\e[8~": end-of-line
+"\eOc": forward-word
+"\eOd": backward-word
+$endif
+```
+
+#### The solution
+
+With the knowledge gathered above, the next parts will hopefully resolve the problems, make sure to closely inspect the configs here and to match them against your keycodes when needed.
+
+The first thing to do is to modify .zshrc with `autoload zkbd` and restarting the terminal. Then run `zkbd` and follow the prompts pressing keys when asked to self diagnose your own custom file.
+
+Repeat `zkbd` for each $TERM you want to use.
+
+zkbd will provide you with a location to the generated config file like this. You shouldnt need to use multiple sources as it uses term variables to source the correct file on the fly (ie. only include the below once).
+
+```none
+source ~/.zkbd/$TERM-${${DISPLAY:t}:-$VENDOR-$OSTYPE}
+```
+
+zkbd will also give you some examples, here is a longer version of the examples that covered most of the key-code issues i was having. Paste this into .zshrc as well.
+
+```none
+[[ -n ${key[Backspace]} ]] && bindkey "${key[Backspace]}" backward-delete-char
+[[ -n ${key[Insert]} ]] && bindkey "${key[Insert]}" overwrite-mode
+[[ -n ${key[Home]} ]] && bindkey "${key[Home]}" beginning-of-line
+[[ -n ${key[PageUp]} ]] && bindkey "${key[PageUp]}" up-line-or-history
+[[ -n ${key[Delete]} ]] && bindkey "${key[Delete]}" delete-char
+[[ -n ${key[End]} ]] && bindkey "${key[End]}" end-of-line
+[[ -n ${key[PageDown]} ]] && bindkey "${key[PageDown]}" down-line-or-history
+[[ -n ${key[Up]} ]] && bindkey "${key[Up]}" up-line-or-search
+[[ -n ${key[Left]} ]] && bindkey "${key[Left]}" backward-char
+[[ -n ${key[Down]} ]] && bindkey "${key[Down]}" down-line-or-search
+[[ -n ${key[Right]} ]] && bindkey "${key[Right]}" forward-char
+```
+
+#### Fixing vim keys
+
+After implementing the fixes in zkbd i was still having issues in vim, here some some extra configuration changes that i made.
+
+Fix home/end key in all modes (or at least works in uxrvt/zsh/tmux). The use of **map** and **imap** denote which mode (normal and insert).
+cmap <esc>OH <home>
+imap <esc>OH <home>
+map <esc>OF <end>
+cmap <esc>OF <end>
+imap <esc>OF <end>
+```
+
+Fix ctrl+arrow keys not working (or at least in urxvt/zsh/tmux).
+
+```none
+" ~/.vimrc
+map <esc>[1;5D <C-Left>
+map <esc>[1;5C <C-Right>
+imap <esc>[1;5D <C-Left>
+imap <esc>[1;5C <C-Right>
+```
+
