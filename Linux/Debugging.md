@@ -478,3 +478,12 @@ imap <esc>[1;5D <C-Left>
 imap <esc>[1;5C <C-Right>
 ```
 
+#### Misc fixes
+
+One last issue that wasnt resolved the zkbd was ctrl+arrow whilst inside the terminal, using a similar setup to the vimrc config i simply just remapped these keys quick and dirty to ther proper actions.
+
+```none
+bindkey '^[[1;5D' backward-word
+bindkey '^[[1;5C' forward-word
+```
+
