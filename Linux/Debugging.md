@@ -482,8 +482,11 @@ imap <esc>[1;5C <C-Right>
 
 One last issue that wasnt resolved the zkbd was ctrl+arrow whilst inside the terminal, using a similar setup to the vimrc config i simply just remapped these keys quick and dirty to ther proper actions.
 
+A good way to go about this is with the `bindkey` command whilst inside zsh itself to experiment with different key-codes using the ctrl+v, key method. IE. writing any of the following lines in the code block below in zsh will change the bind on the fly.
+
 ```none
 bindkey '^[[1;5D' backward-word
 bindkey '^[[1;5C' forward-word
+bindkey '^[[3;5~' kill-word
 ```
 
