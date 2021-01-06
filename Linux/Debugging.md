@@ -372,6 +372,7 @@ I only have a good solution for this in zsh (using zkbd). Firstly however, you n
 1. Use `ctrl + v, any_key` to print its keycode
 2. Or, use `od -c` to print keycodes from stdin
 3. Or, use `cat` and then type your keys
+4. Use ` echo "ctrl+v, key" | od -c` for some extra details
 
 So for example the home key returns `OH`, note this down as you will encounter this later.
 
