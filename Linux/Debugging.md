@@ -461,6 +461,7 @@ zkbd will also give you some examples, here is a longer version of the examples 
 After implementing the fixes in zkbd i was still having issues in vim, here some some extra configuration changes that i made.
 
 Fix home/end key in all modes (or at least works in uxrvt/zsh/tmux). The use of **map** and **imap** denote which mode (normal and insert).
+```none
 cmap <esc>OH <home>
 imap <esc>OH <home>
 map <esc>OF <end>
