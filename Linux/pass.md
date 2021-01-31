@@ -142,7 +142,6 @@ email: joe@mama.com
 ## Integrating with git
 
 ```none
-git init --bare ~/.password-store
 pass git init
 ```
 
@@ -155,7 +154,22 @@ pass git remote add origin git@github.com:RolandWarburton/password-store.git
 Then push your changes.
 
 ```none
-pass git push --set-upstream origin master
+pass git push -u --all
+```
+
+Or pull your changes (if prompted to merge just `:q` when the merge editor comes up)
+
+```none
+pass git pull origin master --allow-unrelated-histories
+```
+
+```output
+From github.com:RolandWarburton/password-store
+ * branch            master     -> FETCH_HEAD
+Merge made by the 'recursive' strategy.
+ test.com.gpg | Bin 0 -> 587 bytes
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 test.com.gpg
 ```
 
 ## Syncing password database
@@ -254,15 +268,13 @@ pass init 1234567812345678123456781234567812345678
 ```
 
 ```none
-git init --bare ~/.password-store
+pass git init
 ```
 
 ```none
-cd ~/.password-store
-pass git init
 pass git remote add origin git@github.com:RolandWarburton/password-store.git
 ```
 
 ```none
-pass git pull
+pass git pull origin master --allow-unrelated-histories
 ```
