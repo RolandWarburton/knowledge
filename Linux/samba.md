@@ -224,3 +224,35 @@ browseable = No
 follow symlinks = yes
 wide links = yes
 ```
+
+### Fix error opening files
+
+Sometimes depending on the computer, you will be able to browse to a share, but not open it in any external editor (for example feh).
+
+One possible fix for this is to install the gvfs packages to try and make it work.
+
+* gvfs
+* gvfs-fuse
+* gvfs-bin
+* gvfs-daemons
+* gvfs-libs
+* gvfs-libs
+
+Then make sure to **restart** after installing these to give a chance for gvfs to switch on.
+
+The next thing you can do is to make sure you are on the "stable" branch of your distribution. I have had this issue (probably) caused by packages mismatching, or some other package version related issues. Make sure to remove any mention of "testing" from your `/etc/apt/sources.list`. In otherwords change this `deb http://deb.debian.org/debian/ testing main contrib non-free` to this `deb http://deb.debian.org/debian/ main contrib non-free`.
+
+Another thing to check is your kernel.hostname.
+
+```none
+sudo sysctl kernel.hostname
+```
+
+You can change it like this.
+
+```none
+sudo sysctl kernel.hostname=samba
+```
+
+Note that i strongly believe the first, and second solution here solves the problem, but i included this one as well just to make sure.
+
