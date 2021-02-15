@@ -106,7 +106,7 @@ Domain name servers provide a source of truth for clients on a network to automa
 
 To set up a domain name server you can use the following steps.
 
-In the example the IP address of the DNS server is **10.10.10.10**. We will use a client on **192.168.0.100**. The name of the domain will be **lab.lan**, and the name of the DNS server will be **auth**. With that done lets get started!
+In the example the IP address of the DNS server is **10.0.0.10**. We will use a client on **192.168.0.100**. The domain will be called **rolandw.lan**. With that done lets get started!
 
 First verify your hostname of your DNS server
 
@@ -115,39 +115,158 @@ hostnamectl
 ```
 
 ```output
-Static hostname: auth.lab
-		Icon name: computer-vm
-		Chassis: vm
-	Machine ID: e20be31b1c144cd6a0ebbd720dd7018e
-		Boot ID: 0c53d3d2e7894439b7f3d52f3adb0613
+Static hostname: auth
+      Icon name: computer-vm
+        Chassis: vm
+    Machine ID: 407289a50273477da74551659b7881a8
+        Boot ID: 4a98bb65433d4987bc327ae18ef57ac3
 Virtualization: vmware
-Operating System: CentOS Linux 8 (Core)
-	CPE OS Name: cpe:/o:centos:centos:8
-		Kernel: Linux 4.18.0-193.14.2.el8_2.x86_64
-	Architecture: x86-64
+Operating System: Debian GNU/Linux 10 (buster)
+        Kernel: Linux 4.19.0-14-amd64
+  Architecture: x86-64
 ```
 
-Then install packages
+Then install packages to work with dns
 
 ```none
-dnf install bind bind-utils
+apt install -y bind9 bind9utils bind9-doc dnsutils
 ```
 
-Then edit the (idk what this is)
+### Making bind into a recursive query server
+
+We want to be able to query our local DNS server for any hostname on the internet, of course our DNS server doesn't know the correct mapping to every hostname, so it must query other DNS servers iteratively.
+
+A recursive query is used against the DNS server because the client needs a guaranteed answer from the dns server to which IP a hostname belongs to, not a referral link, see [this video](https://www.youtube.com/watch?v=PS0UppB3-fg). The flow that our client will follow when resolving a domain will look something like this.
+
+1. Client wants to go to google.com
+2. Client asks DNS server what is the IP of google.com recursively
+3. The DNS server iteratively queries the root domain hints server and a response with a a referral to the .com domain server
+4. The DNS server iteratively queries the .com domain server, and the .com server responds with a referral to googles DNS server
+5. The DNS server iteratively queries the google DNS server and gets a response with the IP to google.com
+6. The DNS server hands that IP back to the client
+
+The reason why we would make our own DNS server recursive, whereas a public DNS server remains recursive is to reduce the load on the public DNS server doing multiple queries.
+
+When an iterative request is made only **one** total query is processed. The iterative server will not ask any other DNS servers for the IP, instead it replies with a referral IP to a closer DNS server using the DNS hierarchy.
+
+When a recursive request is made **multiple** total queries are processed because the recursive DNS server MUST have a response at the end of the day and will keep querying all its top level domain servers until it exhausts all possible options, this costs more computation however must be done to ensure a resolution of the hostname. This process of using a recursive DNS server also benefits the entire network as the DNS server can cache its results to reduce future lookups.
+
+![dns_flow.png](./media/dns_flow.png)
+
+[source](https://www.youtube.com/watch?v=PS0UppB3-fg)
+
+To implement recursion into bind, edit `/etc/bind/named.conf.options` and add the following in the options block.
 
 ```none
-vim /etc/named.conf
+// Recursion feature =====================================================
+// hide version number from clients for security reasons.
+version "not currently available";
+
+// optional - BIND default behavior is recursion
+recursion yes;
+
+// provide recursion service to trusted clients only
+allow-recursion { 127.0.0.1; 192.168.0.0/24; 10.10.10.0/24; };
+
+// forwarders to query
+forwarders { 1.1.1.1; 8.8.8.8; };
+
+// enable the query log
+querylog yes;
 ```
+
+### Starting in IPv4 mode
+
+For performance reasons, if you are not going to use IPv6 then theres no need to enable it when starting bind. Fortunately named comes with the `-4` flag to operating in IPv4 mode only, this came pre-configured in debian 10, however heres the steps i used to enable/disable it.
+
+First find all the related service files.
 
 ```none
-# line 11: Add your static IP to the listen-on port
-	listen-on port 53 { 127.0.0.1; 10.10.10.10; };
-
-#line 19: allow any query
-	allow-query {localhost; any;};
+root@auth:~# find /etc/systemd -name "*bind*"
+/etc/systemd/system/bind9.service.wants
+/etc/systemd/system/bind9.service.wants/bind9-resolvconf.service
+/etc/systemd/system/multi-user.target.wants/bind9.service
 ```
 
-Start the domain name service
+Then edit the correct one (`/etc/systemd/system/multi-user.target.wants/bind9.service`). Observe the **EnvironmentFile**, navigate to that and see that the options for how named is started are located there.
+
+```output
+[Service]
+Type=forking
+EnvironmentFile=-/etc/default/bind9
+ExecStart=/usr/sbin/named $OPTIONS
+```
+
+```output
+#
+# run resolvconf?
+RESOLVCONF=no
+
+# startup options for the server
+OPTIONS="-u bind -4"
+```
+
+### Bind directory structure
+
+Note that this changes based on distribution, this is on Debian 10 and will be different from CentOS and FreeBSD.
+
+Bind configurations exist in `/etc/bind`
+
+| File                     | Description                                                      |
+|--------------------------|------------------------------------------------------------------|
+| named.conf               | The main config file and imports its modules from /etc/bind      |
+| named.conf.local         | Contains configuration for the zones that we want to use locally |
+| named.conf.default-zones | Dont need to worry about this file for now                       |
+
+### Configuring - Creating zones
+
+Now begin by creating a forward and reverse zone by placing these following blocks in `/etc/bind/named.conf.local`.
+
+#### Forward zone
+
+> A forward zone is responsible for translating a hostname to an IP
+
+![forward_lookup_zone_picture](https://www.mustbegeek.com/wp-content/uploads/2019/03/Understanding-Forward-and-Reverse-Lookup-Zones-in-DNS-Forward-Lookup.png)
+
+[source](https://www.mustbegeek.com/understanding-forward-and-reverse-lookup-zones-in-dns/)
+
+```none
+// Domain name will be rolandw.lan
+zone "rolandw.lan" IN {
+  //Primary DNS
+  type master;
+
+  // Forward lookup file
+  file "/etc/bind/zones/forward.rolandw.lan.db";
+     
+  // Since this is the primary DNS, it should be none.
+  allow-update { none; };
+};
+```
+
+#### Reverse zone
+
+> A reverse zone is responsible for translating a IP to a hostname
+
+![reverse_lookup_zone_picture](https://www.mustbegeek.com/wp-content/uploads/2019/03/Understanding-Forward-and-Reverse-Lookup-Zones-in-DNS-Reverse-Lookup.png)
+
+[source](https://www.mustbegeek.com/understanding-forward-and-reverse-lookup-zones-in-dns/)
+
+```none
+// Hosts looking for hostnames in the 10.0.0.0/24 range go to this zone
+zone "10.0.0.in-addr.arpa" IN {
+  //Reverse lookup name, should match your network in reverse order
+  type master; // Primary DNS
+  
+  //Reverse lookup file
+  file "/etc/bind/reverse.rolandw.lan.db";
+  
+  //Since this is the primary DNS, it should be none.
+  allow-update { none; };
+};
+```
+
+### Start the domain name service
 
 ```none
 systemctl start named && \
@@ -155,7 +274,11 @@ systemctl enable named && \
 systemctl status named
 ```
 
-Poke holes in the firewall for DNS ports so they wont be blocked when a client makes a request.
+### Firewall configuration
+
+DNS runs on port 53 on tcp/udp. Poke holes in the firewall for DNS ports so they wont be blocked when a client makes a request.
+
+If you are using firewall-cmd, then use these instructions.
 
 ```none
 firewall-cmd --zone=public --add-service=dns --permanent
@@ -186,124 +309,103 @@ public (active)
   rich rules:
 ```
 
-Next lets make a DNS zone within `/etc/named.conf`. At the bottom of the file define a zone.
+### Create zone lookup files
+
+Now we need to create the files we references when creating the zones (a fqdm.db file). We will place these databases in `/etc/bind/zones` so create that directory.
 
 ```none
-zone "lab.lan" IN {
-	type master;
-	file forward.lab.lan;
-	allow-update { none; };
-};
-
-# reverse 10.10.10.1(0) and drop the last char (in brackets)
-zone "1.10.10.in.addr.arpa" {
-	type master;
-	file "reverse.lab.lan";
-	allow-update { none; };
-};
+mkdir /etc/bind/zones
 ```
 
-Then create the forward files we just referenced, we will use this file to base our reverse file after.
+Then copy over the template files from the base bind directory.
 
 ```none
-cp /var/named/named.localhost /var/named/forward.lab.lan
+cp /etc/bind/db.local /etc/bind/forward.rolandw.lan.db
+cp /etc/bind/db.127 /etc/bind/reverse.rolandw.lan.db
 ```
 
-Then edit /var/named/forward.lab.lan (make sure to include '.' delimiters).
+Ensure that you copy these files, not create them. This guarantees that the file permissions will be correct.
+If you need to correct the file permissions for these zone lookup files, then do so now.
 
 ```none
-vim /var/named/forward.lab.lan
+chown root:bind /etc/bind/zones/forward.rolandw.lan.db
+chown root:bind /etc/bind/zones/reverse.rolandw.lan.db
 ```
 
-Change the 2nd line to use your domain name. DNS will resolve "host" and "auth" to 10.10.10.10
+#### forward zone lookup
 
 ```none
-$TTL 1D
-@	IN SOA auth.lab.lan. root.lab.lan. (
-				0		; serial
-				1D		; refresh
-				3H )	; minimum
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     ns1.rolandw.lan. root.rolandw.lan. (
+                              3         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+; Commentout below three lines
+;@      IN      NS      localhost.
+;@      IN      A       127.0.0.1
+;@      IN      AAAA    ::1
 
-@		IN		NS		auth.lab.lan.
-@		IN		A		10.10.10.10
-auth	IN		A		10.10.10.10
-host	IN		A		10.10.10.10
-roland	IN		A		192.168.0.100
+;Name Server Information
+
+@       IN      NS      ns1.rolandw.lan.
+
+;IP address of Name Server
+
+ns1     IN      A       10.0.0.10
 ```
 
-Now create the reverse file
+#### reverse zone lookup
 
 ```none
-cp /var/named/forward.lab.lan /var/named/reverse.lab.lan
+;
+; BIND reverse data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     rolandw.lan. root.rolandw.lan. (
+                              3         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+;@      IN      NS      localhost.
+;1.0.0  IN      PTR     localhost.
+
+;Name Server Information
+@       IN      NS     ns1.rolandw.lan.
+
+;Reverse lookup for Name Server
+10      IN      PTR    ns1.rolandw.lan.
 ```
 
-```none
-vim /var/named/reverse.lab.lan
-```
-
-"10" is taken from the 10 in "10.10.10.**(10)**" to reverse lookup auth.lab.lan
-
-"100" is taken from 192.168.0.**(100)** to reverse lookup roland.lab.lan
-
-```none
-$TTL 1D
-@	IN SOA auth.lab.lan. root.lab.lan. (
-				0		; serial
-				1D		; refresh
-				3H )	; minimum
-
-@		IN		NS		auth.lab.lan.
-@		IN		PTR		lab.lan.
-auth	IN		A		10.10.10.10
-host	IN		A		10.10.10.10
-10		IN		PTR		auth.lab.lan.
-100		IN		PTR		roland.lab.lan.
-```
-
-Now fix the file perms so that "named:named" owns the file.
-
-```none
-sudo chown named:named /var/named/forward.lab.lan
-sudo chown named:named /var/named/reverse.lab.lan
-```
+### Verify configuration
 
 Next check that the config syntax passes.
 
 ```none
-named-checkconf -z /etc/named.conf
+named-checkconf /etc/bind/named.conf.local
 ```
 
-A successful load will return
+A successful load will return nothing and a return code of 0.
 
-```output
-zone lab.lan/IN: loaded serial 0
-zone 1.10.10.in-addr.arpa/IN: loaded serial 0
-zone localhost.localdomain/IN: loaded serial 0
-zone localhost/IN: loaded serial 0
-zone 1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.ip6.arpa/IN: loaded serial 0
-zone 1.0.0.127.in-addr.arpa/IN: loaded serial 0
-zone 0.in-addr.arpa/IN: loaded serial 0
-```
-
-Next check the zone files
+Next check the zone files.
 
 ```none
-named-checkzone forward /var/named/forward.lab.lan
-named-checkzone forward /var/named/reverse.lab.lan
-```
-
-Both the forward and reverse zone should return
-
-```output
-zone (forward OR reverse)/IN: loaded serial 0
-OK
+named-checkzone rolandw.lan /etc/bind/zones/forward.rolandw.lan.db
+named-checkzone 10.0.0.in-addr.arpa /etc/bind/zones/reverse.rolandw.lan.db
 ```
 
 Now go ahead and restart the service
 
 ```none
-systemctl restart named
-systemctl status named
+systemctl restart bind9
+systemctl status bind9
 ```
 
 Lastly add your DNS server to your routers list of DNS servers. And change your DHCP servers settings to hand out your DNS servers IP as well.
@@ -328,11 +430,11 @@ Next lets observe `/etc/resolv.conf`.
 
 ```output
 # Generated by NetworkManager
-search lab.lan
-nameserver 10.10.10.10
+search rolandw.lan
+nameserver 10.0.0.10
 ```
 
-Here we can see that our client knows to use 10.10.10.10 as a nameserver to resolve DNS queries with. The **search lab.lan** derived from my router (PFSense) because the DNS service on my PFSense is also running DNS services (as a DNS resolver for public DNS on 1.1.1.1 and 8.8.8.8).
+Here we can see that our client knows to use 10.0.0.10 as a nameserver to resolve DNS queries with. It has also inherited the search domain **rolandw.lan** which is derived from the routers domain (defined under "System/General Setup" in PFSense).
 
 ### Additional debugging
 
