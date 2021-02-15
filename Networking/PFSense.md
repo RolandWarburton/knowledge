@@ -355,3 +355,179 @@ pfsense	IN	PTR	pf.lab.lan
 ; Router
 pfsense		IN	A	192.168.0.1
 ```
+
+## Wireguard
+
+On the (currently beta) branch of PFSense 2.5.0 RC wireguard (wg) is available as a built in VPN feature with web UI support.
+
+### King of the minimalist VPNs, Balancer of tradeoffs
+
+Wireguard is modern and extremely fast. It consists of only 4,000 lines of codes, making it lean and simple to configure and implement, this is compared to other VPN protocols (mainly IKEv2 and OpenVPN) which have much larger code bases with more features. Wireguard is designed to be a L3 only protocol, relying on third party's for extra bells and whistles, such as second auth factors, see [this video](https://youtu.be/PinVqihuvBQ?t=149) (@2:29) for more on this.
+
+However wireguard like any piece of technology is not without shortcomings. Based on the creators own words from the official [website](https://wireguard.com) you may not want to use wireguard if you care about these things...
+
+1. Deep Packet Inspection - Wireguard does not provide obfuscation to what you are doing, it priorities are on a layer 3 domain only providing strong crypto, whereas obfuscation operates on layers above, this leaves room for third part implementation for obfuscation capabilities.
+2. TCP mode - WireGuard explicitly does not support tunneling over TCP, due to the classically terrible network performance of tunneling TCP-over-TCP. If TCP connections are what you need then projects like [udptunnel](https://github.com/rfc1036/udptunnel) and [udp2raw-tunnel](https://github.com/wangyu-/udp2raw-tunnel) are recommended by wireguard to look into.
+3. Hardware Crypto - The wireguards ChaCha20Poly1305 crypto suite has lacking hardware support when compared to the more popular AES-NI. However this isn't a big deal according to [here](https://www.wireguard.com/known-limitations/).
+4. Roaming Mischief - wireguard is susceptible to MITM attacks
+5. Identity Hiding Forward Secrecy - From [wireguard.com](https://www.wireguard.com/known-limitations/) "WireGuard has forward secrecy of data packets, thanks to its handshake, but the handshake itself encrypts the sender's public key using the static public key of the responder, which means that a compromise of the responders private key and a traffic log of previous handshakes would enable an attacker to figure out who has sent handshakes, but not what data is inside of them. Similarly, mac1 is made over the responders public key, which means it is possible to trial hash to guess whether or not a packet is intended for a particular responder, though the mac1 could be forged. Mitigation's include rotating or regenerating keys, based on expectations of un-linkability."
+6. Post-Quantum Secrecy - Wireguard is not post-quantum secure
+7. Denial of Service - wireguard is supposed to be abuse-resistant through the use of mac1 and mac2, though before mac2 kicks in, the ECDH computations may use considerable CPU. In practice, though, mac2 is usually sufficient.
+
+### How it works
+
+#### Wireguard is connection-less and works different to how other VPNs work
+
+Wireguard is a connection-less protocol, however do not confuse this with stateless as all secure protocols require some state to facilitate a handshake of some kind. Wireguards implementation performs a handshake every couple mins to provide rotating keys and bases the handshake on different internal timers (instead of previous packets).
+
+Wireguards inner workings do not exist in user space, this means there is no systemd unit to turn on and off, and no program to run. Instead wireguard is built into the kernel of linux, and recently freebsd which allows it to exist within PFSense. To "enable" wireguard you instead create a wireguard interface through the `ip` command. For example an example network from the wireguard website cites these following steps to manually configure a peer.
+
+### CLI client instructions - The manual way
+
+Use the video walk through either [here](https://www.wireguard.com/talks/talk-demo-screencast.mp4) as a silent .mp4 or [here](https://youtu.be/88GyLoZbDNw?t=829) (@13:49) as part of a demonstration from blackhat 2018 by one of the creators.
+
+Once connected ping the interface, optionally targeting it with `-I` if required, make sure to name it correctly (from wg0 to anything else you named it).
+
+```none
+ping -I wg0 192.168.2.1
+```
+
+### CLI client instructions - The wg-quick way
+
+This is the actual way that i would configure a client. Based on [this](https://www.ckn.io/blog/2017/11/14/wireguard-vpn-typical-setup/) tutorial.
+
+#### 1. Install wireguard
+
+Make sure you have buster backports added to `/etc/apt/sources.list` `deb http://deb.debian.org/debian buster-backports main`.
+
+```none
+sudo apt update
+sudo apt install wireguard-dkms wireguard-tools linux-headers-$(uname -r)
+```
+
+Then reboot to avoid the `RTNETLINK answers: Operation not supported` error. Alternatively you can run `modprobe wireguard` to try and load wireguard into the kernel if it supports dkms and wants to play nice (i had trouble doing this so just rebooted instead).
+
+#### 2. Create client keys
+
+Run these commands
+
+Move to the wireguard configuration folder.
+
+```none
+cd /etc/wireguard
+```
+
+Create the public and private key
+
+```none
+wg genkey | tee privatekey | wg pubkey > publickey
+```
+
+Set correct permissions for the keys to `600`
+
+```none
+chmod 600 privatekey
+chmod 600 publickey
+```
+
+#### 3. Create client interface config file
+
+Create a config file for wg-quick to read inside `/etc/wireguard/wg0.conf`.
+
+* The client will have the ip 10.0.0.2
+* The server that we will connect to is at 101.186.7.12
+* The addresses that will use this link is *any* address (0.0.0.0/0)
+
+```none
+[Interface]
+Address = 10.0.0.2/32
+PrivateKey = <private key of this client>
+DNS = 1.1.1.1
+
+[Peer]
+PublicKey = <public key of the endpoint>
+Endpoint = 101.186.7.12:51820
+AllowedIPs = 0.0.0.0/0, ::/0
+```
+
+#### 4. Running the client
+
+Now you just need to bring the interface up when you would like to use the VPN tunnel. Replace `wg0` with the name of the file in `/etc/wireguard/*.conf`
+
+To bring the interface up.
+
+```none
+sudo wg-quick up wg0
+```
+
+To bring the interface down.
+
+```none
+sudo wg-quick down wg0
+```
+
+### Wireguard server - The PFSense way
+
+There is two options, offloading the wireguard server to another computer, or hosting it on PF, of course in this example i will show the PF way of setting up the server using the web UI.
+
+Next under the `System -> Update` tab, make sure you are on 2.5.0 RC at least to see wireguard support under the `VPN` tab. Currently this version is the "next stable version" IE its not quite finished but is near release.
+
+Once on the correct version Wireguard will appear under the VPN tab, no package installation is required.
+
+Next click on the `Add Tunnel` button and fill out the following fields.
+
+![wireguard_config_01.png](./media/wireguard_config_01.png)
+
+* **Description** - Can be anything you want.
+* **Address** - the address range of IPs that will used for this tunnel.
+* **Listen Port** - Leave this as default (51820) for simplicity.
+* **Interface Keys** - Just press "generate" See below for more explanation.
+
+#### Interface keys
+
+The interface keys are a set of public/private keys encoded in base64 that work like SSH keys in that...
+
+* A client has your PF servers public key
+* The PF server has your clients public key
+* Using these two keys the two nodes are able to establish a secure tunnel
+
+But how is this secure?
+
+* Because we know that asynchronous encryption like the type wireguard uses with public/private keys is a mathematically a **one way** function.
+* Because we have keyed in the clients public key into the servers (PFSense) "peers" table, only a client with a private key is able to sign a message that the server can decrypt with its public key.
+* This effectively allows the sharing of the public keys, while the private key is kept secret.
+* This also works the other way around with the servers private key encoding a message for the client, and the client verifying it came from the server with the servers public key
+
+#### Adding peers
+
+As explained in the interface keys section above, to establish communication __the PF server has your clients public key__. That is the purpose of this table, for registering clients public keys so that we only accept verified messages from the client that could **have only** come from the client because it was encrypted by their private key - a key that only the client owns.
+
+If you would like you can add a Keep Alive of 20s or whatever you feel is a suitable number.
+
+Also not that this type of peer having allowed IPs set to 0.0.0.0/0 is not very secure as it allows any IP on the client to send traffic over this link. A more secure option is to set allowed-ips to the address of the other end of the link, IE 10.0.0.2/32.
+
+![wireguard_config_02.png](./media/wireguard_config_02.png)
+
+#### Observing the newly created interface
+
+After creating the wireguard tunnel we have a brand new interface to use for all wireguard traffic. Observe it under the `Interfaces` tab. No configuration is required here.
+
+![wireguard_config_04.png](./media/wireguard_config_04.png)
+
+#### Creating firewall rules for the wireguard network
+
+Now that we have the wireguard tunnel configured (remember to press save), you should see a new tab under `Firewall -> Rules` for your wireguard network. For testing purposes create an `all all` rule that allows any traffic over this link.
+
+![wireguard_config_03.png](./media/wireguard_config_03.png)
+
+#### Route wireguard traffic to the wireguard interface
+
+The last thing to do is to NAT wireguard traffic to the correct interface (10.0.0.1). Configure a NAT rule until it looks like this.
+
+![wireguard_config_05.png](./media/wireguard_config_05.png)
+
+#### Testing the link
+
+Now go back to "Running the client" and tun the `wg-quick up wg0` command to test your connection.
+
+Running `wg show` should show you the traffic that is going over the link.
