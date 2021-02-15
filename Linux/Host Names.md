@@ -32,7 +32,7 @@ So now when you go to *"localhost"* on your computer, it is resolved to 127.0.0.
 
 ### Domains
 
-The concept of "DNS but locally" is known as a **domain** and its purpose is to unify a network of computers under a single domain.
+The concept of "DNS but locally" is known as a **domain** and its purpose is to unify a network of computers under a single name.
 
 An example of this would look as follows.
 
@@ -54,7 +54,7 @@ So we have 2 objectives.
 
 #### Step 1
 
-Lets call this computer/server "webserver".
+On the webserver: Lets call this server "webserver".
 
 ```none
 sudo vim /etc/hostname
@@ -67,7 +67,7 @@ webserver
 
 #### Step 2
 
-Lets modify `/etc/hosts` in the same way and add an entry for "webserver_login.com". For this we can either use 127.0.0.1 (its loopback) or its rotatable IP (like 192.168.0.1 or 10.0.0.1 etc).
+On the webserver: Lets modify `/etc/hosts` and add an entry for "webserver_login.com" for the server itself. For this we can use its routable IP (like 192.168.0.1 or 10.0.0.1 etc), however a better solution is to use its loopback address 127.0.0.1.
 
 ```none
 sudo vim /etc/hosts
@@ -102,7 +102,7 @@ However there is a better way of automating this distribution of known hosts usi
 
 ## Domains - Setting up a domain name server
 
-Domain name servers automatically handle the routing of *IP to Domain name* associations that clients require to use domain names.
+Domain name servers provide a source of truth for clients on a network to automatically handle the association of IP to Domain names that clients require to use use network names.
 
 To set up a domain name server you can use the following steps.
 
