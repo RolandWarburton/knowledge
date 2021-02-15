@@ -438,17 +438,14 @@ Here we can see that our client knows to use 10.0.0.10 as a nameserver to resolv
 
 ### Additional debugging
 
-If you dont get the results above. Here are some tips for resolving any issues.
+If things dont seem to work you can try these things.
 
-#### Issue: nameserver is 10.10.10.1 (incorrect nameserver)
+#### Issue: nameserver is 10.0.0.1 (incorrect nameserver assigned to clients)
 
-By default most routers like to give out the DNS (aka nameserver) as itself. In this case the default gateway of the 10.10.10.0 subnet is 10.10.10.1 so thats what a DHCP provisioned device will get. To fix this you should change the DHCP settings on your DHCP server to hand out the correct IP
+By default most routers like to give out the DNS (aka nameserver) as itself. In this case the default gateway of the 10.0.0.0/24 subnet is 10.10.10.1 so thats what a DHCP provisioned device will get. To fix this you should change the DHCP settings on your DHCP server to hand out the correct IP
 
 #### Issue: public DNS queries stop working
 
-This is normally caused by Not enough DNS servers or no BIND for fallback nameservers on named. If 10.10.10.10 is your only source of DNS then a client has no way of being able to reach public stuff (like google).
+This is normally caused by Not enough DNS servers or no recursion feature implemented for fallback nameservers. If in your clients `/etc/resolv.conf` 10.0.0.10 is your only source of DNS then a client has no way of being able to reach the public internet.
 
-To solve this you can either.
-
-1. Add another bind in /etc/named.conf. `listen-on port 53 { 127.0.0.1; 10.10.10.10; 1.1.1.1; };` Where 1.1.1.1 is a DNS server that named can look at for DNS it does not have locally.
-2. Add an additional nameserver to your router. In this case i am using PFSense, so under *System -> general setup* I can have DNS servers. 10.10.10.10 and 1.1.1.1
+To solve this you can implement recursion as described above in "Making bind into a recursive query server".
