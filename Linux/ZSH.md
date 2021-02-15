@@ -115,3 +115,46 @@ fpath-prepend "$HOME/.config/zsh/userFunctions"
 autoload -Uz hello
 typeset -gU fpath
 ```
+
+## ZLE - zsh line editor
+
+For most of this information: [source](https://sgeb.io/posts/2014/04/zsh-zle-custom-widgets/).
+
+The zsh line editor, aka "the command prompt", is the bridge between you and zsh.
+
+### ZLE keymap modes
+
+The zsh line editor comes with the concept of keymaps, Keymaps are a collection of keybindings.
+
+When a new keymap is chosen, all keyboard shortcuts are replaced with the ones defined in that new keymap.
+
+The following keymaps are set up by default in zsh:
+
+* EMACS emulation mode
+* viins - vi in insert mode
+* vicmd - vi in command mode
+* isearch - incremental search mode
+* command - command reading mode
+* .safe - keymap fallback
+
+The default mode is in fact emacs, though most users dont use many of these emac style keybinds ( with exceptions like ctrl+u to clear line).
+
+Some other emacs style keybinds worth trying are `alt+b`, `alt+f`, `ctrl+a`, `ctrl+e`, and `ctrl+w`.
+
+`viins` and `vicmd` are the vim keymodes for fancier line editing. Using `alt+i` will place you in viins mode. The same rules apply to vicmd (`alt+c`).
+
+Once in a particular mode, for example vicmd, normal vim keys will work as you expect. For example navigating backwards and forwards with `b` and `e`. for example While in viins you could press `alt+b` to go to vivmd and go backwards a word, then press `shift+a` to go back to the end of the line and automatically be placed back into viins.
+
+### ZLE vim program line editor
+
+When you have a large command you can use the entire vim program to edit it fullscreen using a keybind.
+
+To do this you need to map the following in your zshrc.
+
+```none
+autoload edit-command-line; zle -N edit-command-line
+bindkey -M vicmd v edit-command-line
+```
+
+Now `alt+v` will open vim to edit your command on.
+
