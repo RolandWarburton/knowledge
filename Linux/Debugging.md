@@ -492,3 +492,18 @@ bindkey '^[[1;5C' forward-word
 bindkey '^[[3;5~' kill-word
 ```
 
+### Enabling and disabling display manager (DM) in Debian 10
+
+Based on [this post](https://unix.stackexchange.com/questions/264393/how-to-disable-x-server-autostart-in-debian-jessie).
+
+To disable.
+
+```none
+systemctl set-default multi-user.target
+```
+
+To re-enable.
+
+```none
+systemctl set-default graphical.target
+```
