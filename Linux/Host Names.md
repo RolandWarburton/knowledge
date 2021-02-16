@@ -208,7 +208,7 @@ OPTIONS="-u bind -4"
 
 ### Bind directory structure
 
-Note that this changes based on distribution, this is on Debian 10 and will be different from CentOS and FreeBSD.
+Note that this changes based on distribution, in this example i am using Debian 10 and it will be different on other distributions like CentOS and FreeBSD.
 
 Bind configurations exist in `/etc/bind`
 
@@ -264,6 +264,37 @@ zone "10.0.0.in-addr.arpa" IN {
   //Since this is the primary DNS, it should be none.
   allow-update { none; };
 };
+```
+
+#### Zone ACLs
+
+In addition to providing security on a global scope within `/etc/bind/named.conf.options` by adding the following lines.
+
+```none
+// range to allow requests from
+allow-query { localhost; 10.0.0.0/24; 192.168.0.0/24; };
+```
+
+We can do a similar thing on a per zone basis by using an ACL, see [11.2.2.2](https://docstore.mik.ua/orelly/networking_2ndEd/dns/ch11_02.htm).
+
+> BIND 8 and 9 also allow you to apply an access control list to a particular zone. In this case, just use allow-query as a substatement to the zone statement for the zone you want to protect.
+
+```none
+vim /etc/bind/named.conf.local
+```
+
+```none
+acl "CLIENTS" { 10.0.0.0/24; 192.168.0.0/24; };
+
+zone "rolandw.lan" IN {
+  ...
+  allow-query { "CLIENTS"; };
+}
+
+zone "10.0.0.in-addr.arpa" IN {
+  ...
+  allow-query { "CLIENTS"; };
+}
 ```
 
 ### Start the domain name service
@@ -346,7 +377,7 @@ $TTL    604800
                         2419200         ; Expire
                          604800 )       ; Negative Cache TTL
 ;
-; Commentout below three lines
+; Comment out below three lines
 ;@      IN      NS      localhost.
 ;@      IN      A       127.0.0.1
 ;@      IN      AAAA    ::1
@@ -435,6 +466,140 @@ nameserver 10.0.0.10
 ```
 
 Here we can see that our client knows to use 10.0.0.10 as a nameserver to resolve DNS queries with. It has also inherited the search domain **rolandw.lan** which is derived from the routers domain (defined under "System/General Setup" in PFSense).
+
+## Final DNS Configurations
+
+```output
+// /etc/bind/named.conf.local
+//
+// Do any local configuration here
+//
+
+// Consider adding the 1918 zones here, if they are not used in your
+// organization
+
+// I un-commented this - Roland
+// https://serverfault.com/questions/306104/what-is-the-point-of-the-zones-rfc1918-file-for-bind9
+// It is generally considered a good practice to serve localhost, 0.0.127.in-addr.arpa and the
+// RFC-1918 reverse zones on your internal DNS system to prevent sending queries from them out to
+// the internet.
+include "/etc/bind/zones.rfc1918";
+
+acl "CLIENTS" { 10.0.0.0/24; 192.168.0.0/24; };
+
+zone "rolandw.lan" IN { //Domain name
+     type master; //Primary DNS
+     file "/etc/bind/zones/forward.rolandw.lan.db"; //Forward lookup file
+     allow-update { none; }; // Since this is the primary DNS, it should be none.
+     allow-query { "CLIENTS"; };
+};
+
+// 10.0.0.0/24
+zone "10.0.0.in-addr.arpa" IN { //Reverse lookup name, should match your network in reverse order
+     type master; // Primary DNS
+     file "/etc/bind/reverse.rolandw.lan.db"; //Reverse lookup file
+     allow-update { none; }; //Since this is the primary DNS, it should be none.
+     allow-query { "CLIENTS"; };
+};
+```
+
+```output
+// /etc/bind/named.conf.options
+options {
+        directory "/var/cache/bind";
+
+        // If there is a firewall between you and nameservers you want
+        // to talk to, you may need to fix the firewall to allow multiple
+        // ports to talk.  See http://www.kb.cert.org/vuls/id/800113
+
+        // If your ISP provided one or more IP addresses for stable
+        // nameservers, you probably want to use them as forwarders.
+        // Uncomment the following block, and insert the addresses replacing
+        // the all-0's placeholder.
+
+        // forwarders {
+        //      0.0.0.0;
+        // };
+
+        //========================================================================
+        // If BIND logs error messages about the root key being expired,
+        // you will need to update your keys.  See https://www.isc.org/bind-keys
+        //========================================================================
+        dnssec-validation auto;
+
+        // Change from "none" to "any" to listen on ip6
+        listen-on-v6 { none; };
+
+        // range to allow requests from
+        allow-query { localhost; 10.0.0.0/24; 192.168.0.0/24; };
+
+        // Recursion feature =====================================================
+        // hide version number from clients for security reasons.
+        version "not currently available";
+
+        // optional - BIND default behavior is recursion
+        recursion yes;
+
+        // provide recursion service to trusted clients only
+        allow-recursion { 127.0.0.1; 192.168.0.0/24; 10.10.10.0/24; };
+
+        // forwarders to query
+        forwarders { 1.1.1.1; 8.8.8.8; };
+
+        // enable the query log
+        querylog yes;
+};
+```
+
+```output
+// /etc/bind/zones/forward.rolandw.lan.db
+;
+; BIND data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     ns1.rolandw.lan. root.rolandw.lan. (
+                              3         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+; Commentout below three lines
+;@      IN      NS      localhost.
+;@      IN      A       127.0.0.1
+;@      IN      AAAA    ::1
+
+;Name Server Information
+
+@       IN      NS      ns1.rolandw.lan.
+
+;IP address of Name Server
+
+ns1     IN      A       10.0.0.10
+```
+
+```output
+// /etc/bind/zones/reverse.rolandw.lan.db
+;
+; BIND reverse data file for local loopback interface
+;
+$TTL    604800
+@       IN      SOA     rolandw.lan. root.rolandw.lan. (
+                              3         ; Serial
+                         604800         ; Refresh
+                          86400         ; Retry
+                        2419200         ; Expire
+                         604800 )       ; Negative Cache TTL
+;
+;@      IN      NS      localhost.
+;1.0.0  IN      PTR     localhost.
+
+;Name Server Information
+@       IN      NS     ns1.rolandw.lan.
+
+;Reverse lookup for Name Server
+10      IN      PTR    ns1.rolandw.lan.
+```
 
 ### Additional debugging
 
