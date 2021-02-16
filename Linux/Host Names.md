@@ -166,7 +166,7 @@ version "not currently available";
 recursion yes;
 
 // provide recursion service to trusted clients only
-allow-recursion { 127.0.0.1; 192.168.0.0/24; 10.10.10.0/24; };
+allow-recursion { 127.0.0.1; 192.168.0.0/24; 10.0.0.0/24; };
 
 // forwarders to query
 forwarders { 1.1.1.1; 8.8.8.8; };
@@ -541,7 +541,7 @@ options {
         recursion yes;
 
         // provide recursion service to trusted clients only
-        allow-recursion { 127.0.0.1; 192.168.0.0/24; 10.10.10.0/24; };
+        allow-recursion { 127.0.0.1; 192.168.0.0/24; 10.0.0.0/24; };
 
         // forwarders to query
         forwarders { 1.1.1.1; 8.8.8.8; };
