@@ -145,12 +145,12 @@ Based on trabes article [here](https://medium.com/trabe/using-docker-engine-api-
 
 In this situation we have two machines:
 
-* My local LAN network hosting a docker daemon on 10.0.0.50
-* My remote docker network on my VPS (which also hosts portainer) on 1.2.3.4
+* My local LAN network hosting a docker daemon on 10.0.0.50, its FQDN within my LAN is store.rolandw.lan
+* My remote docker network on my VPS (which also hosts portainer) on 1.2.3.4, its FQDN is portainer.rolandw.dev
 
 We need to do the following to succeed at securing docker.
 
-* Expose port 2376 for secure traffic (2375 is traditionally for unsecure traffic exposed by dockers api)
+* Expose port 2376 for secure traffic (2375 is traditionally for unsecured api traffic exposed by dockers)
 * Generate a TLS server certificate authority to sign a...
   * Server certificate
   * Client certificate
@@ -247,3 +247,30 @@ Then all you need to do is from portainer, navigate to `endpoints -> add endpoin
   * Select the 2nd TLS mode (TLS with client verification only)
   * TLS certificate: cert.pem
   * TLS key: key.pem
+
+### Making the endpoint persistent with DDNS
+
+As a final bonus, its highly recommended to use DDNS if your IP of the client (my LAN at home in this case) changes (non-static IP ISP address).
+
+To achieve this you will need the following things...
+
+* A DDNS client on your LAN, for this i used PFSense
+* You will also need a nameserver that offers a DDNS feature, such as cloudflare
+
+Using Cloudflare (CF) you need to retrieve your "Global API Key" by clicking on the top right avatar and using the first link "My Profile" and going to the "API Tokens" tab.
+
+The next step is to chose your domain from your account and add a new A record for your dynamic DNS.
+
+Now in PFSense under `services -> Dynamic DNS` you can add a new client.
+
+* Service Type - Cloudflare
+* Interface to monitor - WAN
+* Hostname - `01.docker` `rolandw.dev` (resolves to 01.docker.rolandw.dev)
+* Cloudflare Proxy - Leave disabled
+* Username - Your CF email
+* Password - Your global API key from CF
+* TTL - Can leave blank if you like
+
+It may take a short while (10mins - 30mins) to sync sometimes.
+
+Lastly, make sure to change the URL value of your endpoint. For me i will change it to `01.docker.rolandw.dev:2376`, make sure to include the port number still.
