@@ -125,7 +125,7 @@ Lastly, make sure to expose this port on your firewall.
 
 ## Step 4 - Securing the API
 
-Not done yet, havent learnt how to do this. In the meantime (and for my reference later)...
+Make sure to read more about portainer endpoints and securing the docker API here.
 
 https://docs.docker.com/engine/security/protect-access/
 
@@ -133,9 +133,11 @@ https://medium.com/trabe/using-docker-engine-api-securely-584e0882158e
 
 https://lemariva.com/blog/2019/12/portainer-managing-docker-engine-remotely
 
-Another idea i had was to put the communication in a wireguard tunnel somehow. But i havent read much about this yet,
-the todo for this task would be to maybe understand this https://youtu.be/88GyLoZbDNw?t=1142 (@19:05 onwards)
-about networking namespaces.
+There are 2 official ways of securing dockers API, SSH, and TLS, i decided to use TLS because SSH didn't work for me for some reason.
+
+Another idea i had was to put the communication in a wireguard tunnel somehow. But i haven't read much about this yet.
+If i wanted to look into this i would need to understand this https://youtu.be/88GyLoZbDNw?t=1142 (@19:05 onwards)
+about networking namespaces most likely.
 
 ## Securing with TLS
 
@@ -150,8 +152,8 @@ We need to do the following to succeed at securing docker.
 
 * Expose port 2376 for secure traffic (2375 is traditionally for unsecure traffic exposed by dockers api)
 * Generate a TLS server certificate authority to sign a...
-    * Server certificate
-    * Client certificate
+  * Server certificate
+  * Client certificate
 * Associate the client certificate with portainer to authenticate against my local LAN networks docker daemon
 
 create a location to put these certs.
