@@ -507,3 +507,64 @@ To re-enable.
 ```none
 systemctl set-default graphical.target
 ```
+
+### Downgrading Debian From SID to Buster
+
+Recently i ended up with a server that ended up on SID (the testing branch of debian) while i was trying to fix an unrelated issue.
+Now ideally i want to downgrade this server back to Buster because stability (also some SID packages were breaking dependencies for me), unfortunately debian doesn't REALLY support this, and the solution is to revert to a backup - however i didn't have a backup so had to risk the downgrade.
+
+Fortunately i found a great solution [here](https://www.adammargherio.com/reverting-debian-from-sid-to-stable/) that explains how to downgrade simply and easily. Keep in mind that this didn't downgrade my kernel.
+
+#### Reverting - Step 1. Change Your Sources
+
+Firstly you need to change your `/etc/apt/sources.list` to remove all the SID repos, mine ended up looking like this.
+
+```none
+deb http://deb.debian.org/debian/ buster main contrib  non-free
+deb-src http://deb.debian.org/debian/ buster main contrib  non-free
+
+deb http://security.debian.org/debian-security buster/updates main contrib  non-free
+deb-src http://security.debian.org/debian-security buster/updates main contrib  non-free
+
+# buster-updates, previously known as 'volatile'
+deb http://deb.debian.org/debian/ buster-updates main contrib  non-free
+deb-src http://deb.debian.org/debian/ buster-updates main contrib  non-free
+
+# This system was installed using small removable media
+# (e.g. netinst, live or single CD). The matching "deb cdrom"
+# entries were disabled at the end of the installation process.
+# For information about how to configure apt package sources,
+# see the sources.list(5) manual.
+
+# I put this here for docker
+deb [arch=amd64] https://download.docker.com/linux/debian stretch stable
+```
+
+Next edit (or create in my case) a file here `sudo vim /etc/apt/preferences` and paste the following in it.
+
+```none
+Package: *
+Pin: release a=stable
+Pin-Priority: 1001
+```
+
+To stay on the safe side you should leave this file here even after you upgrade as the article that i got this information from is unsure if you can remove it or not.
+
+#### Reverting - Step 2. The Moment of Truth
+
+Now run...
+
+```none
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get dist-upgrade # if required
+```
+
+While i didn't do this, if you want to revert the kernel back you can install whatever kernel available want with this command.
+Replace the 5.10-0.3-amd with whichever version is available for the release you are downgrading to.
+
+5.10.0-3 is the one i ended up on, i did not run the below command.
+
+```none
+sudo apt-get install linux-image-5.10.0-3-amd
+```
