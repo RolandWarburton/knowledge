@@ -1,6 +1,6 @@
 # Signing Payloads
 
-Signing a payload is a way of verifying its **authenticity**, when placed on the CIA triad (authorization, authentication, and avialability) - payload signing is falls under *authentication* because we are ensuring that the sender was able to sign the payload using a pre-shared key.
+Signing a payload is a way of verifying its **authenticity**, when placed on the CIA triad (authorization, authentication, and avialability) - payload signing falls under *authentication* because we are ensuring that the sender was able to sign the payload using a pre-shared key.
 
 What payload singing is NOT is encryption, we are not encrypting the payload and it can still be seen and read by anyone. The layer we are adding is a verification hash field of the payloads contents between two endpoints, the server hashes the payload -> the client reads the payloads and hashes it, then compares the hashes to ensure that the payload was not tampered with.
 
@@ -66,7 +66,7 @@ fetch(url, options)
 Now we need to accept the payload on the client, and compare hashes.
 To do this, we recycle the `signPayload` function (so signPayload exists on the sender and receiver) and pass it the parsed JSON from the received payload.
 
-To extract the hashed payload from the payload you can use something like this.
+To extract the hashed payload from the payload headers you can use something like this.
 
 ```js
 // Using express we can get the information we need from the req object
