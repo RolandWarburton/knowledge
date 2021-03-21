@@ -1,10 +1,10 @@
 # Promise Chaining - Ordering Promises with Dependencies
 
-Sometimes you have a set of functions (or functions that return promises) that you need to run, utilizing `Promise.all()` is a great way of resolving an array on promises all at once. However, i encountered a limitation that i was able to solve with some help from [here](https://stackoverflow.com/questions/30853265/dynamic-chaining-in-javascript-promises) in which a chain of promises need to be run one after the other sequentially (promise 1 resolves before promise 2, etc). In the problem statement below i will explain a use case for why you might want to do this.
+Sometimes you have a set of functions (or functions that return promises) that you need to run, utilizing `Promise.all()` is a great way of resolving an array on promises all at once. However, I encountered a limitation that I was able to solve with some help from [here](https://stackoverflow.com/questions/30853265/dynamic-chaining-in-javascript-promises) in which a chain of promises need to be run one after the other sequentially (promise 1 resolves before promise 2, etc.). In the problem statement below I will explain a use case for why you might want to do this.
 
 ## The problem
 
-Lets say you have a data structure that looks like this. Perhaps we get this initial data from an API, or a database.
+Let's say you have a data structure that looks like this. Perhaps we get this initial data from an API, or a database.
 
 ```js
 const myPage = {
@@ -50,7 +50,7 @@ const getSiblings = (myPage) => {
 }
 ```
 
-So heres the problem. Now we have two promises that can do what we need, however they require a special order. Also, both functions require the `myPage` object, and as we build on more fields and create more dependencies within the object (ie field B depends on data from field A before it can be run) the order matters more and more. So the solution is to run each promise sequentially and chain them together (hence promise chaining).
+So heres the problem. Now we have two promises that can do what we need, however they require a special order. Also, both functions require the `myPage` object, and as we build on more fields and create more dependencies within the object (i.e. field B depends on data from field A before it can be run) the order matters more and more. So the solution is to run each promise sequentially and chain them together (hence promise chaining).
 
 Heres our problem summarized.
 
