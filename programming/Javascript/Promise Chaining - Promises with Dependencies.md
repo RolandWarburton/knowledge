@@ -166,3 +166,87 @@ steps.reduce((acc, curr, i, arr) => {
     console.log(result);
 });
 ```
+
+## Bonus! - Chaining without promises
+
+This idea of chaining functions/promises is actually quite useful for non promise functions as well. You could use this design pattern to complete a set of steps based by making use of currying to lend a small code footprint and make your code adaptable.
+
+In the below example i have a `renderMarkdown()` function that takes some markdown and renders it to HTML, `renderMarkdown()` **always** needs to run, however some post processing steps needs to be run afterwards on the resultant html, for example minifying the HTML to make it production ready.
+
+First lets create a curry function by wrapping the a `postprocess` function (defined anonymouslyly as `return (steps) => {...}`) under the `renderMarkdown()` function
+
+```js
+// Example A
+
+renderMarkdown(markdown) {
+    // render out the markdown
+    let html = marked(markdown)
+
+    // we will see where (steps) comes from in a bit
+    return (steps) => {
+        for (const step of steps) {
+            html = step(html)
+        }
+        // now that post processing is complete, return the markdown
+        return html
+    }
+}
+```
+
+Next lets write a similar **instructions** template for `renderMarkdown()` to take and pass to postProcess.
+
+```js
+const minifyOptions = {
+    // you can define extra things to pass to your postProcessingSteps array of functions
+    // in this example, we might need to pass minify() some options
+}
+
+const postProcessingSteps = [
+    (html) => minify(html, minifyOptions),
+];
+```
+
+Then lets use the *postProcessingSteps* array to flesh out `renderMarkdown()`. A curried function is a function (renderMarkdown) that returns another function (postProcess, or just `return () => {}` if we choose to use an anonymous function within renderMarkdown like in example A).
+
+```js
+const minifyOptions = {
+    // you can define extra things to pass to your postProcessingSteps array of functions
+    // in this example, we might need to pass minify() some options
+}
+
+const postProcessingSteps = [
+    (html) => minify(html, minifyOptions),
+];
+
+// We render markdown into html
+// then a function is returned that accepts an array of functions to apply postProcessing on that html
+const markdownOutputHtml = renderMarkdown(markdownOutput)(postProcessingSteps); // <- we call that 2nd returned function immediately
+
+// 🎉 now we have html thats also processed
+```
+
+In an alternate universe, we could also do this in a non curried way, but it would take more lines of code.
+
+Instead we would write the postProcess logic by itself in its own `postProcess` function, making it a **non-anyonymous** (i.e defined) function, this decouples the two functions and makes PostProcess reusable elsewhere, even outside of `renderMarkdown`, but costs more lines of code and looks less elegant.
+
+```js
+// Example B
+
+const postProcessingSteps = [
+    (html) => minify(html),
+];
+
+
+postProcess(html, steps) {
+    for (const step of steps) {
+        html = step(html)
+    }
+    return html
+}
+
+
+renderMarkdown(markdown, steps) {
+    let html = marked(markdown)
+    return postProcess(html, steps)
+}
+```
