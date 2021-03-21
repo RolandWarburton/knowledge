@@ -50,7 +50,7 @@ const getSiblings = (myPage) => {
 }
 ```
 
-So heres the problem. Now we have two promises that can do what we need, however they require a special order. Also, both functions require the `myPage` object, and as we build on more fields and create more dependencies within the object (ie field B depends on data from field A before it can be run) the order matters more and more. So the solution is to run each promise sequentially and chain them together (hencce promise chaining).
+So heres the problem. Now we have two promises that can do what we need, however they require a special order. Also, both functions require the `myPage` object, and as we build on more fields and create more dependencies within the object (ie field B depends on data from field A before it can be run) the order matters more and more. So the solution is to run each promise sequentially and chain them together (hence promise chaining).
 
 Heres our problem summarized.
 
@@ -80,7 +80,7 @@ const templateSteps = [
 ]
 ```
 
-Next lets create the function that orderes these steps sequentially, and does all the stuff we mentioned above.
+Next lets create the function that orders these steps sequentially, and does all the stuff we mentioned above.
 
 ```js
 const steps = templateSteps; // rename this to be clearer
@@ -101,7 +101,7 @@ steps.reduce((acc, curr, i, arr) => {
 
 Lets now break down how `Array.reduce` works.
 
-from [mdn](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce) reduce is a higher order function that has the following parts.
+From [mdn](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce) reduce is a higher order function that has the following parts.
 
 * `acc` - An accumulator (what myPage was previously)
 * `curr` - The current state (what myPage is now)
@@ -130,7 +130,7 @@ steps.reduce((acc, curr, i, arr) => {
     return acc.then(async (curr) => {
         // get the steps information
         const step = arr[i];
-        
+
         // Now we run the promise and await its return
         const data = await step.function(curr); // run the build, pass it the current state of myPage
 
@@ -149,7 +149,7 @@ steps.reduce((acc, curr, i, arr) => {
     return acc.then(async (curr) => {
         // get the steps information
         const step = arr[i];
-        
+
         // Now we run the promise and await its return
         const data = await step.function(curr); // run the build, pass it the current state of myPage
 
