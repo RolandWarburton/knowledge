@@ -568,3 +568,16 @@ Replace the 5.10-0.3-amd with whichever version is available for the release you
 ```none
 sudo apt-get install linux-image-5.10.0-3-amd
 ```
+
+### Docker not starting
+
+Try [this](https://github.com/docker/cli/issues/2104).
+
+```none
+service docker stop
+service containerd stop
+cgroupfs-umount
+cgroupfs-mount
+service containerd start
+service docker start
+```
