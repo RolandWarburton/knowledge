@@ -11,7 +11,7 @@ What about promises and ajax? Simply put, promises are the **tool** for managing
 
 Because only one call stack is avaliable to the javascript in your browser. An ajax uses an "execution stack" for each function that is provided, and managed, by the browser to keep track of requests outside of regular javascripts call stack, of which only one of can exist in a FIFO manner.
 
-![diagram](/media/Concurrency.png)
+![diagram](https://i.imgur.com/tDxiTku.png)
 
 TL;DR
 
