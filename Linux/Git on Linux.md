@@ -1,6 +1,6 @@
 # Git on Linux
 
-### Commit without authenticating
+## Commit without authenticating
 
 First make sure you have your username and email set. If you are unsure on what these settings should be you can have a look at a previous commit that was counted by adding `.patch` to
 the end of the url. Eg [This URL](https://github.com/RolandWarburton/staticFolio/commit/c7a21b7f4393d3414d878e68d9bcb6dd83c35cf8.patch).
@@ -10,7 +10,7 @@ git config --global user.name RolandWarburton
 git config --global user.email warburtonroland@gmail.com
 ```
 
-#### Configure ssh keys
+### Configure ssh keys
 
 Now to set up SSH keys! 😍
 
