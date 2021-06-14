@@ -131,7 +131,7 @@ The use of the **dev** command allows us to make use of `ts-node` to compile and
 }
 ```
 
-## Boilerplate
+## Simple Boilerplate
 
 Lets write some boilerplate express code in `src/index.ts`.
 
@@ -392,3 +392,36 @@ Add the following to VSC settings.json using `F1 -> Open Settings (JSON)` and ad
   "eslint.validate": ["javascript"]
 }
 ```
+
+## Intermediate boilerplate
+
+Expanding on the simple boilerplate, the next section will describe a more advanced boilerplate. The intermediate boilerplate will implement the following.
+
+* An index.ts entrypoint that imports an express app to run
+* An app.ts module that creates an express server (register middleware and routes)
+* Use the typescript interface to **describe** a generic route
+* A generic route to **implement** the route interface
+* A simple controller to do something when the route is hit
+* Implement middleware to catch errors and implement cors
+
+You can find the source for the intermediate project [here](https://github.com/RolandWarburton/learningTS/tree/boilerplate).
+
+The final structure will look like this.
+
+```none
+src/
+├── index.ts
+├── app.ts
+├── controllers
+│   └── index.controller.ts
+├── exceptions
+│   └── HttpException.ts
+├── interfaces
+│   └── routes.interface.ts
+├── middleware
+│   └── error.middleware.ts
+└── routes
+    └── index.route.ts
+```
+
+![tsDiagram.png](https://i.imgur.com/MWdVzuo.png)
