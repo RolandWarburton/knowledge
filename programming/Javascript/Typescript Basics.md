@@ -125,7 +125,7 @@ The use of the **dev** command allows us to make use of `ts-node` to compile and
 {
   "scripts": {
     "start": "node dist/index.js",
-    "dev": "nodemon src/index.ts",
+    "dev": "nodemon src/index.ts --delay 500 --exec ts-node src/index.ts",
     "build": "tsc -p ."
   },
 }
@@ -149,26 +149,25 @@ app.get("/", (req: Request, res: Response, next: NextFunction) => {
 app.listen(3000, () => {console.log("server running");});
 ```
 
-We can no use the browser and navigate to [http://localhost:3000](http://localhost:3000) to see our work live.
-
-The next sections will cover more tooling for typescript.
+Then run `npm run dev` and use the browser [http://localhost:3000](http://localhost:3000) to see our work live.
 
 ## Prettier
 
 ### Method One
 
-Next up we need prettier to watch this project. We should already have prettier installed globally via `npm i -g prettier`, but lets install it specifically into the project as well. We also need to install the `onchange` package for a script that we will create to watch for changes.
+To format the project with prettier, We should already have prettier installed globally via `npm i -g prettier`, also install prettier locally into the project as well. Also, install the `onchange` and `concurrently` packages.
 
 ```none
-npm i prettier onchange
+npm i prettier onchange concurrently
 ```
 
-Then we can add a script to `package.json` to watch our code for changes, and then prettify our typescript files. Also i have modified the "dev" script to make use of the "prettier:watch" script.
+* The **"prettier:watch"** script watches and formats on file change.
+* The **"dev"** script runs prettier:watch and nodemon at the same time
 
 ```json
 {
   "scripts": {
-    "dev": "npm run prettier:watch & nodemon src/index.ts",
+    "dev": "concurrently \"npm run prettier:watch\" \"nodemon src/index.ts --delay 500 --exec ts-node src/index.ts\"",
     "prettier:watch": "onchange 'src/**/*.ts' -- prettier --write {{changed}}"
   },
 }
@@ -189,7 +188,7 @@ Next lets copy in a .prettierrc file to configure prettier a bit.
 
 ### Method Two
 
-If you are using an editor like VSCode, you can install the prettier plugin, and enable it for typescript files by pressing `f1` and then searching for "*Format Document*" and setting the formatted to prettier when prompted. Also see these settings options to format on save in `settings.json`.
+If you are using an editor like VSCode, you can install the prettier plugin, and enable it for typescript files by pressing `f1` and then searching for "*Format Document*" and setting the formatted to prettier when prompted. Also see these settings options to format on save in `settings.json` (if the f1 -> format method doesn't work).
 
 ```json
 {
@@ -210,7 +209,7 @@ If you are using an editor like VSCode, you can install the prettier plugin, and
 
 ## ESLint
 
-Despite a lot of tutorials that ive read that still use tslint, this is deprecated, and ESLint is what should be used instead.
+Despite a lot of tutorials that ive read that still use tslint, this is deprecated, ESLint is what should be used instead.
 
 We need 3 new dependencies to make ESLint work with TS.
 
@@ -269,8 +268,11 @@ Next add a lint script in `package.json`.
 ```json
 {
   "scripts": {
-    "lint": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix"
+    "start": "node dist/index.js",
+    "dev": "concurrently \"npm run prettier:watch\" \"nodemon src/index.ts --delay 500 --exec ts-node src/index.ts\"",
+    "build": "tsc -p .",
+    "lint": "eslint . --ext .ts", // <-- Add this
+    "lint:fix": "eslint . --ext .ts --fix" // <-- Add this
   }
 }
 ```
@@ -368,7 +370,12 @@ Just add this to package.json using the before utilized "onchange" package.
 ```json
 {
   "scripts": {
-    "lint:watch": "onchange 'src/**/*.ts' -- npm run lint"
+    "start": "node dist/index.js",
+    "dev": "concurrently \"npm run lint:watch\" \"nodemon src/index.ts --delay 500 --exec ts-node src/index.ts\"",
+    "build": "tsc -p .",
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "lint:watch": "onchange 'src/**/*.ts' -- npm run lint" // <-- Add this
   }
 }
 ```
@@ -385,15 +392,3 @@ Add the following to VSC settings.json using `F1 -> Open Settings (JSON)` and ad
   "eslint.validate": ["javascript"]
 }
 ```
-
-### Integrate ESLint with package.json Scripts
-
-Install concurrently to manage both process within one script.
-
-```none
-npm install concurrently
-```
-
-Then modify the dev command to see the output of both nodemon and code lint at the same time.
-
-Of course, you can also forgo this "concurrent" command and just run the `npm run lint:watch` command by itself in another terminal window.
