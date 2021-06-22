@@ -188,7 +188,7 @@ sudo fdisk /dev/sda
 
 ### Growing Step 2
 
-Now grow the file system to use the newly allocated partition size. Boot back into the live media to run this on the unmounted drive. There is no need to specify a second parameter in resize2fs because its implicitly will fill all available remaining space.
+Now grow the file system to use the newly allocated partition size. Boot back into the live media to run this on the unmounted drive. There is no need to specify a second parameter in resize2fs because it implicitly will fill all available remaining space.
 
 ```none
 e2fsck -f /dev/sda1
