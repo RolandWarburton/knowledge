@@ -12,11 +12,20 @@ sda      8:0    0   60G  0 disk
 
 Lets say we want to shrink the /dev/sda1 partition to become 40G.
 
-First we will need to shrink down the filesystem, then we will need to shrink down the partition. To do this we need to work through two steps and understand the difference between a file system and a partition. In my (possibly flawed) understanding here is a brief description of what we will be doing.
+First we will need to shrink down the filesystem, then we will need to shrink down the partition. To do this we need to understand the difference between a **file system** and a **partition**. In my (possibly flawed) understanding here is a brief description of the two when related to resizing a drive.
 
-in this situation a partition can be thought of as an entry that sits in a table on a drive that describes a "shell". IE that this "partition" begins at X and ends at Y. The partition does not care what goes inside its shell, that is the job of the filesystem.
+in this situation a partition can be thought of as an entry in a table that describes where data should start and stop. IE that this "partition" begins at X and ends at Y. The partition does not care what goes inside its data container, that is the job of the filesystem.
 
-A filesystem is something that goes inside a partition, a common filesystem that you might use is EXT4, the partition doesn't know where your files are, EXT4 does and as such we need to resize the filesystem first and squash the 58G of EXT4 filesystem occupied space down to 40G (assuming you have <40G of actual files). Then after that our drive will have essentially partition space that used to be occupied by EXT4 that can now be shrunk down as well to the 40G.
+A filesystem is something that goes inside a partition, a common filesystem that you might use is EXT4, the partition doesn't know where your files are, EXT4 does and as such we need to resize the filesystem first and squash the 58G of EXT4 filesystem occupied space down to 40G (assuming you have <40G of actual occupied filesystem space). Then after that our drive will have essentially partition space that used to be occupied by EXT4 that can now be shrunk down as well to the 40G.
+
+Another way of thinking about partitions and filesystems is like a bucket.
+
+* You have a bucket of water, your bucked can hold 10L of liquid (data). This is the total capacity of your bucket (drive)
+* You draw fill lines on your bucket to arbitrarily separate the liquid (data) in the bucket, therefore you have partitioned your bucket
+* You then fill the bucked with water (filesystem) and now no matter how full the bucket is, you will always know what liquid belongs to what partition of your bucket
+* If you want to resize your bucket you can only do so at the end where the liquid meets the air (where your final partition meets free drive space)
+
+Ok so lets actually shrink the drive.
 
 Booting into live media and using `fdisk /dev/sda` we can observe the information about the partition.
 
