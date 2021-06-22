@@ -25,7 +25,24 @@ Another way of thinking about partitions and filesystems is like a bucket.
 * You then fill the bucked with water (filesystem) and now no matter how full the bucket is, you will always know what liquid belongs to what partition of your bucket
 * If you want to resize your bucket you can only do so at the end where the liquid meets the air (where your final partition meets free drive space)
 
-Ok so lets actually shrink the drive.
+```output
+File system takes up the whole space of the partition
++------------------------+
+|=====================|  |
++------------------------+
+
+Step 1. Resize the file system with resize2fs
++------------------------+
+|===========          |  |
++------------------------+
+
+Step 2. Resize the partition
++------------------------+
+|===========|            |
++------------------------+
+```
+
+### Shrinking Step 1
 
 Booting into live media and using `fdisk /dev/sda` we can observe the information about the partition.
 
@@ -65,6 +82,8 @@ dev/sda1  *       2048      121696863 121634816  58G     83    Linux
                                         and we only resized the filesystem.
 ```
 
+### Shrinking Step 2
+
 Lets now reboot into the live media and resize the partition now.
 
 To resize a partition we need the partition we are resizing to be the very last one on the disk, otherwise there is no way to resize it. So the first step is to use fdisk on /dev/sda to remove all partitions other than the main sda1.
@@ -95,7 +114,7 @@ Now when we run print in fdisk we should receive.
 
 ```none
 Device    Boot    Start     End       Sectors    Size    Id    Type
-dev/sda1          2048      84912127 84910080    40.5G   83    Linux
+/dev/sda1         2048      84912127 84910080    40.5G   83    Linux
 ```
 
 Notice how the boot flag has been toggled off, we need to re-enable that.
@@ -105,3 +124,75 @@ fdisk /dev/sda
 > a <-- Toggle the boot flag
 > w <-- Write your changes
 ```
+
+## Expanding a Filesystem
+
+Now that we have the theory and practice behind us with shrinking a drive, expanding a drive should be no problem (just do the opposite of above).
+
+Again we MUST ensure that the partition we are working on is the final partition, if you need a refresher check the bucket example at the top of the page.
+
+Our new partition table that we want to expand up to 50G. Using the `fdisk /dev/sda` `print` is noted below, notice how the actual **Disk** space is 60GiB, but the device **Partition** is only 40, that means we have room to expand back up and grow the disk.
+
+```output
+Disk /dev/sda: 60GiB, 64424509440 bytes, 125829120 sectors
+Disk model: Virtual disk
+Units: sectors of 1 * 512 = 512 bytes
+...
+Disklabel type: dos
+
+Device    Boot    Start     End       Sectors    Size    Id    Type
+/dev/sda1         2048      84912127 84910080    40.5G   83    Linux
+```
+
+```output
+File system takes up the whole space of the partition
++------------------------+
+|=========|              |
++------------------------+
+
+Step 1. Resize the partition
++------------------------+
+|===========          |  |
++------------------------+
+
+Step 2. Resize the file system with resize2fs
++------------------------+
+|=====================|  |
++------------------------+
+```
+
+### Growing Step 1
+
+Using `fdisk` tool on `/dev/sda`
+
+```none
+sudo fdisk /dev/sda
+
+> d
+Partition 1 has been deleted
+
+> n
+p <-- Create a primary partition
+1 <-- Partition number will be 1
+2048 <-- Enter the start sector you noted down before
++50G <-- Enter the relative end in Gigabytes
+N <-- We don't want to remove the Ext4 signature
+
+w <-- Write the changes (will boot you out of fdisk)
+
+sudo fdisk /dev/sda
+
+> a <-- Toggle the boot flag
+> w <-- Write your changes
+```
+
+### Growing Step 2
+
+Now grow the file system to use the newly allocated partition size. Boot back into the live media to run this on the unmounted drive. There is no need to specify a second parameter in resize2fs because its implicitly will fill all available remaining space.
+
+```none
+e2fsck -f /dev/sda1
+resize2fs /dev/sda1
+```
+
+And thats it! Reboot and see your newly resized file system.
