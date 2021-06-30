@@ -2,11 +2,11 @@
 
 While its nice to rely on google photos to manage all of my photos. It would be nice to have a local backup of my photos taken on my phone just in cast something goes wrong with google photos, IE i run out of space or my account is deactivated.
 
-To achieve this i use an app for my phone called [FolderSync](https://play.google.com/store/apps/details?id=dk.tacit.android.foldersync.lite&hl=en_AU&gl=US) that lets me use SFTP along with many other possible file transfer methods to back up my photos, including to other cloud storage providers.
+To achieve this i used an app called [FolderSync](https://play.google.com/store/apps/details?id=dk.tacit.android.foldersync.lite&hl=en_AU&gl=US) that lets me use SFTP along with many other possible file transfer methods to back up my photos, including to other cloud storage providers for redundant cloud storage.
 
-I chose to use SFTP over my local network to transfer the contents of `/storage/emulated/0/DCIM/Camera` to `/home/roland/mobile_photos` on my server which has a lot more than the free 15GB that google offers, therefore allowing me to take and store a LOT more photos than i would otherwise be able to on the free google storage tier.
+I chose to use SFTP over my local network to transfer the contents of `/storage/emulated/0/DCIM/Camera` to `/home/roland/mobile_photos` on my server, which has a lot more than the free 15GB that google offers. This allows me to take and store a LOT more photos than i would otherwise on the free google storage tier.
 
-Briefly this is the instructions and settings i used when setting up FolderSync for you (or me in the future) to follow along with. Foldersync works on "profiles" and "folder pairs".
+I will go over the instructions and settings i used when setting up FolderSync that you can use (or i can use in the future). Foldersync works on "profiles" and "folder pairs", we need to create one of each below.
 
 ## Setting up folder sync
 
@@ -121,7 +121,7 @@ for file in mp4Files:
         pass
 ```
 
-Now that we can organise our photos and mp4s by year and month without creating any major hiccups, we need to automate their deployment.
+Now that we can organise our photos and mp4s by year and month, we need to automate their deployment.
 
 Lets create some cronjobs for that!
 
@@ -134,6 +134,8 @@ touch ~/bin/processDcimMp4s.py
 chmod 755 ~/bin/processDcimJpgs.sh
 chmod 755 ~/bin/processDcimMp4s.py
 ```
+
+Call exiftool to sort our Jpg files.
 
 ```shell
 # ~/bin/processDcimJpgs.sh
