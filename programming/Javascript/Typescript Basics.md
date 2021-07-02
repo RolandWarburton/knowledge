@@ -413,13 +413,13 @@ src/
 ├── index.ts
 ├── app.ts
 ├── controllers
-│   └── index.controller.ts
+│   └── index.controller.ts
 ├── exceptions
-│   └── HttpException.ts
+│   └── HttpException.ts
 ├── interfaces
-│   └── routes.interface.ts
+│   └── routes.interface.ts
 ├── middleware
-│   └── error.middleware.ts
+│   └── error.middleware.ts
 └── routes
     └── index.route.ts
 ```
@@ -427,6 +427,12 @@ src/
 ![tsDiagram.png](https://i.imgur.com/MWdVzuo.png)
 
 ## Testing
+
+### Jest Tooling
+
+I've had **MAJOR** issues getting the VSC jest plugin working. Instead of relying on an plugin for VSC i just use the `jest --watch` flag to watch my tests from a terminal window instead. I Always have a separate (not VSC intergrated) terminal open next to my project because its on a separate monitor dedicated just to watching jest tests and lint warnings.
+
+![Picture of a dedicated terminal](https://i.imgur.com/txzX04y.png)
 
 ### Mocking Controllers
 
