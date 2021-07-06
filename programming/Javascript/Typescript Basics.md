@@ -430,7 +430,7 @@ src/
 
 ### Jest Tooling
 
-I've had **MAJOR** issues getting the VSC jest plugin working. Instead of relying on an plugin for VSC i just use the `jest --watch` flag to watch my tests from a terminal window instead. I Always have a separate (not VSC intergrated) terminal open next to my project because its on a separate monitor dedicated just to watching jest tests and lint warnings.
+I've had **MAJOR** issues getting the VSC jest plugin working. Instead of relying on an plugin for VSC i just use `jest --watch` to watch for new tests (compared to previous commit) or `jest --watchAll` to watch all my tests from a terminal. I Always have a separate (not VSC intergrated) terminal open next to my project because it spreads out information across the screen.
 
 ![Picture of a dedicated terminal](https://i.imgur.com/txzX04y.png)
 
@@ -629,3 +629,554 @@ test("my mocked function", () => {
   expect(mockedFoo.mock.instances.length).toBe(1);
 });
 ```
+
+## OpenAPI and Swagger
+
+OpenAPI is a YAML and JSON standard for standardizing APIs. Swagger developed the OpenAPI standard for public use and makes money by developing tools for generating OpenAPI spec files.
+
+OpenAPI resources that i looked at for setting up API documentation.
+
+* [Swagger UI Express](https://www.npmjs.com/package/swagger-ui-express) To serve the swagger UI based on an OpenAPI spec.
+* [Swagger JSDoc](https://www.npmjs.com/package/swagger-jsdoc) To convert jsdoc comments into an OpenAPI spec.
+* [Swagger Inspector](https://inspector.swagger.io) Create OpenAPI definitions semi-automatically through HTTP requests and analysing the response.
+* [Stoplight Studio](https://stoplight.io/studio/) A paid for (with a free tier) tool for graphically creating an OpenAPI spec.
+
+### Setting up Swagger UI Express
+
+We will add a new step in `app.ts` that initializes Swagger. Make sure to place the docs before the routes initializers to fix any routing issues.
+
+```ts
+import openApiSettings from "./openApiSettings";
+// eslint-disable-next-line node/no-unpublished-import
+import swaggerUi from "swagger-ui-express";
+// eslint-disable-next-line node/no-unpublished-import
+import swaggerJsdoc from "swagger-jsdoc";
+
+class App {
+  public app: express.Application;
+  public port: string | number;
+  public env: boolean;
+
+  constructor(routes: Route[]) {
+    this.app = express();
+    this.port = process.env["PORT"] || 3000;
+    this.env = process.env["NODE_ENV"] === "production" ? true : false;
+
+    this.initializeMiddlewares();
+    this.initilizeDocs(); // <-- Add this
+    this.initializeRoutes(routes);
+    this.initializeErrorHandling();
+  }
+
+  // Create the swagger UI for openapi documentation
+  // This step MUST come before the initialize routes
+  private initilizeDocs() {
+    // use swagger-jsdoc to get openapi scheme
+    const openapiSpecification = swaggerJsdoc(openApiSettings);
+
+    // or import an openapi spec
+    // const fs.readFileSync("../swagger.json", {format: "utf-8"})
+
+    this.app.use("/api", swaggerUi.serve, swaggerUi.setup(openapiSpecification));
+  }
+
+}
+```
+
+### Using a Vanilla Swagger Spec JSON
+
+If we were not relying on swagger-jsdoc to generate our spec file based on route comments. We instead must just load in a `swagger.json` we wrote ourselves, for example.
+
+**However** there is a better way! By suing [Stoplight Studio](https://stoplight.io/studio/) you can graphically and much easily create spec files and generate documentation much faster thanwriting by hand. Also OpenAPI is the biggest waste of time to manually write because its complicated, long-winded, and barely designed for human readability in my opinion.
+
+```json
+{
+  "openapi": "3.0.3",
+  "info": {
+    "description": "My Example App",
+    "version": "1.0.0",
+    "title": "Example App",
+    "contact": {
+      "name": "Roland",
+      "email": "abc@gmail.com"
+    }
+  },
+  // etc etc
+  "paths": {
+    "/todos": {
+      "get": {
+        "summary": "Get all the tasks",
+        "description": "Get all the tasks",
+        "produces": ["application/json"],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/todosResponse"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid status value",
+            "schema": {
+              "$ref": "#/definitions/InvalidResponse"
+            }
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+### Swagger JSDoc
+
+**NOTE** I decided not to use Swagger-JSDoc because i was not able to get *"Components"* and *"$ref"* working with the plugin.
+
+Here is what `openApiSettings.ts` looks like, we load this in as a base config for swagger-jsdoc.
+
+```ts
+export default {
+  definition: {
+    openapi: "3.0.1",
+    info: {
+      title: "Hello World",
+      version: "1.0.0",
+    },
+  },
+  tags: [
+    {
+      name: "users",
+      description: "operations available to everyone",
+    },
+  ],
+  servers: [
+    {
+      url: "localhost:3000/api",
+      description: "development server",
+      variables: {
+        port: {
+          default: "3000",
+        },
+      },
+      basePath: {
+        default: "v1",
+      },
+    },
+    {
+      url: "example.rolandw.dev/api",
+      description: "Production server",
+      variables: {
+        port: {
+          enum: ["443", "80"],
+          default: "443",
+        },
+      },
+      basePath: {
+        default: "v1",
+      },
+    },
+  ],
+  host: "localhost:3080",
+  basePath: "/api",
+  apis: ["**/routes/*.ts"],
+};
+```
+
+Next we use `@openapi` yaml in each of our routes for swagger-jsdoc to collect and use to create the full spec.
+
+```ts
+// /src/routes/index.route.ts
+
+import { Router } from "express";
+import IndexController from "../controllers/index.controller";
+import Route from "../interfaces/routes.interface";
+
+/**
+ * @openapi
+ * /:
+ *   get:
+ *     summary: returns root with help
+ *     description: returns root with help
+ *     tags:
+ *       - users
+ *     responses:
+ *       200:
+ *         description: Returns a mysterious string.
+ *         content:
+ *           application/json:
+ */
+class IndexRoute implements Route {
+  public path = "/";
+  public router = Router();
+  public indexController = new IndexController();
+
+  constructor() {
+    this.initializeRoutes();
+  }
+
+  private initializeRoutes() {
+    this.router.get(`${this.path}`, this.indexController.index);
+  }
+}
+
+export default IndexRoute;
+```
+
+### OpenAPI Practical Example
+
+After downloading the stoplight app and taking a look at the example project. Lets remove all that and start by creating a new spec first, then implement it into our express app.
+
+For example lets create a request that can be describes as follows:
+
+* The request is a POST to the "/user" endpoint
+* The request body must by "application/json"
+* This request should be tagged with "general" because its general use (tags just group requests together in documentation)
+* The request body must contain an "id" property containing a number
+* The response body must by "application/json"
+* The response body for HTTP 200 must contain an "id: number", "name: string", and "likes: string" property
+
+This whole process is pretty self explanatory apart from resolving these errors for tagging.
+
+* Operation should have non-empty `tags` array.
+* Operation tags should be defined in global tags.
+
+![errors picture](https://i.imgur.com/H1mCHUY.png)
+
+To resolve this use the "tag button" on both the request you are creating, and the "api overview" itself.
+
+* By adding the tag to the "api overview" you are adding it to a global tag list that describes all the possible tags. This resolves the `Operation tags should be defined in global tags` error.
+* By adding the tag to the specific "/user" request you are resolving the `Operation should have non-empty tags array` error.
+
+Here is a photo of the request in the GUI. Notice how i used a "model" for the response. OpenAPI supports components like models that allow for code reuse.
+
+![request](https://i.imgur.com/vUEwyo2.png)
+
+Heres a photo of the model.
+
+![model](https://i.imgur.com/vgKGwLq.png)
+
+And finally just in case, heres the fully generated spec.json for easy use.
+
+```json
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "my test api",
+    "version": "1.0",
+    "summary": "this is the summary",
+    "description": "this is the description",
+    "contact": {
+      "name": "Roland",
+      "email": "warburtonroland@gmail.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "development"
+    }
+  ],
+  "paths": {
+    "/user/:id": {
+      "parameters": [],
+      "get": {
+        "summary": "",
+        "operationId": "get-user-:id",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                },
+                "examples": {
+                  "example-1": {
+                    "value": {
+                      "id": "142",
+                      "name": "Roland",
+                      "likes": "Chocolate"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "description": "returns a user details based on their ID",
+        "tags": [
+          "general"
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "User": {
+        "title": "User",
+        "type": "object",
+        "description": "",
+        "examples": [
+          {
+            "id": 142,
+            "name": "Roland",
+            "likes": "Chocolate"
+          }
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the given user."
+          },
+          "name": {
+            "type": "string"
+          },
+          "likes": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "likes"
+        ]
+      }
+    },
+    "securitySchemes": {}
+  },
+  "tags": [
+    {
+      "name": "general"
+    }
+  ]
+}
+```
+
+Next lets see what codegen we can make using Swagger Hub Codegen. Convert the JSON from Stoplight into YAML, paste it into the editor, and generate some JS code.
+
+```output
+.
+├── api
+│   └── openapi.yaml
+├── controllers
+│   └── General.js
+├── index.js
+├── package.json
+├── README.md
+├── service
+│   └── GeneralService.js
+└── utils
+    └── writer.js
+
+4 directories, 7 files
+```
+
+I wont even post the generated code here because i have learnt that it does not do a very good job for typescript projects. After all its not even TS generated code (its vanilla JS). To be fair i did not expect a one click solution that automatically programs the entire API because thats nigh impossible.
+
+TLDR this code looks very bare-bones, thats because it is. It seems that swagger-codegen has barely interpreted our spec. So we should definitely not be relying on this tool for any actual programming. Instead lets implement the `/user/:id` endpoint ourselves.
+
+First we need to define the request shape in `src/models/requests/user_id.ts`.
+
+The request will use a custom type created first called *UserRequest*, and *JSONSchemaType* takes that *UserRequest*.
+
+The purpose of a JSONSchemaType from AJV is to allow a typescript safe schema for AJV to read later (in other words it would be a vanilla object in normal JS). The *JSONSchemaType* ensures that we have properties like the ajv "type" and "properties" field.
+
+Using the "UserRequest" as a generic for "JSONSchemaType", we can also ensure that the "properties" contains only expected fields supported by the "UserRequest" type.
+
+```ts
+// src/models/requests/user_id.ts
+
+import { JSONSchemaType } from "ajv";
+
+type UserRequest = {
+  id: string;
+};
+
+// the "UserRequest" of type JSONSchemaType<UserRequest> is used by JSONSchemaType as a "generic"
+// A generic is a way of capturing a user passed in Type (<UserRequest>) that JSONSchemaType can use internally.
+// JSONSchemaType will be defined in the Ajv library as something like `interface JSONSchemaType<Type> {...}`
+// 		Now JSONSchemaType can use the <UserRequest> type. EG. interface JSONSchemaType<Type> { myArg: Type }
+// You can also use generics for functions and classes https://www.typescriptlang.org/docs/handbook/2/generics.html
+const schema: JSONSchemaType<UserRequest> = {
+  type: "object",
+  properties: {
+    id: { type: "string", nullable: false },
+  },
+  required: ["id"],
+  additionalProperties: false,
+};
+
+// We can now use this schema in the middleware of routes/user.route.ts to validate that a user request is an object that matches...
+// {
+//  id: string
+// }
+export default schema;
+export { UserRequest }
+```
+
+And a model for our response as well. We will just use it to store our "database" of users.
+
+```ts
+// src/models/responses/user.ts
+
+import Ajv, { JSONSchemaType } from "ajv";
+
+// interface for implementation of the User object
+type User = {
+  id: string;
+  name: string;
+  likes: string;
+};
+
+// type guard checking for the user object
+const ajv = new Ajv();
+
+const schema: JSONSchemaType<User> = {
+  type: "object",
+  properties: {
+    id: { type: "string", nullable: false },
+    name: { type: "string", nullable: false },
+    likes: { type: "string", nullable: false },
+  },
+  required: ["id", "name", "likes"],
+  additionalProperties: false,
+};
+
+const validateSchema = ajv.compile(schema);
+
+export default User;
+export { validateSchema };
+```
+
+Then lets create new middleware to assist in checking the body of the request has the shape we specified in the OpenAPI GUI creator.
+
+Here we will implement our own generic `<Type>` to accept an argument of `schema: JSONSchemaType<Type>`. The `<Type>` is defined by the user when calling the function like `validateRequest<UserRequest>("params", userRequestSchema)`, then that type `UserRequest` will be used in place (replacing `<Type>` with `UserRequest`).
+
+```ts
+// src/middleware/validateReq.middleware.ts
+
+import { NextFunction, Request, Response, RequestHandler } from "express";
+import { ValidateFunction } from "ajv";
+import HttpException from "../exceptions/HttpException";
+
+type Value = "body" | "query" | "params";
+
+// when we call this we need to tell it the type for the validate function
+// for example in user.route.ts: `validateRequest<UserRequest>("params", new Ajv().compile(mySchema);)`
+function validationMiddleware<Type>(
+  value: Value,
+  validate: ValidateFunction<Type>
+): RequestHandler {
+  // This is sort of like a factory pattern that returns some middleware function that can validate any <Type> of schema passed to it.
+  return (req: Request, res: Response, next: NextFunction) => {
+    // run a validation check of the request ("body"/"query"/"params") against the schema we gave it
+    if (validate(req[value])) next();
+    else next(new HttpException(400, `wrong body from validate middleware`));
+  };
+}
+
+export default validationMiddleware;
+
+```
+
+Lastly lets create a simple "user lookup" route and its controller to handle some simple request that relies on a `req.body.params.id` to be present.
+
+```ts
+// user.route.ts
+
+// This is just ONE route. A new file is created for every route
+// The Route contains an userController which is a standard-ish MVC controller
+// 		The job for userController is to actually run some code for the request
+
+import { Router } from "express";
+import UserController from "../controllers/user.controller";
+import Route from "../interfaces/routes.interface";
+import userRequestSchema, { UserRequest } from "../models/requests/user_id";
+import validateRequest from "../middleware/validateReq.middleware";
+import Ajv from "ajv";
+
+// The "userRequestSchema" is a JSONSchemaType for AJV to consume
+// The UserRequest is a typescript <Type> for JSONSchemaType
+
+// We need "userRequestSchema" object to compile the AJV validator function
+// We need "UserRequest" type to tell the validateRequest middleware
+//    what type the validate function should use
+
+class UserRoute implements Route {
+  public path = "/user/:id";
+  public router = Router();
+  public userController = new UserController();
+  private validator = new Ajv().compile(userRequestSchema);
+
+  constructor() {
+    this.initializeRoutes();
+  }
+
+  private initializeRoutes() {
+    this.router.get(
+      `${this.path}`,
+      validateRequest<UserRequest>("params", this.validator),
+      this.userController.user
+    );
+  }
+}
+
+export default UserRoute;
+
+```
+
+And our controller that handles our route.
+
+```ts
+// src/controllers/user.controller
+
+// This file is a controller that runs some code when a route is hit
+// This file is referenced by the user.route.ts ROUTE which uses UserController (this) as its CONTROLLER
+
+import { NextFunction, Request, Response } from "express";
+import HttpException from "../exceptions/HttpException";
+import User from "../models/responses/user";
+
+class UserController {
+  public user = (req: Request, res: Response, next: NextFunction): void => {
+    // our user database
+    const users: Array<User> = [
+      {
+        id: "1",
+        name: "roland",
+        likes: "chocolate",
+      },
+    ];
+
+    // by the time this controller is called we expect that the values passed in have been validated
+    // 		so we can put some very simple logic in here to just find the user and return them
+    // if the user is 404 then we send next() a HttpException and Express will pass that to the error middleware
+    // 		because HttpException is an Error (extends the error class)
+    try {
+      const user = users.find((user) => user.id == req.params["id"]);
+      if (!user) next(new HttpException(404, "user not found"));
+      else res.status(200).json(user);
+    } catch (error) {
+      // the HTTP exception middleware will read this even if its a standard Error and not a HttpException
+      // then if its NOT a HTTP exception it just gets passed along the chain, to either express to handle the error,
+      // 		or if you enable the general Error (Error class) middleware, then this will handle it instead.
+      next(error);
+    }
+  };
+}
+
+export default UserController;
+```
+
+Ok great! Now we have achieved the following things in summary.
+
+1. We created a model of our request
+2. We created middleware to validate our request
+3. We created a new route that uses provides our model to the validate middleware
+4. Our route returns a User object based on our defined model
+
+<!-- Ok lets also write some tests to cover this code. -->
