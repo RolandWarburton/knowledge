@@ -1179,4 +1179,148 @@ Ok great! Now we have achieved the following things in summary.
 3. We created a new route that uses provides our model to the validate middleware
 4. Our route returns a User object based on our defined model
 
-<!-- Ok lets also write some tests to cover this code. -->
+### Unit and Intergration tests
+
+So far we have written only unit tests. That is that we test just a controller, or a route on its own. But in the real application there is a flow to the code. EG...
+
+* A route is created, **then**
+* The route has, and calls its middleware, **then**
+* A route calls its controller, **then**
+* The controller calls its own ExpressJS next() function, **then**
+* The next() function continues to pass the the request/response object down the chain until eventually the client gets a response of some kind
+
+Each one of these dot points can (and should) be tested individually (even next(), by checking it was called by the controller with specific parameters etc).
+
+**(Important)** Because we can only test one unit of code at a time, it is hard to test an entire lifecycle of the request/response for a particular route because we would need to
+mock every next() call and that would be tedious and wasteful of our time.
+
+This is what intergration testing aims to solve by combining two "units" of code together.
+
+I like to think about the testing ecosystem within the architecture of C4. The intergration of units come together to form "components". Then we can slot these components together to compose our full application or container. And finally this container of software can make up and ecosystem or "software system".
+
+![c4ModelDiagram](https://res.infoq.com/articles/C4-architecture-model/en/resources/c4-3-1529934729500.jpg)
+
+#### The Rest of The Testing Types
+
+Based on [atlassion] there are also other types of tests that you could research and implement into your software.
+
+* Unit Tests (done)
+* Intergration tests (done)
+* Functional Tests - Tests that assess business level input and output
+* End-to-End Tests - Replicate user behavior in a browser (or whatver the user sees/uses)
+* Acceptance Tests - A business checklist to verify business requirements are met
+* Performance Tests - Benchmarking software speed and performance
+
+### Unit tests for the User Route
+
+Ok lets also write some unit tests to cover this code.
+
+```ts
+import UserController from "../controllers/user.controller";
+import User from "../models/responses/user";
+import HttpException from "../exceptions/HttpException";
+import { Request, Response, NextFunction } from "express";
+
+describe("Test the user controller", () => {
+  let mockRequest: Partial<Request>;
+  let mockResponse: Partial<Response>;
+  let nextFunction: Partial<NextFunction>;
+
+  let resultJson = {};
+  let resultStatus = {};
+
+  // This is the same boilerplate that i explained above
+  beforeEach(() => {
+    // reset the request and response objects before each test
+    mockRequest = {};
+    mockResponse = {};
+
+    // reset the objects that store results in them
+    resultJson = {};
+    resultStatus = {};
+
+    // mock the response status
+    mockResponse.status = jest.fn().mockImplementation((result) => {
+      resultStatus = result;
+      return mockResponse;
+    });
+
+    // mock the response response
+    mockResponse.json = jest.fn().mockImplementation((result) => {
+      resultJson = result;
+      return mockResponse;
+    });
+
+    nextFunction = jest.fn();
+  });
+
+  it("returns returns user object", () => {
+    const controller = new UserController().user;
+
+    // input to the controller
+    mockRequest.params = { id: "1" };
+
+    // expected response
+    const expected: User = { id: "1", name: "roland", likes: "chocolate" };
+
+    // run the controller method
+    controller(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
+
+    // when the res.status is called we expect it to be passed 200
+    expect(resultStatus).toBe(200);
+
+    // expect the response to be this user
+    expect(resultJson).toEqual(expected);
+  });
+
+  it("returns user not found error", () => {
+    const controller = new UserController().user;
+
+    // input to the controller
+    mockRequest.params = { id: "not a user" };
+
+    // run the controller method
+    controller(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
+
+    // when the res.status is called we expect it to be passed 200
+    expect(resultStatus).toBe(404);
+
+    // expect the response to be empty (IE not modified by the mock)
+    expect(Object.entries(resultJson).length).toBe(0);
+
+    // expect the response.json to NOT have been called (by checking is mock properties)
+    expect(mockResponse.json).toHaveBeenCalledTimes(0);
+
+    // expect the next middleware to have been called due to the user not being found
+    expect(nextFunction).toHaveBeenCalledTimes(1);
+
+    // expect that the next middleware was called with this error
+    expect(nextFunction).toHaveBeenCalledWith(new HttpException(404, "user not found"));
+  });
+
+  // Note that this logically should not happen because there is no route to the controller that allows no user to be passed
+  //      as /user/:id requires a parameter to be set (otherwise the path is just /user)
+  // Its up to you if you want to write these tests to handle future situations
+  //      when you might decide to implement a route that will practically use this test
+  test("nothing is passed", () => {
+    const controller = new UserController().user;
+
+    // input to the controller
+    mockRequest.params = {};
+
+    // run the controller method
+    controller(mockRequest as Request, mockResponse as Response, nextFunction as NextFunction);
+
+    // when the res.status is called we expect it to be passed 200
+    expect(resultStatus).toBe(404);
+  });
+});
+```
+
+And then some intergration tests using [SuperTest](https://www.npmjs.com/package/supertest) as an agent to run the server in memory and make requests against it, asserting that collections of routes (the /user/:id route) and controllers (the user controller) act correctly as a whole.
+
+```ts
+// src/__tests__/intergrations/user.controller.ts
+
+// NOT DONE
+```
