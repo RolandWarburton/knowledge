@@ -128,3 +128,71 @@ myAsyncFunction()
 // wait 500ms
 // => suspense
 ```
+
+## For await loop
+
+check [this video](https://www.youtube.com/watch?v=unDSLi5zBXU) for more information about the concept of the for-await-of loop.
+
+Lets say we have a factory that generates promises for us.
+
+```js
+const asyncFactory = function (timeout) {
+  return new Promise((resolve) => {
+    // pretend to do some work
+    setTimeout(() => resolve(timeout), timeout * 1000);
+  });
+};
+```
+
+We may generate promises at any time! What should we do when we want to consume them?
+
+One option is to call `Promise.all()` and it will wait for all the promises to resolve before continuing. You would call this when you want to ensure that every single promise has resolved.
+
+Another way of resolving promises is to use an for-await-of loop. Generally speaking a for loop will iterate over all its items as fast as possible. The for-await loop will instead iterate in the order of items you gave it, but waits ensures that A is resolved before B.
+
+Writing this for-await loop...
+
+```js
+const myPromises = [];
+
+  // push a 2, 1, and 3 second promise
+  for (const i of [2, 1, 3]) {
+    myPromises.push(asyncFactory(i));
+  }
+
+  // Good solution
+  for await (const p of myPromises) {
+    console.log(p);
+  }
+
+// 2000ms
+// print 2
+// print 1
+// 1000ms
+// print 3
+```
+
+Is **almost** the same as writing this not await-enabled loop...
+
+```js
+const myPromises = [];
+
+  // push a 2, 1, and 3 second promise
+  for (const i of [2, 1, 3]) {
+    myPromises.push(asyncFactory(i));
+  }
+
+  // Bad solution
+  for (const p of myPromises) {
+    p.then((t) => console.log(t));
+  }
+
+// 2000ms
+// print 2
+// 1000ms print 1
+// print 1
+// 3000ms
+// print 3
+```
+
+The problem with the non await loop is that it is running our promises synchronously, therefore wasting time between promises that resolve out of order. In other words while we are waiting for the (first) 2000ms promise to resolve the second (1000ms) promise resolves in the background, so by the time the first promise resolves the second one can also resolve immediately from the [event](https://www.youtube.com/watch?v=8aGhZQkoFbQ) stack.
