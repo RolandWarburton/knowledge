@@ -2,17 +2,88 @@
 
 Setting up a virtual camera is a useful tool to have available when you need to stream your desktop over a video chat app such as zoom that doesn't support screen share.
 
-### Install requirements
+## Install requirements
 
 You will need the following tools.
 
-1. **v4l-utils** to support webcam stream formats
-2. **v4l2loopback-dkms** to create a video loopback
-3. **mon2cam** for multi-head support (link [here](https://github.com/ShayBox/Mon2Cam))
-4. **mpv** to test your webcam (optional)
-5. **obs-v4l2sink** for virtual camera support on obs (optional)
+1. **v4l2loopback-dkms** to create a video loopback
+2. **v4l2loopback-utils** to support webcam stream formats
+3. **ffmpeg** to convert the desktop video stream to /dev/video0
 
-### Instructions
+Optional requirements.
+
+1. **mon2cam** for multi-head support (link [here](https://github.com/ShayBox/Mon2Cam))
+2. **mpv** to test your webcam (optional)
+
+Note: mon2cam is just one way to support multi-head. There is a better way to do this with just ffmpeg.
+
+## FFmpeg method
+
+This method is harder to set up but makes more sense and has less moving parts once you get it going.
+
+### Determine window resolution
+
+First, we need to determine the resolutions and offsents for each monitor. Using nvidia-settings this can be quite easy.
+
+Under the **position** we can see the offset of this screen (+0+240), and the size of it (1080x1920).
+
+![nvidia_settins](https://i.imgur.com/jEMgabd.png)
+
+If you dont have an nvidia card, you can also use a trick with `xwininfo | grep geometry` which will give you the geometry of the window. Just full screen a window, run this command, and click on it to have the geometry printed in the terminal.
+
+![xwininfo](https://i.imgur.com/2VXP2D7.png)
+
+However, you can see that this is not exactly accurate as the offset is not correctly reported (nvidia tools method is accurately reporting the offset in my situation).
+
+### Stream with FFmpeg
+
+Now that we know the dimensions we can create a video stream with ffmpeg.
+
+* `-f` for input/output. `-f x11grab` grabs the screen. Then `-f v4l2 /dev/video0` pipes it to video0 as a readable stream.
+* `-r` for framerate.
+* `-video_size` for the resolution. This changes between 1920x1080 and 1080x1920 depending on the screen i am recording.
+* `-grab_x` and `grab_y` for the offset.
+* `-i` for the screen to record. I have one big X screen thats 4080x2160 if you stick all the monitors together.
+* `-vcodec` and `-pix_fmt` and `-threads` remain the same between all commands (no need to change them).
+
+to grab the primary bottom screen.
+
+```none
+sudo ffmpeg -f x11grab -r 60 -video_size 1920x1080 -grab_x 1080 -grab_y 1080 -i :0.0 -vcodec rawvideo -pix_fmt yuv420p -threads 0 -f v4l2 /dev/video0
+```
+
+to grab the top screen.
+
+```none
+sudo ffmpeg -f x11grab -r 60 -video_size 1920x1080 -grab_x 1080 -grab_y 0 -i :0.0 -vcodec rawvideo -pix_fmt yuv420p -threads 0 -f v4l2 /dev/video0
+```
+
+to grab the left screen.
+
+```none
+sudo ffmpeg -f x11grab -r 60 -video_size 1080x1920 -grab_x 3000 -grab_y 240 -i :0.0 -vcodec rawvideo -pix_fmt yuv420p -threads 0 -f v4l2 /dev/video0
+```
+
+to grab the right screen
+sudo ffmpeg -f x11grab -r 60 -video_size 1080x1920 -grab_x 0 -grab_y 240 -i :0.0 -vcodec rawvideo -pix_fmt yuv420p -threads 0 -f v4l2 /dev/video0
+
+Then test with ffplay.
+
+```none
+ffplay /dev/video0
+```
+
+### Adding to OBS
+
+Use a V4L2 source.
+
+![obs_01](https://i.imgur.com/jj9Pj7X.png)
+![obs_02](https://i.imgur.com/Efy7x6O.png)
+![obs_03](https://i.imgur.com/92pWTcc.png)
+
+## Mon2Cam method
+
+This method i did a long time ago, i suggest using the above ffmpeg version.
 
 Install all the above tools. Make sure the location of mon2cam is in your path (`echo $PATH`)
 
