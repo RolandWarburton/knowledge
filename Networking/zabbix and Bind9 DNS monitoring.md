@@ -74,22 +74,22 @@ From the zabbix web interface create a new template like so.
 2. Search for the `template zabbix agent`
 3. Click on the passive `template zabbix agent`
 
-![step 1](https://media.discordapp.net/attachments/744488560060792872/889454240903340042/unknown.png?width=810&height=286)
+![step 1](https://i.imgur.com/8KkG9Tw.png)
 
 1. Click clone and give it a new name test for bind
 
 Now there is a new template based on the basic zabbix one
 
-![step 2](https://media.discordapp.net/attachments/744488560060792872/889454512530681866/unknown.png?width=810&height=422)
+![step 2](https://i.imgur.com/Ya01vRQ.png)
 
 Click on the new template `test for bind`
 
-![step 3](https://media.discordapp.net/attachments/744488560060792872/889454683255607296/unknown.png?width=810&height=395)
+![step 3](https://i.imgur.com/a4v49wj.png)
 
 1. Click on items
 2. Click on create item
 
-![step 4](https://media.discordapp.net/attachments/744488560060792872/889454857583489024/unknown.png?width=810&height=245)
+![step 4](https://i.imgur.com/fIpK4u0.png)
 
 Fill out this information.
 
@@ -99,7 +99,7 @@ Fill out this information.
 
 Then click save and then go back to hosts.
 
-![step 5](https://media.discordapp.net/attachments/744488560060792872/889455046960492564/unknown.png?width=810&height=608)
+![step 5](https://i.imgur.com/9AngK8c.png)
 
 Click on items.
 
@@ -107,17 +107,17 @@ Click on items.
 2. Select it
 3. Execute it to grab data
 
-![step 6](https://media.discordapp.net/attachments/744488560060792872/889455494815694868/unknown.png?width=810&height=231)
+![step 6](https://i.imgur.com/n6jYUN5.png)
 
-![step 7](https://media.discordapp.net/attachments/744488560060792872/889455647328989194/unknown.png?width=810&height=347)
+![step 7](https://i.imgur.com/i0qyWDS.png)
 
 It will appear in the latest data tab.
 
-![step 8](https://media.discordapp.net/attachments/744488560060792872/889455934185811998/unknown.png?width=810&height=283)
+![step 8](https://i.imgur.com/Mokm6Fi.png)
 
 Double check the values are correct by basing it against the DNS servers own stats page at [http://dns_server_ip:8080/](http://dns_server_ip:8080/).
 
-![step 9](https://media.discordapp.net/attachments/744488560060792872/889456179200262144/unknown.png)
+![step 9](https://i.imgur.com/u0YG1S2.png)
 
 Examples of keys you can use.
 
