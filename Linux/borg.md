@@ -245,7 +245,7 @@ Create the script to run on the client which runs some borg tasks.
 ```bash
 #  /usr/local/bin/borg-daily.sh
 export BORG_REPO=borg@store.rolandw.lan:desktop
-export BORG_PASSPHRASE=b721ee36e6b29807fc65c098adddb1807f55da93ef5acf7c6aa192baded2fc32
+export BORG_PASSPHRASE=Password123
 export BORG_RSH='ssh -i /home/roland/.ssh/id_borg'
 
 # some helpers and error handling:
