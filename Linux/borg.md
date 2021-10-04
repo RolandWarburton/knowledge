@@ -243,6 +243,8 @@ Note for "A" Added when file has already been added to the archive.
 Create the script to run on the client which runs some borg tasks.
 
 ```bash
+#!/bin/bash
+
 #  /usr/local/bin/borg-daily.sh
 export BORG_REPO=borg@store.rolandw.lan:desktop
 export BORG_PASSPHRASE=Password123
