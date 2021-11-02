@@ -113,3 +113,22 @@ authenticator = dns-cloudflare
 dns_cloudflare_credentials = /home/nginx/credentials.ini
 server = https://acme-v02.api.letsencrypt.org/directory
 ```
+
+## Certbot in docker
+
+Sometimes weird things happen when installing software, for that we have docker!
+
+Heres an example from a script where i deploy a certificate for my blog website, we need to bind mounts to the container so that we can access the certificates created, another good way of doing things is to mount a volume and place the certs in there, that way another nginx container can access easily in the future and its quite easy to run another docker run script to renew certs as well.
+
+```none
+sudo docker run -it --rm --name certbot \
+    -v "/etc/letsencrypt:/etc/letsencrypt" \
+    -v "/var/lib/letsencrypt:/var/lib/letsencrypt" \
+    -v "/home/roland/cloudflare:/creds" \
+    certbot/dns-cloudflare certonly \
+    --agree-tos \
+    --email warburtonroland@gmail.com \
+    -d blog.rolandw.dev \
+    --dns-cloudflare \
+    --dns-cloudflare-credentials /creds/credentials.ini
+    ```
