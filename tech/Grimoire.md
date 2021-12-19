@@ -15,6 +15,14 @@ Yep, computers are pretty much sorcery.
 Nothing here is guranateed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
+### Dump Postgresql Database
+
+On modern versions (>8.4) of Postgresql, you can dump a database to a file.
+
+```none
+pg_dump --column-inserts --data-only --table=<table> <database>
+```
+
 ### Make an IP Static on a Linux Server
 
 Edit `/etc/systemd/network/20-wired.network`.
