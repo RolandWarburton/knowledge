@@ -15,6 +15,14 @@ Yep, computers are pretty much sorcery.
 Nothing here is guranateed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
+### Set Key Repeat Rate
+
+Useful to make the caret move faster when navigating text.
+
+```none
+xset r rate 280 40
+```
+
 ### Dump Postgresql Database
 
 On modern versions (>8.4) of Postgresql, you can dump a database to a file.
