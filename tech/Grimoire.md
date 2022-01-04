@@ -15,6 +15,14 @@ Yep, computers are pretty much sorcery.
 Nothing here is guranateed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
+### Vim Macro
+
+Press `q` then a letter between `a` and `z`, this will be your register.
+
+Then type your macro, and press `q` when you are done.
+
+To run your macro press `@` and then the register letter you used.
+
 ### Set Key Repeat Rate
 
 Useful to make the caret move faster when navigating text.
