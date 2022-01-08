@@ -15,6 +15,45 @@ Yep, computers are pretty much sorcery.
 Nothing here is guranateed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
+### Dockerfile Multi Stage Builds
+
+A useful docker feature is multi state builds where you can copy artifacts from one container to another within the same dockerfile.
+
+Example using `--copy` to copy an artifact.
+
+```dockerfile
+FROM node:16 as build
+...
+RUN ["npm", "run", "build"]
+
+FROM nginx:latest as web
+COPY --from=build /usr/src/app/dist /usr/share/nginx/html
+```
+
+Example of using named stages to conditionally build the container (think of it as an IF statement)
+
+```dockerfile
+FROM nginx:latest as core
+...
+
+FROM core as development
+...
+
+FROM core as production
+...
+```
+
+With docker-compose you can target the different stages.
+
+```yaml
+services:
+  nginx_proxy:
+  build:
+    context: .
+      dockerfile: dockerfile
+      target: production
+```
+
 ### Vim Macro
 
 Press `q` then a letter between `a` and `z`, this will be your register.
