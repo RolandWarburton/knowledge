@@ -278,9 +278,9 @@ Now that we understand that logical extents (LE) map to physical extends (PE), w
   * LE 3 maps to PV1 2
   * LE 4 maps to PV2 2
 
-There is a caveat to this. The number of mappings gets confusing when you exceed the number of PEs in the smallest PV. This can be overcome in lvm2 but i do not understand how. Read more about the caveat [here](https://tldp.org/HOWTO/LVM-HOWTO/mapmode.html) if you care about stirping LVM.
+There is a caveat to this. The number of mappings gets confusing when you exceed the number of PEs in the smallest PV. This can be overcome in lvm2 but i do not understand how. Read more about the caveat [here](https://tldp.org/HOWTO/LVM-HOWTO/mapmode.html) if you care about striping LVM.
 
-Regardless of this, i will NOT be using striping because i dont care much for performance and hassle with the LVM mapping. I will be using linear mapping instead, especially since i only have one drive. Also importantly, raid is not a backup and LVM striping is not even raid so there is not much to gain in my situation.
+Regardless of this, i will NOT be using striping because i don't care much for performance and hassle with the LVM mapping. I will be using linear mapping instead, especially since i only have one drive. Also importantly, raid is not a backup and LVM striping is not even raid so there is not much to gain in my situation.
 
 #### Command Examples - Creating LV
 
@@ -292,7 +292,7 @@ To create a logical volume called newvol that takes up 90% of the volume group s
 sudo lvcreate -l 90%VG --name root datavg0
 ```
 
-To create a new logical volume called newvol that takts up 2GB of the volume group space.
+To create a new logical volume called newvol that takes up 2GB of the volume group space.
 
 ```none
 sudo lvcreate -L 2G --name newvol datavg0
