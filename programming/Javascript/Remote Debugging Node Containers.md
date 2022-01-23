@@ -1,4 +1,8 @@
-# Remote Debugging Node Containers
+# OUTDATED
+
+THIS PAGE IS OUTDATED. See `Debugging.md` for more recent revision.
+
+## Remote Debugging Node Containers
 
 It seems that i am destined for a never ending circle of using breakpoints for debugging, and then falling back to `console.log("got here")` depending on if my project decides to cooperate with VS Codes remote debugging features. This
 
