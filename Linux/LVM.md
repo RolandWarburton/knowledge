@@ -341,3 +341,20 @@ lvresize --resizefs --size 12G /dev/datavg0/newvol
 # set the LV size to 100% of the VG
 lvresize --resizefs -l 100%VG /dev/datavg0/newvol
 ```
+
+#### Renaming the LV
+
+To find the current name use `lvs`.
+
+```output
+LV   VG      Attr       LSize  Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+borg datavg0 -wi-ao---- <6.55t
+```
+
+I called my LV "borg" but want to rename it.
+
+Use the `lvrename` command to rename the LV.
+
+```none
+lvrename datavg0 borg newname
+```
