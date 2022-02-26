@@ -6,7 +6,7 @@ Traditionally without LVM you have three layers of storage:
 2. Partitions: `/dev/sda1`
 3. File system: `/dev/sda1` formatted as EXT4 mounted at `/`
 
-LVM add three layers between the **Partitions** and the **File system**.
+LVM adds three layers between the **Partitions** and the **File system**.
 
 1. PV: Physical Volume - This partition `/dev/sda1` will become a LVM physical volume that needs to be mapped to a volume group
 2. VG: Volume Group - This partition `/dev/sda1` will be mapped to the volume group `datavg0`
