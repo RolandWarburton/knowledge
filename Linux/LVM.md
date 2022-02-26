@@ -358,3 +358,344 @@ Use the `lvrename` command to rename the LV.
 ```none
 lvrename datavg0 borg newname
 ```
+
+## LVM Raid 1
+
+LVM can be used for raid 1 (and probably others but i'm not interested in setting that up) to create some redundancy in my data.
+
+I'm following a tutorial from gentoo wiki to create LVM and Raid 1. Link [here](https://wiki.gentoo.org/wiki/Raid1_with_LVM_from_scratch).
+
+I will be operating on two identical 8TB drives. `/dev/sdc` and `/dev/sdd`.
+
+### Prepping The Disks
+
+#### Configuring SDC Partitions
+
+Using parted to create partitions. Start parted with the -a optimal flag to use the "optimum alignment as given by the disk topology".
+
+```none
+parted -a optimal /dev/sdc
+```
+
+Set the label as GPT.
+
+```none
+mklabel gpt
+```
+
+Create a primary partition and use all the space on that disk (`-1`) on the primary partition number `1`.
+
+```none
+mkpart primary 1 -1
+```
+
+Set partition name to raiddata0 on partition 1.
+
+```none
+name 1 raiddata0
+```
+
+Enable the LVM flag on partiton 1.
+
+```none
+set 1 lvm on
+```
+
+Verify your settings with the `print` command from within parted.
+
+```output
+Model: ATA ST8000VN004-2M21 (scsi)
+Disk /dev/sdc: 8002GB
+Sector size (logical/physical): 512B/4096B
+Partition Table: gpt
+Disk Flags:
+
+Number  Start   End     Size    File system  Name       Flags
+ 1      1049kB  8002GB  8002GB               raiddata0  lvm
+```
+
+Press `ctrl+d` to exit parted.
+
+#### Configuring SDE Partitons
+
+Repeat above, replace `/dev/sdc` with `/dev/sde`, and `raiddata0` with `raiddata1`.
+
+```none
+roland@store:~$ sudo parted -a optimal /dev/sdd
+GNU Parted 3.4
+Using /dev/sdd
+Welcome to GNU Parted! Type 'help' to view a list of commands.
+(parted) mklabel gpt
+(parted) mkpart primary 1 -1
+(parted) name 1 raiddata1
+(parted) set 1 lvm on
+(parted) print
+Model: ATA ST8000VN004-2M21 (scsi)
+Disk /dev/sdd: 8002GB
+Sector size (logical/physical): 512B/4096B
+Partition Table: gpt
+Disk Flags:
+
+Number  Start   End     Size    File system  Name       Flags
+ 1      1049kB  8002GB  8002GB               raiddata1  lvm
+
+(parted)
+
+Information: You may need to update /etc/fstab.
+```
+
+### Setting up LVM
+
+#### Create And Raid Volume Groups
+
+Create the LVM **physical** volumes for both physical disks
+
+```none
+lvm pvcreate /dev/sdc1
+lvm pvcreate /dev/sdd1
+```
+
+Now `pvscan` will show new physical volumes.
+
+```output
+PV /dev/sdc1                      lvm2 [<7.28 TiB]
+PV /dev/sdd1                      lvm2 [<7.28 TiB]
+```
+
+We will combine these two PVs into one single **virtual** group (VG). I named the volume group kepler_raid_vg0 but you can name it anything, for example raid0vg0.
+
+```none
+vgcreate kepler_raid_vg0 /dev/sdc1 /dev/sdd1
+```
+
+We can now see the volume group using `vgscan`.
+
+```output
+Found volume group "kepler_raid_vg0" using metadata type lvm2
+```
+
+Next we can create the **logical** volume (LV), it will be sized to use ALL the space in the VG.
+
+* We use the --nosync flag to not sync these drives when the LV is created, any data written afterwards will be mirrored.
+* We use the -l flag to set the size of the LV to 100% of the VG.
+* We use the -n flag to name the LV to "kepler_raid_lv0".
+* The last part `kepler_raid_vg0` is the name of the VG that we created before.
+
+```none
+lvcreate --mirrors 1 --type raid1 -l 100%FREE --nosync -n kepler_raid_lv0 kepler_raid_vg0
+```
+
+#### Creating FIle Systems
+
+Use EXT4, it works best for LVM. I am making a simple EXT4 filesystem for this LV thats NOT encrypted.
+
+```none
+mkfs.ext4 /dev/kepler_raid_vg0/kepler_raid_lv0
+```
+
+To mount the file system we need the UUID of the file system we just created. Use `blkid`.
+
+It will be called `/dev/mapper/*`. Since we are raiding the system, theres a couple to pick from.
+
+All the UUIDs are the same, pick any.
+
+```output
+/dev/mapper/kepler_raid_vg0-kepler_raid_lv0_rimage_0: UUID="573ed9a5-1d18-43e4-abd9-92207a3dc6fd" BLOCK_SIZE="4096" TYPE="ext4"
+/dev/mapper/kepler_raid_vg0-kepler_raid_lv0_rimage_1: UUID="573ed9a5-1d18-43e4-abd9-92207a3dc6fd" BLOCK_SIZE="4096" TYPE="ext4"
+/dev/mapper/kepler_raid_vg0-kepler_raid_lv0: UUID="573ed9a5-1d18-43e4-abd9-92207a3dc6fd" BLOCK_SIZE="4096" TYPE="ext4"
+```
+
+Update /etc/fstab to mount the file system.
+
+```none
+sudo mkdir /mnt/kepler
+```
+
+**defaults** is specified so that we use the default mount settings (equivalent to rw,suid,dev,exec,auto,nouser,async).
+
+I used 0 and 1 at the end of the map for these reasons.
+
+* The 0 means to not dump the filesystem, dump is a linux tool for backing up the filesystem to another drive.
+* The 2 is used by fsck to determine the order it should boot in, a root filesystem is always 1, and other filesystems should have the number.
+
+```none
+// /etc/fstab
+
+UUID=573ed9a5-1d18-43e4-abd9-92207a3dc6fd /mnt/kepler ext4 defaults 0 2
+```
+
+To mount without rebooting run `sudo mount -a`.
+
+### Monitoring The LVM Raid
+
+Monitoring the status of raid can be done using the lvs tool. This will show the status of the raid: `lvs -a -o name,copy_percent,devices kepler_raid_vg0`.
+
+```output
+LV                         Cpy%Sync Devices/
+kepler_raid_lv0            100.00   kepler_raid_lv0_rimage_0(0),kepler_raid_lv0_rimage_1(0)
+[kepler_raid_lv0_rimage_0]          /dev/sdc1(1)
+[kepler_raid_lv0_rimage_1]          /dev/sdd1(1)
+[kepler_raid_lv0_rmeta_0]           /dev/sdc1(0)
+[kepler_raid_lv0_rmeta_1]           /dev/sdd1(0)
+```
+
+We can get some more information about the devices in the raid with `sudo lvs --segments kepler_raid_vg0/kepler_raid_lv0 -o +devices`.
+
+### Tearing Down an Raid Logical Volume
+
+Use the lvconvert tool.
+
+```none
+sudo lvconvert --splitmirrors 1 --name copy kepler_raid_vg0/kepler_raid_lv0
+```
+
+Splits and creates these...
+
+```output
+sdc                                   8:32   0   7.3T  0 disk
+└─sdc1                                8:33   0   7.3T  0 part
+  └─kepler_raid_vg0-copy_raid_lv0 254:5    0   7.3T  0 lvm
+sdd                                   8:48   0   7.3T  0 disk
+└─sdd1                                8:49   0   7.3T  0 part
+  └─kepler_raid_vg0-kepler          254:4    0   7.3T  0 lvm
+```
+
+We can rename the logical volume with `lvrename`.
+
+```none
+sudo lvrename kepler_raid_vg0 kepler_raid_lv0 arber_lv0
+```
+
+## LVM over MDADM
+
+A different way of creating a raid is to use a specialized raid tool called mdadm.
+
+We will use mdadm to create a raid 1 on the two drives, sdc and sdd. Then put LVM on top of that raid.
+
+### Setting up MDADM
+
+#### Partition Disks
+
+This will wipe your drives.
+
+Use pareted to create a GPT partition table, repeat for both drives.
+
+```none
+roland@store:~$ sudo parted -a optimal /dev/sdc
+GNU Parted 3.4
+Using /dev/sdd
+Welcome to GNU Parted! Type 'help' to view a list of commands.
+(parted) mklabel gpt
+(parted) mkpart primary 1 -1
+(parted) name 1 raiddata1
+(parted) set 1 raid on
+(parted)
+
+Information: You may need to update /etc/fstab.
+```
+
+Press `ctrl+d` to exit parted.
+
+You can run `print` in parted to see something similar to this.
+
+```output
+(parted) print
+Model: ATA ST8000VN004-2M21 (scsi)
+Disk /dev/sdd: 8002GB
+Sector size (logical/physical): 512B/4096B
+Partition Table: gpt
+Disk Flags:
+
+Number  Start   End     Size    File system  Name       Flags
+ 1      1049kB  8002GB  8002GB               raiddata1
+```
+
+Repeat this for SDC and SDD.
+
+#### Configure MDADM
+
+Create a new "array" in mdadm and put the two drives in it.
+
+* --create specifies what block file will refer to this array. Pick an incrementing number is a good option starting at 0.
+* --level is the raid level.
+* --raid-devices is the number of devices in the array.
+
+```none
+mdadm --create /dev/md0 --level=1 --raid-devices=2 /dev/sdc1 /dev/sdd1
+```
+
+Create the file system.
+
+```none
+mkfs.ext4 /dev/md0
+```
+
+Check the status of the array.
+
+```none
+mdadm --detail /dev/md0
+```
+
+You can already read straight from `cat proc/mdstat` to see the status of the array as it builds.
+
+Now we need to allow this array to be constructed on boot. Get the result of this command and paste it into the file `/etc/mdadm/mdadm.conf`.
+
+```none
+mdadm --detail --scan
+```
+
+```output
+// /etc/mdadm/mdadm.conf
+ARRAY /dev/md0 metadata=1.2 name=store:0 UUID=1991a11a:513644f9:fa014c72:783e3a00
+```
+
+Then update initramfs.
+
+```none
+update-initramfs -u
+```
+
+Next we need to mount this drive, do this through getting the UUID with `blkid` and pasting that into `/etc/fstab`.
+
+```output
+/dev/md0: UUID="0dcc2457-2ab4-45d9-afaf-49dd19c6acfe" BLOCK_SIZE="4096" TYPE="ext4"
+```
+
+```none
+// /etc/fstab
+
+...
+UUID=0dcc2457-2ab4-45d9-afaf-49dd19c6acfe /mnt/arber ext4 defaults 0 2
+```
+
+Then we can mount the raid with `sudo mount -a` or `sudo mount /dev/md0`.
+
+### How to Drive From Remove MDADM
+
+Skip this step if you are following the instructions to create LVM on MDADM.
+
+You need to fail the drive you are removing first so mdadm allows you to remove it.
+
+First unmount your md0 drive thats mounted somewhere, for example `umount /mnt/arber`.
+
+To mark the drive as failed run `mdadm /dev/md0 --fail /dev/sdd1`.
+
+Then you can remove the drive with `mdadm /dev/md0 --remove /dev/sdd1`.
+
+If you want to re add the drive run `mdadm /dev/md0 -add /dev/sdd1`. Of course it needs to be formatted correctly first, see above section (partition disks).
+
+Now that /dev/sdd1 is removed, you CANNOT remount it, instead use mdadm to re assemble it and mount it through `/dev/md0`.
+
+In this example `/dev/sdd1` is the drive that was removed.
+
+```none
+mdadm --stop /dev/md0
+mdadm --assemble --run /dev/md0 /dev/sdd1
+mount /mnt/md0 /mnt/recoveryFolder
+```
+
+### Starting and Stopping
+
+To stop run `sudo mdadm --stop /dev/md0`.
+
+To start run `sudo mdadm --assemble --run /dev/md0`.
