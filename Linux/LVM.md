@@ -670,7 +670,7 @@ UUID=0dcc2457-2ab4-45d9-afaf-49dd19c6acfe /mnt/arber ext4 defaults 0 2
 
 Then we can mount the raid with `sudo mount -a` or `sudo mount /dev/md0`.
 
-### How to Drive From Remove MDADM
+### How to Remove a Drive MDADM
 
 Skip this step if you are following the instructions to create LVM on MDADM.
 
