@@ -6,7 +6,7 @@ Linux uses the CUPS printer daemon to communicate to printers. Sometimes you nee
 
 Install the required software.
 
-```non
+```none
 sudo pacman -S cups
 ```
 
