@@ -699,3 +699,52 @@ mount /mnt/md0 /mnt/recoveryFolder
 To stop run `sudo mdadm --stop /dev/md0`.
 
 To start run `sudo mdadm --assemble --run /dev/md0`.
+
+### Solving md127
+
+As far as i can tell, mdadm creates /dev/md127 when theres nothing in the config to read.
+
+To fix this, check your `/etc/mdadm/mdadm.conf` and see if there is a md127 that you can change back to your prefferfed number.
+
+Then run `update-initramfs -u`.
+
+Then rebooting is the easiest way to fix it from here.
+
+### Installing LVM on MDADM
+
+Now that we have an MDADM array, we can install LVM on top of it.
+
+First we will remove the filesystem we created earlier on /dev/md0 using `fdisk /dev/md0` and then writing with `w` to the device.
+
+I had some trouble (i think caused by rebooting) so i had to run `mdadm --create /dev/md0 --level=1 --raid-devices=2 /dev/sdc1 /dev/sdd1` again.
+
+Now that we have /dev/md0 with no filesystem, we should regenerate the config file with `echo $(mdadm --detail --scan) >> /etc/mdadm/mdadm.conf`.
+
+This should output something like this into mdadm.conf.
+
+```output
+ARRAY /dev/md0 metadata=1.2 name=vm02:0 UUID=4a67294d:24b68bde:993efbda:f84261a7
+```
+
+Now follow LVM instructions.
+
+```none
+pvcreate /dev/md0
+vgcreate arber_vg0 /dev/md0
+lvcreate -n arber_lv0 -l 100%FREE arber_vg0
+mkfs.ext4 /dev/mapper/arber_vg0-arber_lv0
+```
+
+Then use `blkid` to get the UUID of the new filesystem.
+
+```output
+/dev/mapper/arber_vg0-arber_lv0: UUID="b86caaff-5aec-42a4-88a9-9f2bd06c4cc8" BLOCK_SIZE="4096" TYPE="ext4"
+```
+
+Then add the new entry to `/etc/fstab`.
+
+```none
+UUID=b86caaff-5aec-42a4-88a9-9f2bd06c4cc8 /mnt/arber ext4 defaults 0 2
+```
+
+Then `mount -a` to mount the new filesystem. And you are done.
