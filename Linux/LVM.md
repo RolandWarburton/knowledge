@@ -718,7 +718,7 @@ First we will remove the filesystem we created earlier on /dev/md0 using `fdisk 
 
 I had some trouble (i think caused by rebooting) so i had to run `mdadm --create /dev/md0 --level=1 --raid-devices=2 /dev/sdc1 /dev/sdd1` again.
 
-Now that we have /dev/md0 with no filesystem, we should regenerate the config file with `echo $(mdadm --detail --scan) >> /etc/mdadm/mdadm.conf`.
+Now that we have /dev/md0 with no filesystem, we should regenerate the config file with `mdadm --detail --scan`, replacing the old config with the new one.
 
 This should output something like this into mdadm.conf.
 
