@@ -15,6 +15,18 @@ Yep, computers are pretty much sorcery.
 Nothing here is guranateed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
+### Mongo Shell Count Distinct
+
+I want to count the unique `iso_codes` in my mongodb collection.
+
+```none
+docker exec -it container_name bash
+
+mongo
+> use database_name
+> db.<collection_name>.distinct('column_name')
+```
+
 ### Dockerfile Multi Stage Builds
 
 A useful docker feature is multi state builds where you can copy artifacts from one container to another within the same dockerfile.
