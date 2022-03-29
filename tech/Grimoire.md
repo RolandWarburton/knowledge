@@ -15,6 +15,24 @@ Yep, computers are pretty much sorcery.
 Nothing here is guranateed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
+### Git Push to Branch Without Specifying Remote
+
+When you create a new branch, on your first push github will ask you to specify a remote.
+
+```none
+❯ git push
+fatal: The current branch add-sass-dep has no upstream branch.
+To push the current branch and set the remote as upstream, use
+
+    git push --set-upstream origin add-sass-dep
+```
+
+This can be avoided by using this git incantation while on the branch you want to push.
+
+```none
+git push -u origin HEAD
+```
+
 ### Mongo Shell Count Distinct
 
 I want to count the unique `iso_codes` in my mongodb collection.
