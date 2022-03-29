@@ -15,6 +15,21 @@ Yep, computers are pretty much sorcery.
 Nothing here is guranateed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
+### Git Force Push
+
+Sometimes you get yourself in a situation where you just want to start over again and go back to a git commit 'checkpoint', force push can do this with the following commands.
+
+First determine the commit hash you want to go back to with the `git log` command.
+
+The git log has most recent at the top, gg will also bring you to the top and most recent, G will bring you to the oldest commit.
+
+Once you have the commit hash you can use this.
+
+```none
+git reset --hard <commit hash>
+git push -f origin HEAD
+```
+
 ### Git Push to Branch Without Specifying Remote
 
 When you create a new branch, on your first push github will ask you to specify a remote.
