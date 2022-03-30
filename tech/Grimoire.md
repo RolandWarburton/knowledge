@@ -15,6 +15,16 @@ Yep, computers are pretty much sorcery.
 Nothing here is guranateed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
+### Protect a File/Folder From Accidental Deletion
+
+To add protection write `sudo chattr +a -R <folder/file>`.
+
+* The file can now only be appended to. Ie with `>>` redirection.
+* The `-R` flag makes it recursive.
+
+* To remove protection write `sudo chattr -a <folder/file>`.
+* The file has the -a (append only) flag removed.
+
 ### Git Force Push
 
 Sometimes you get yourself in a situation where you just want to start over again and go back to a git commit 'checkpoint', force push can do this with the following commands.
