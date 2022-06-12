@@ -20,7 +20,7 @@ Just a collection of computer "spells" that i have used more than once.
 When typing a vim command, you can paste your clipboard with `<C-r> "` (ctrl + r  + ")
 
 This also works for registers that are not `"`.
-For example you can copy text to `e` and then press `<C-r> "`
+For example you can copy text to `e` and then press `<C-r> "`.
 
 ### Protect a File/Folder From Accidental Deletion
 
