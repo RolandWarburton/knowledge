@@ -15,6 +15,17 @@ Yep, computers are pretty much sorcery.
 Nothing here is guranateed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
+### Find Linux English Name For Key
+
+Use the `xev` command with `grep`.
+
+```none
+❯ xev | grep keysym
+    state 0x0, keycode 36 (keysym 0xff0d, Return), same_screen YES,
+    state 0x0, keycode 50 (keysym 0xffe1, Shift_L), same_screen YES,
+                                           \ name of key                                           
+```
+
 ### Paste to vim command buffer
 
 When typing a vim command, you can paste your clipboard with `<C-r> "` (ctrl + r  + ")
