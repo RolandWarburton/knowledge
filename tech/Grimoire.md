@@ -15,6 +15,14 @@ Yep, computers are pretty much sorcery.
 Nothing here is guranateed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
+### Get TB Written to a Drive
+
+Assuming 512 byte sectors. Change `sdX` as appropriate.
+
+```none
+sudo smartctl -A /dev/sdX | awk '/^241/ { print "TBW: "($10 * 512) * 1.0e-12, "TB" } '
+```
+
 ### Find Linux English Name For Key
 
 Use the `xev` command with `grep`.
