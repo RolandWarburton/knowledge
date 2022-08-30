@@ -15,6 +15,18 @@ Yep, computers are pretty much sorcery.
 Nothing here is guranateed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
+### Remap CAPS to ESC in X
+
+Below rebinds CAPS as ESC.
+
+This is useful for vim where escape brings you back to normal mode.
+
+Only works in Xorg unfortunately.
+
+```none
+setxkbmap -option caps:escape
+```
+
 ### Get TB Written to a Drive
 
 Assuming 512 byte sectors. Change `sdX` as appropriate.
