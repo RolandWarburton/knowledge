@@ -1,16 +1,17 @@
 # Grimoire
 
-From [Fred Bednarski](https://fdisk.space/grimoire/), a grimoire is a collection of useful software bits.
+Summoning daemons to do our bidding, making lifeless things appear alive,
+writing esoteric commands in hermetic languages and tricking rocks into thinking.
+Yep, computers are pretty much sorcery.
+
+From [Fred Bednarski](https://fdisk.space/grimoire/),
+a grimoire is a collection of useful software bits.
 
 > The grimoire is a scrapbook for useful bits of code,
 > software solutions and all kinds of tech wizardry.
 > The entries here are something between a reference and a tutorial.
 
-## Forward
-
-Summoning daemons to do our bidding, making lifeless things appear alive,
-writing esoteric commands in hermetic languages and tricking rocks into thinking.
-Yep, computers are pretty much sorcery.
+## Disclaimer
 
 Nothing here is guranateed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
