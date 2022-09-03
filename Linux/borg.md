@@ -28,7 +28,7 @@ You can find encrypted archives at `/path/to/repo/data`.
 
 ### Quick Start
 
-Create a borg **repository**.
+Create a borg **repository** on the server (the location that will store the backups) in the location `/home/roland/.borgrepo`.
 
 ```none
 borg init --encryption=repokey /home/roland/.borgrepo
@@ -37,7 +37,7 @@ borg init --encryption=repokey /home/roland/.borgrepo
 Create an **archive** called test in the **repository** that backups up the folder `~/backmeup`.
 
 ```none
-borg create .borgrepo::test ~/backmeup
+borg create /home/roland/.borgrepo::test ~/backmeup
 ```
 
 To restore the archive use the following command from the **root** of the file system.
@@ -127,17 +127,36 @@ echo "Last archive size is $LASTARCHIVESIZE"
 
 ## Remote Borg Server
 
+* My client **roland@desktop.rolandw.lan**
+* Wants to back up **/home/roland**
+* To the server **borg@store.rolandw.lan**
+
+store.rolandw.lan has a pre-created "borg" user. The borg user has permission to write to the repositorys
+which are stored in `/mnt/borg` located on the server.
+
+When we do anything on the client we are doing it as the **"roland"** user.
+
+When we do anything on the server we are doing it as the **"borg"** user.
+
 ### Configure Remote Borg Server and Client
 
 #### Step 1. (Client) Generate SSH Key
 
-Generate your ssh key.
+Generate your ssh key on the client. I did not use a password for this key.
 
 ```none
 ssh-keygen -f ~/.ssh/id_borg
 ```
 
-Then configure on the client to use this key when connecting to borg@store.rolandw.lan.
+Then add this key to authorized_keys on the client so that ssh will offer it when connecting to the server.
+
+```none
+cat ~/.ssh/id_borg.pub >> ~/.ssh/authorized_keys
+```
+
+Then modify `~/.ssh/config` on the client to use this identity file when connecting to the borg server.
+
+In this example the borg server is `borg@store.rolandw.lan`
 
 ```none
 # /home/roland/.ssh/config
@@ -150,30 +169,42 @@ Host borg@store.rolandw.lan
 
 Manually install your SSH key on the remote server, this is because we need to add some restrictions to users logging in with this key.
 
-Get the public key from the client first. Then add it to the authorized_keys file on the remote server with the prepended command.
-
-I found that in some tutorials the use of the `command="/usr/local/bin/borg serve --restrict-to-path /volume2/borgbackup",restrict` command did not work for me, so instead of resorted to using just the `restrict` command, see below.
+Get the public key from the client first (run `cat ~/.ssh/id_borg.pub` and copy that). Then add it to the authorized_keys file on the remote server with the `restrict` command infront of the public key you copied.
 
 ```none
 # store.rolandw.lan
 # /home/borg/.ssh/authorized_keys
 
-restrict sh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCneUnNyOfUoTY3aE1cGHRIwwlZDOB2k2Q2pd8tNKcbufCSeysTmlvYuVbKWPUp4qtcsMTbDO7IDT6JPwJuvxHjvP1x2eyALg/1p5+xLMFapoKKQCtiZKZv753WsjMSF9ycrdyvhYz1dM5nYmBlpK7PRJckzFqLfv4BXJx7myen/aO11scaId/r7LAQh570ULnI6i/aziRxHpdUGRF2dvlvO2bp43yqrcKc6WXThJ8pMnCkQ0OrEFertXjUdpap+FMECXWzNQY9iClRRA/6VXzoAc2sKfLQzqgSrz36VbYyupRRmZMIg81l6qBYhKhNKJ5JQxrg/WfT82veQX4m15yo6BpHRJ3iiHLVKX7e2x5QfYfXUWSiUVUsp1Olvm4DT9AeodgQLuCdfGO2U1bYusnNSutRoC4G1RU5uWr5E7mUDLRESszEZ81dlX9xj6m2/Huoat+PLmamTyEnMbnb4rofNM7ZioSxyiuOmseKWIVrPkflFoPQFDzziG1ZnxPRYIM= roland@debian
+restrict ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCneUnNyOfUoTY3aE1cGHRIwwlZDOB2k2Q2pd8tNKcbufCSeysTmlvYuVbKWPUp4qtcsMTbDO7IDT6JPwJuvxHjvP1x2eyALg/1p5+xLMFapoKKQCtiZKZv753WsjMSF9ycrdyvhYz1dM5nYmBlpK7PRJckzFqLfv4BXJx7myen/aO11scaId/r7LAQh570ULnI6i/aziRxHpdUGRF2dvlvO2bp43yqrcKc6WXThJ8pMnCkQ0OrEFertXjUdpap+FMECXWzNQY9iClRRA/6VXzoAc2sKfLQzqgSrz36VbYyupRRmZMIg81l6qBYhKhNKJ5JQxrg/WfT82veQX4m15yo6BpHRJ3iiHLVKX7e2x5QfYfXUWSiUVUsp1Olvm4DT9AeodgQLuCdfGO2U1bYusnNSutRoC4G1RU5uWr5E7mUDLRESszEZ81dlX9xj6m2/Huoat+PLmamTyEnMbnb4rofNM7ZioSxyiuOmseKWIVrPkflFoPQFDzziG1ZnxPRYIM= roland@debian
 ```
+
+I found that in some tutorials the use of the `command="/usr/local/bin/borg serve --restrict-to-path /volume2/borgbackup",restrict` command did not work for me, so instead of resorted to using just the `restrict` command.
 
 #### Step3. (Client) Init Borg as a Client
 
-Create a new repo called desktop on the client.
+Create a new repo called **desktop** on the client.
+
+This will be the name of the folder that is also created on the borg backup server.
 
 ```none
+# Copy your key to the borg server
+ssh-copy-id -i ~/.ssh/id_borg.pub borg@store.rolandw.lan
+
 # init the backup repo from the client
-borg init --encryption=repokey borg@store.rolandw.lan:desktop
+borg init --encryption=repokey borg@store.rolandw.lan:/mnt/borg/desktop
 
 # get a backup of the key just in case. put it somewhere safe (do not share it)
-borg key export borg@store.rolandw.lan:desktop ~/borg-desktop-1-backup.key
+borg key export borg@store.rolandw.lan:/mnt/borg/desktop ~/borg-desktop-1-backup.key
 ```
 
 After this is run you can see the borg server added to the client. by checking `~/.config/borg`.
+
+If you messed up creating the repo, you can run this from the client
+to remove the repo and try again.
+
+```none
+borg delete --force borg@store.rolandw.lan:/mnt/borg/desktop
+```
 
 ## Configure Backup Scripts on the Client
 
@@ -185,7 +216,7 @@ Creating backup tasks, from the client run these commands on a cron or systemd t
 
 ```bash
 # for brevity in scripts
-export BORG_REPO=borg@store.rolandw.lan:desktop
+export BORG_REPO=borg@store.rolandw.lan:/mnt/borg/desktop
 export BORG_PASSPHRASE=password123
 export BORG_RSH='ssh -i /home/roland/.ssh/id_borg'
 
@@ -197,7 +228,8 @@ borg create \
   /home/roland
 ```
 
-I took this command from [here](https://practical-admin.com/blog/backups-using-borg/), the author also provides explanation for what each flag does.
+I took this command from [here](https://practical-admin.com/blog/backups-using-borg/),
+the author also provides explanation for what each flag does.
 
 ```output
 # we want borg to create a new backup
@@ -236,7 +268,12 @@ More flags [here](https://borgbackup.readthedocs.io/en/stable/usage/create.html#
 
 Note for "A" Added when file has already been added to the archive.
 
-> The files cache is used to determine whether Borg already "knows" / has backed up a file and if so, to skip the file from chunking. It intentionally excludes files that have a timestamp which is the same as the newest timestamp in the created archive. So, if you see an "A" status for unchanged file(s), they are likely the files with the most recent timestamp in that archive.
+> The files cache is used to determine whether 
+Borg already "knows" / has backed up a file and if so,
+to skip the file from chunking. It intentionally excludes files that have a timestamp
+which is the same as the newest timestamp in the created archive. 
+So, if you see an "A" status for unchanged file(s),
+they are likely the files with the most recent timestamp in that archive.
 
 #### Working Script Example
 
@@ -246,7 +283,7 @@ Create the script to run on the client which runs some borg tasks.
 #!/bin/bash
 
 #  /usr/local/bin/borg-daily.sh
-export BORG_REPO=borg@store.rolandw.lan:desktop
+export BORG_REPO=borg@store.rolandw.lan:/mnt/borg/desktop
 export BORG_PASSPHRASE=Password123
 export BORG_RSH='ssh -i /home/roland/.ssh/id_borg'
 
@@ -262,7 +299,7 @@ borg create \
     --exclude-caches \
     --exclude '/home/*/.cache/*' \
     --exclude /home/roland/.local/share/Trash \
-    borg@store.rolandw.lan:desktop::'{hostname}-daily-{now}' \
+    borg@store.rolandw.lan:/mnt/borg/desktop::'{hostname}-daily-{now}' \
     /home/roland
 
 backup_exit=$?
@@ -343,6 +380,7 @@ OnCalendar=*-*-* 03:00
 WantedBy=timers.target
 ```
 
-Then reload systemd `sudo systemctl daemon-reload` and enable the unit `sudo systemctl enable --now borg-backup`
+Then reload systemd `sudo systemctl daemon-reload`
+and enable the unit `sudo systemctl enable --now borg-backup`
 
 To monitor the backup jobs run `sudo journalctl -u borg-backup.timer`.
