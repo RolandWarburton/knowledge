@@ -438,7 +438,7 @@ Change the `ansible.cfg` file to be like so.
 ```ini
 <!-- ansible.cfg -->
 [defaults]
-inventory·=·./inventory/hosts.ini
-private_key_file·=·~/.ssh/id_rsa
+inventory = ./inventory/hosts.ini
+private_key_file = ~/.ssh/id_rsa
 remote_user = rinne
 ```
