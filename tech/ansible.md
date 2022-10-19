@@ -442,3 +442,46 @@ inventory = ./inventory/hosts.ini
 private_key_file = ~/.ssh/id_rsa
 remote_user = rinne
 ```
+
+### Roles
+
+Tasks can be reduced into roles of "task books" that can be assigned to "playbooks".
+
+A task book stored in `./roles/<task name>/tasks/main.yml` contains a list of tasks that will
+be performed.
+
+First create a playbook with a role. We will then create a role called "base".
+
+```yaml
+# ./playbooks/roles.yml
+- hosts: "192.168.1.102"
+  become: true
+  vars:
+    username: roland # we will need this to perform actions on the user as we are running as root
+    filename: myfile # will make sense when demonstrating how files are located in tasks
+  roles:
+    - ./roles/base
+```
+
+Create the base role.
+
+```yaml
+# ./roles/base/tasks/main.yml
+- name: add ssh key for rinne
+  authorized_key:
+    user: rinne
+    key: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC3W0kYY1Ej.."
+
+- name: copy file
+  copy:
+    src: file.txt
+    dest: /home/{{username}}/{{filename}}.txt
+    owner: roland
+```
+
+You can then run this playbook as usual.
+
+```none
+ansible-playbook \
+  ./playbooks/roles.yml
+```
