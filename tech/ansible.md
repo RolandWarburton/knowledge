@@ -573,3 +573,39 @@ Next create a new handlers folder and file in your roles directory.
     state: restarted
 ```
 
+### Templates
+
+Templates allow for you to inject many different variables
+from a host_vars file into a single config.
+
+Create a new folder `./roles/base/templates`.
+
+```none
+# ./roles/base/templates/config.j2
+AllowUsers {{ workstation_users }}
+```
+
+```yaml
+# ./inventory/host_vars/192.168.1.102
+workstation_users: "roland rinne"
+workstation_template_file: "config.j2"
+```
+
+```yaml
+# ./roles/tasks/main.yml
+- name: generate file from template
+  template:
+    src: "{{ workstation_template_file }}"
+    dest: /home/{{username}}/config
+    owner: "{{username}}"
+    mode: 755
+  notify: restart_sshd
+```
+
+```yaml
+# ./roles/base/handlers/main.yml
+- name: restart_sshd
+  service:
+    name: sshd
+    state: restarted
+```
