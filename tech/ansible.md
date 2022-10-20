@@ -259,6 +259,23 @@ If you want to chain things together you can also write.
 when: ansible_distribution in ["Debian", "Ubuntu"] and ansible_apparmor.status == "disabled"
 ```
 
+When conditionals can also look at task state from `registers` in other tasks.
+For example to determine if you should restart a service if it has changed or not.
+
+```yaml
+- name: write a file
+  copy:
+    src: /home/{{ansible_user_id}}/ansible/file.txt
+    dest: /home/{{ansible_user_id}}/file.txt
+    owner: roland
+  register: fileCopy
+- name: restart my service
+  service:
+    name: "myservice"
+    state: restarted
+  when: fileCopy.changed
+```
+
 ### Variables
 
 The below playbook uses `message` as a variable.
@@ -485,3 +502,74 @@ You can then run this playbook as usual.
 ansible-playbook \
   ./playbooks/roles.yml
 ```
+
+### Host Variables
+
+You can define variables that are available to a host in any context (play book, task book, etc).
+
+Place a `host_vars` folder in the same directory as `inventory.ini`.
+
+```yaml
+# ./inventory/host_vars/192.168.1.102
+username: roland
+filename: myfile
+```
+
+You can then modify your playbook and inventory file to remove all variable mentions.
+
+```ini
+<!-- ./inventory/hosts.ini -->
+[workstations]
+192.168.1.102 remove_me=yes
+```
+
+```yaml
+# ./playbooks/roles.yml (can be any playbook)
+- hosts: workstations
+  become: true
+  roles:
+    - ./roles/base
+```
+
+### Notify Task Trigger
+
+Instead of using a changed event on a task to determine if a task has run or not,
+you can use notify.
+
+We will replace the below task with a new one.
+
+```yaml
+- name: write a file
+  copy:
+    src: /home/{{ansible_user_id}}/ansible/file.txt
+    dest: /home/{{ansible_user_id}}/file.txt
+    owner: roland
+  register: fileCopy
+- name: restart my service
+  service:
+    name: "myservice"
+    state: restarted
+  when: fileCopy.changed
+```
+
+```yaml
+./roles/<role name>/tasks/main.yml
+- name: write a file
+  copy:
+    src: /home/{{ansible_user_id}}/ansible/file.txt
+    dest: /home/{{ansible_user_id}}/file.txt
+    owner: roland
+  notify: restart_myservice # Change this
+  # delete the task to restart the service
+```
+
+Next create a new handlers folder and file in your roles directory.
+
+```yaml
+# ./roles/base/handlers/main.yml
+- name: restart_myservice # named the same as the "notify"
+  service:
+    name: "myservice"
+    state: restarted
+```
+
