@@ -16,6 +16,14 @@ a grimoire is a collection of useful software bits.
 Nothing here is guranateed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
+### Show IP Information For One Interface
+
+For example the device name could be: ens192, wlp3s0, lo
+
+```none
+ip add show dev <device name>
+```
+
 ### Remap CAPS to ESC in X
 
 Below rebinds CAPS as ESC.
