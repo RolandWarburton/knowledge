@@ -609,3 +609,12 @@ workstation_template_file: "config.j2"
     name: sshd
     state: restarted
 ```
+
+### Run playbook on localhost
+
+Modify the playbook to include a statement that this should run locally.
+
+```yaml
+- hosts: localhost
+  connection: local # run locally
+```
