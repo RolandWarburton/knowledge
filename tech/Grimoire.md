@@ -16,6 +16,17 @@ a grimoire is a collection of useful software bits.
 Nothing here is guranateed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
+### Make a JPG Bigger
+
+But WHY!!! This is useful for websites that require a minimum file size for example.
+
+You can use `dd` to cat some zeroes to the end of the file and it still counts as a JPG
+
+```bash
+# make the image 100KB bigger
+dd if=/dev/zero bs=1024 count=100 | cat >> IMAGE.jpg
+```
+
 ### SSH and SFTP jump host
 
 You can use an intermediary host as a jump host.
