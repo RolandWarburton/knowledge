@@ -16,6 +16,29 @@ a grimoire is a collection of useful software bits.
 Nothing here is guranateed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
+### SSH and SFTP jump host
+
+You can use an intermediary host as a jump host.
+
+```none
++---+      +----+      +---+
+|PC1|----->|JUMP|----->|PC2|
++---+      +----+      +---+
+\1.2.3.4    \10.0.0.1   \192.168.0.100
+             \port 22    \port 23
+```
+
+```none
+jumphost -J bastion@10.0.0.1:22 roland@192.168.0.100:23
+```
+
+Using the `-J` flag on modern versions of `sftp` (>=8.0) can also use a jump host in the same way
+as above. If the version of openssh is not >=8.0 you can use the following command.
+
+```none
+sftp -o ProxyJump=bastion@10.0.0.1:22 roland@192.168.0.100:23
+```
+
 ### Show IP Information For One Interface
 
 For example the device name could be: ens192, wlp3s0, lo
