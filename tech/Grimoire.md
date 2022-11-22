@@ -13,7 +13,7 @@ a grimoire is a collection of useful software bits.
 
 ## Disclaimer
 
-Nothing here is guranateed to work, or even be useful in the long term.
+Nothing here is guaranteed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
 ### Encrypt YubiKey With Static Password
