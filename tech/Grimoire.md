@@ -16,6 +16,31 @@ a grimoire is a collection of useful software bits.
 Nothing here is guranateed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
+### Encrypt YubiKey With Static Password
+
+This is useful for any type of repetitive task where standard keyboard injection is not viable.
+Think of a [bad usb](https://en.wikipedia.org/wiki/BadUSB) but quickly re-programmable
+for system admin purposes.
+
+First install the `ykman` application.
+
+```none
+sudo apt install yubikey-manager
+```
+
+Then you man perform the following to determine the serial number.
+
+```none
+$ ykman list
+YubiKey 5 NFC (5.4.3) [OTP+FIDO+CCID] Serial: 1234567
+```
+
+Using the discovered serial number, imprint the password `sysadmin`.
+
+```none
+ykman -d 123456 otp static --keyboard-layout US 1 "sysadmin"
+```
+
 ### Make a JPG Bigger
 
 But WHY!!! This is useful for websites that require a minimum file size for example.
