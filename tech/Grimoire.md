@@ -16,6 +16,16 @@ a grimoire is a collection of useful software bits.
 Nothing here is guaranteed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
+### Clean up Git Checkout
+
+```bash
+# reset tracked files
+git reset --hard
+
+# remove un-tracked files
+git clean -f
+```
+
 ### Sed Change Line N Lines After Match
 
 I had a patch i need to apply where i change a "no" to a "yes". The problem is i cant just `sed`
