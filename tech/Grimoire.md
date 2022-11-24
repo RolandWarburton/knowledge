@@ -16,6 +16,32 @@ a grimoire is a collection of useful software bits.
 Nothing here is guaranteed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
+### Sed change line N lines below match
+
+I had a patch i need to apply where i change a "no" to a "yes". The problem is i cant just `sed`
+that specific line out because it occurs multiple times in the file.
+
+Below is a diff of the desired change.
+
+```xml
+<message>Authentication is required to grant an application high priority scheduling</message>
+<message xml:lang="tr">Sürecin yüksek öncelikli çalıştırılabilmesi için yetki gerekiyor</message>
+<defaults>
+-  <allow_any>no</allow_any>
++  <allow_any>yes</allow_any>
+  <allow_inactive>yes</allow_inactive>
+  <allow_active>yes</allow_active>
+</defaults>
+```
+
+No problem with sed.
+
+```none
+sed -E '/Authentication is required to grant an application high priority scheduling/,+3 s/no/yes/' test
+```
+
+To make the change inline, use the `-i` flag in addition to `-E` for extended regexp.
+
 ### Encrypt YubiKey With Static Password
 
 This is useful for any type of repetitive task where standard keyboard injection is not viable.
