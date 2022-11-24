@@ -16,7 +16,7 @@ a grimoire is a collection of useful software bits.
 Nothing here is guaranteed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
-### Sed change line N lines below match
+### Sed change line N lines after match
 
 I had a patch i need to apply where i change a "no" to a "yes". The problem is i cant just `sed`
 that specific line out because it occurs multiple times in the file.
