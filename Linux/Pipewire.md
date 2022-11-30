@@ -12,13 +12,24 @@ However instead of using pulse, pipewire replaces pulseaudio
 The following chart describes how audio gets from a program to a speaker (Left to right),
 and how audio comes from a microphone to a program (Right to Left).
 
+There are also additional parts between the **server** and **sound card**, these components are
+**libraries** and **kernel modules**.
+
+The userspace layer communicates to (usually) alsa via LADSPA which is a standard format to talk
+to alsa.
+
 ```none
- +---------+     +--------------+     +-------+
- | program |---->| pipewire     |--+->| sound |
- | (cliet) |<----| (server)     |<-+--| card  |
- +---------+     +--------------+  |  +-------+
-                                   |
-                                   alsa
+                         userspace layer | kernel   | hardware
+                                         | layer    | layer
+ +---------+     +--------------+        |          |  +-------+
+ | program |---->| pipewire     |------------+-------->| sound |
+ | (cliet) |<----| (server)     |<-----------+---------| card  |
+ +---------+     +--------------+   |    |   |      |  +-------+
+                                    |    |   |      |    
+                             gstreamer,  | alsa/oss
+                             libcanberra,
+                             libpulse,   
+                             libalsa     
 ```
 
 Do I Need Alsa?
