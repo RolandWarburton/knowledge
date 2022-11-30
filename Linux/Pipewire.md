@@ -2,13 +2,6 @@
 
 ## Introduction
 
-Alsa is the driver - It talks directly to your hardware.
-Alsa is delivered in two parts, a kernel driver, and a user space API that other applications
-consume. You always require alsa in any reasonable install.
-
-To control alsa, you need pulseaudio which speaks to alsa.
-However instead of using pulse, pipewire replaces pulseaudio
-
 The following chart describes how audio gets from a program to a speaker (Left to right),
 and how audio comes from a microphone to a program (Right to Left).
 
@@ -31,6 +24,18 @@ to alsa.
                              libpulse,   
                              libalsa     
 ```
+
+## Alsa
+
+The core of linux audio revolves around alsa which is able to send audio to your sound card.
+
+Alsa is the driver - It talks directly to your hardware.
+Alsa is delivered in two parts, a kernel driver, and a user space API that other applications
+consume. You always require alsa in any reasonable install.
+
+To control alsa, you need pulseaudio which speaks to alsa.
+However instead of using pulse, pipewire replaces pulseaudio
+
 
 Do I Need Alsa?
 
