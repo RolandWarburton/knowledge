@@ -15,8 +15,8 @@ to alsa.
                          userspace layer | kernel   | hardware
                                          | layer    | layer
  +---------+     +--------------+        |          |  +-------+
- | program |---->| pipewire     |------------+-------->| sound |
- | (cliet) |<----| (server)     |<-----------+---------| card  |
+ | program |---->| pipewire     |---+--------+-------->| sound |
+ | (cliet) |<----| (server)     |<--+--------+---------| card  |
  +---------+     +--------------+   |    |   |      |  +-------+
                                     |    |   |      |    
                              gstreamer,  | alsa/oss
