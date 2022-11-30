@@ -27,17 +27,16 @@ to alsa.
 
 ## Alsa
 
-The core of linux audio revolves around alsa which is able to send audio to your sound card.
+The core of linux audio revolves around Alsa which is able to send audio to your sound card.
 
 Alsa is the driver - It talks directly to your hardware.
 Alsa is delivered in two parts, a kernel driver, and a user space API that other applications
 consume. You always require alsa in any reasonable install.
 
 To control alsa, you need pulseaudio which speaks to alsa.
-However instead of using pulse, pipewire replaces pulseaudio
+However instead of using pulse, pipewire replaces pulseaudio.
 
-
-Do I Need Alsa?
+### Do I Need Alsa?
 
 Yes you need alsa as it speaks to the hardware directly, it converts from digital to PCM and
 the same in reverse. Pipewire does not do this.
@@ -45,14 +44,18 @@ the same in reverse. Pipewire does not do this.
 Alsa can only send one signal to the hardware in the form of PCM to play it however,
 this is implemented with pipewire which muxes audio.
 
-Do I Need Pulse?
+## Replacing Pulse with Pipewire
 
-It depends, but usually yes. Most people will want to use chromium, chromium by default ships
-`libpulse0` in debian as a dependency, `libpulse0` is "used by applications that access a PulseAudio
+Do I Need Pulse even if i want to use pipewire as much as possible?
+
+It depends, but usually yes. For example most people will want to use chromium,
+chromium by default ships `libpulse0` in debian as a dependency, `libpulse0`
+is "used by applications that access a PulseAudio
 sound server via PulseAudio's native interface" - this is the core of pulse
-(its api and client libraries).
+(its api and client libraries) if you refer to the first graph libpulse0 sits between pipewire
+in the user space, and alsa in the kernel space.
 
-How Do I Know If An Application Is Using Pipewire?
+### How Do I Know If An Application Is Using Pipewire?
 
 Pipewire provides the `pw-top` command. You may run this command and then play some audio,
 then observe if it plays through pipewire by observing it here.
