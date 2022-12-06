@@ -69,6 +69,14 @@ This file location can be obtained by inspecting `$SWAYSOCK` on the sway worksta
 swaymsg -s /run/user/1000/sway-ipc.1000.245075.sock -t get_workspaces
 ```
 
+## Searching The Sway Tree Programmatically
+
+Find the currently active window.
+
+```bash
+swaymsg -t get_tree | jq '.. | select(type == "object") | select(.focused == true)'
+```
+
 ## Sway Config
 
 ### Sway Config Variables
