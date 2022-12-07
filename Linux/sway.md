@@ -77,6 +77,20 @@ Find the currently active window.
 swaymsg -t get_tree | jq '.. | select(type == "object") | select(.focused == true)'
 ```
 
+Get a filtered list of windows.
+
+```bash
+swaymsg -t get_tree | \
+jq '.. | select(.name?) |
+{
+  name: .name,
+  visible: .true,
+  type: .type,
+  id: .id,
+  contains_nodes: (has("nodes") | tostring)
+}'
+```
+
 ## Sway Config
 
 ### Sway Config Variables
