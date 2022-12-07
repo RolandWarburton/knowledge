@@ -12,7 +12,9 @@ Press `$mod+e` for the standard layout.
 
 ```none
 +----++----+
+|    ||    |
 |win1||win2|
+|    ||    |
 +----++----+
 ```
 
