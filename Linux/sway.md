@@ -89,6 +89,16 @@ If you have 3 windows stacked in the opposite direction (vertically) you can cha
 orientation by pressing `mod+e` again.
 
 ```none
+different layouts, but have the same tree structure
+
+          root
+            | 
+            v 
+    +-------+-------+
+    |       |       |
+    v       v       v
+  win1    win2    win3
+
 +------------------------+       +------------------------+
 |+----------------------+|       |+------++------++------+|
 ||         win1         ||       ||      ||      ||      ||
