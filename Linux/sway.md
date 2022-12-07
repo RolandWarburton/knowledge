@@ -61,6 +61,131 @@ use mod+e. This will toggle the direction of every window to be opposite of what
 
 `mod+shift+arrow` will move the window.
 
+### Three Window Two Column Layouts
+
+Assume that all window layouts begin from a common starting point.
+
+```none
+          root
+            | 
+            v 
+    +-------+-------+
+    |       |       |
+    v       v       v
+  win1    win2    win3
+
++------------------------+
+|+------++------++------+|
+||      ||      ||      ||
+||      ||      ||      ||
+|| win1 || win2 || win3 ||
+||      ||      ||      ||
+||      ||      ||      ||
+|+------++------++------+|
++------------------------+
+```
+
+If you have 3 windows stacked in the opposite direction (vertically) you can change their
+orientation by pressing `mod+e` again.
+
+```none
++------------------------+       +------------------------+
+|+----------------------+|       |+------++------++------+|
+||         win1         ||       ||      ||      ||      ||
+|+----------------------+|       ||      ||      ||      ||
+|+----------------------+|       ||      ||      ||      ||
+||         win2         || ----> || win1 || win2 || win3 || 
+|+----------------------+|   |   ||      ||      ||      ||
+|+----------------------+|   |   ||      ||      ||      ||
+||         win3         ||   |   ||      ||      ||      ||
+|+----------------------+|   |   |+------++------++------+|
++------------------------+   |   +------------------------+
+                             v
+                             pressing `mod+e` to swap between vertical and horizontal.
+```
+
+Say we want a layout like below.
+
+```none
++------------------------+
+|+------++--------------+|
+||      ||    win2      ||
+|| win1 |+--------------+|
+||      |+--------------+|
+||      ||    win3      ||
+|+------++--------------+|
++------------------------+
+```
+
+1. Select any window (in this example window 1 is selected denoted by the `///` shading)
+2. First take any window and move it to the top with `mod+k`.
+3. Then take window 1 and push it to the left with `mod+h`.
+
+```none
++------------------------+      +------------------------+      +------------------------+
+|+------++------++------+|      |+----------------------+|      |+------++--------------+|
+|| //// ||      ||      ||      || /////// win1 /////// ||      || //// ||    win2      ||
+|| //// ||      ||      ||      |+----------------------+|      || //// |+--------------+|
+|| win1 || win2 || win3 || ---> |                        | ---> || win1 |+--------------+|
+|| //// ||      ||      ||      |+----------+-----------+|      || //// ||              ||
+|| //// ||      ||      ||      ||    win2  |    win3   ||      || //// ||    win3      ||
+|+------++------++------+|      |+----------+-----------+|      |+------++--------------+|
++------------------------+      +------------------------+      +------------------------+
+|                               |
+\ mod+k                         \ mod+h
+```
+
+From this point the graph will look like this
+
+```none
+  root
+    |
+    v
+  <------+
+  |      |
+  v      v
+win1    con
+         |
+     +---+---+
+     v       v
+    win2    win3
+```
+
+Whilst on any of the `con` group windows (win1, and win2)
+you can change the layout of that container to be in different modes.
+
+Possible modes are `mod+e`, `mod+w`, and `mod+s`. The default is `e`
+in which you can see all 3 windows at once.
+
+The **stacking** view can be activated with `mod+s` and looks like this.
+
+
+```none
++------------------------+
+|+------++--------------+|
+||      ||    win2      || <- windows are stacked up here as banners
+||      |+--------------+|
+|| win1 ||              ||
+||      ||              ||
+||      ||    win3      ||
+|+------++--------------+|
++------------------------+
+```
+
+The **tabbed** view can be activated with `mod+w` and looks like this.
+
+```none
++------------------------+
+|+------++--------------+|
+||      ||  win2 | win3 || <- windows are tabbed up here as banners
+||      |+--------------+|
+|| win1 ||              ||
+||      ||              ||
+||      ||    win2      ||
+|+------++--------------+|
++------------------------+
+```
+
 ## Controlling Sway Remotely
 
 ### Using WAYLAND_DISPLAY (swaynag example)
