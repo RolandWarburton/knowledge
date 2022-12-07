@@ -1,4 +1,3 @@
 # knowledge
-🌯 om nom
 
-Heres some text i put here to test a github webhook
+Twiddling bits in the wire crop - unlocking of the universe.
