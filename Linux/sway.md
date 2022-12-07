@@ -6,6 +6,40 @@
 
 `mod+v` and `mod+b` to `vsplit` and `split` windows.
 
+### Changing Layout
+
+Press `$mod+e` for the standard layout.
+
+```none
++----++----+
+|win1||win2|
++----++----+
+```
+
+Press `$mod+s` for stacking layout.
+
+```none
++----+
+|win2| <-- label for next window in stack
++----+
+|    |
+|win1|
+|    |
++----+
+```
+
+Press `$mod+w` for tabbed layout.
+
+```none
++---------+
+|win1|win2|
++---------+
+|         |
+|  win1   |
+|         |
++---------+
+```
+
 ### resizing
 
 `mod+r` or `mod+lmouse`.
