@@ -2,7 +2,7 @@
 
 ## Display a cool banner when logging in with SSH
 
-Modify */etc/issue.net* and write a cool message in there. then make sure banners are enabled.
+Modify */etc/issue.net* and write a cool message in there. Then make sure banners are enabled.
 
 ```none
 #/etc/ssh/sshd_config
