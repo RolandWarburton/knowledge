@@ -262,6 +262,78 @@ jq '.. | select(.name?) |
 }'
 ```
 
+## Monitor Configuration
+
+You can discover what displays are connected and their state
+using the `swaymsg -t get_outputs` command.
+
+Monitors can be rotated if requires using `output eDP-1 transform 90` where `eDP-1`
+is the name of the monitor and `90` is the angle.
+
+
+## Multi Monitor Configuration
+
+You can discover what displays are connected and their state
+using the `swaymsg -t get_outputs` command.
+
+Once you know the names of your displays, you can turn them on and off using below.
+
+```none
+swaymsg output eDP-1 disable
+```
+
+Positioning can be done in a similar way.
+
+```none
+
+0,0| +----------+
+   | |          |
+   | |  eDP-1   |
+   | |          |
+   | +----------+
+   | |          |
+   | |  HDMI1   |
+   | |          |
+   | +----------+
+   +------------|------------
+                \2160,1920
+
+output eDP-1 pos 0 0 res 1920x1080
+output HDMI1 pos 1920 0 res 1920x1080
+```
+
+### Event Driven Display Switching
+
+For setups using a laptop that plugs into screens but is closed, you can use the following in your
+sway config.
+
+```none
+set $laptop eDP-1
+bindswitch --reload --locked lid:on output $laptop disable
+bindswitch --reload --locked lid:off output $laptop enable
+```
+
+Then to ensure the laptop screen state is correctly set when reloading the sway config,
+ensure this script runs.
+
+Place this in your sway config.
+
+```none
+exec_always /path/to/configure-laptop-display.sh
+```
+
+And then the script itself `configure-laptop-display.sh` below.
+
+```bash
+#!/usr/bin/bash
+LAPTOP=eDP-1
+if grep -q open /proc/acpi/button/lid/LID/state; then
+  swaymsg output eDP-1 enable
+else
+  swaymsg output eDP-1 disable
+fi
+```
+
 ## Sway Config
 
 ### Sway Config Variables
