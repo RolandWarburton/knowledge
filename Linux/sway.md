@@ -338,6 +338,8 @@ fi
 
 ### Sway Config Variables
 
+I do not think these are correct, requires further testing.
+
 `@sysconfdir@` is typically found in `/usr/local/etc/sway/`.
 
 The `@sysconfdir@` variable represents the location of the system-wide configuration directory.
