@@ -25,6 +25,12 @@ gpg --export -a 1CB1AADD3F35902234887B922C1C6E0C75E4CC05 > public.key
 gpg --export-secret-key -a 1CB1AADD3F35902234887B922C1C6E0C75E4CC05 > private.key
 ```
 
+When migrating you also should export the trust DB.
+
+```none
+gpg --export-ownertrust > trustdb-backup.txt
+```
+
 ## Importing a key
 
 ```none
@@ -36,6 +42,14 @@ gpg --import private.key
 ```
 
 Once you have imported a public key, you need to set its trust.
+
+If you exported a trust DB.
+
+```none
+gpg --import-ownertrust < trustdb-backup.txt
+```
+
+Otherwise you need to set its trust level again.
 
 By default your own keys are `[ultimate]` trust level.
 
