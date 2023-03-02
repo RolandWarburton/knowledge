@@ -278,3 +278,24 @@ pass git remote add origin git@github.com:RolandWarburton/password-store.git
 ```none
 pass git pull origin master --allow-unrelated-histories
 ```
+
+## Diagnosing Issues
+
+### Freezing when retrieving passwords
+
+If you try and run `pass example.com` and the program freezes, there are a couple things to check.
+
+* Is dbus running? `systemctl --user status dbus`.
+* Is `DBUS_SESSION_BUS_ADDRESS` set? If not
+`export DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$(id -u)/bus`.
+* Is the user in the `dbus` group. `groupadd dbus && usermod -aG dbus roland`.
+* Do you have `pinentry pinentry-tty pinentry-curses` installed?.
+* Is the default pinentry program set in `~/.gnupg/gpg-agent.conf`?
+Use `pinentry-program /usr/bin/pinentry-curses` then restart `gpgconf --kill gpg-agent`.
+
+Test the correct functioning of gpg by trying to encrypt a file.
+
+```none
+echo "hello" > test && gpg --symetric test`
+```
+
