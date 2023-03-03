@@ -39,11 +39,11 @@ interface HocProps {
 
 //                   The returned components props \
 function withQuery(Component: React.ComponentType<HocProps>) {
-  // then we return that component with some component logic
-  // we need to take some props, in this case a path
-  return function WithQuery(props: Props) {                  // -+
-    const { path } = props
-    // example query that all our components that implement     // -+->
+  // We return a component with some component logic
+  // The component needs to take some props, in this case a path
+  return function WithQuery(props: Props) {                     // -+
+    const { path } = props                                      //  |
+    // example query that all our components that implement     //  +->
     const doQuery = () => {result: 'hi'}                        //  | this component is
     // return the passed in component with its props (HocProps) //  | returned from the HOC
     return <Component path={path} query={doQuery} />;           //  | with its {query} function
@@ -68,16 +68,16 @@ that contains rendering logic.
 
 ```tsx
 // this can be exported from above, and imported here
-// as the interface Props will be the same
+// as the interface HocProps will be the same
 // these are the Props that your rendering component will get access to
 interface HocProps {
   query: () => { myPath: string };
   path: string;
 }
 
-// our component Props are taking the 
+// the rendering component
 function Component(props: HocProps) {
-  // use the component logic inherited from the HOC
+  // use the logic inherited from the HOC
   const const { query, path } = props;
   const result = query();
 
@@ -93,10 +93,11 @@ function Component(props: HocProps) {
 This component will make use of the `query` given to it.
 It will also need to take a `path`.
 
-You can see how both `query` and `path` are required above in `withQuery`.
+You can see how both `query` and `path` are required above in `withQuery` and `Component`.
 These interfaces are the same in both code blocks and should be exported for reuse.
 
-The `Component` returns the rendering component that takes the path.
+The `Component` returns the rendered content that makes use of the HocProps
+(it can use the generic query).
 
 Next we can tie it all together below.
 
