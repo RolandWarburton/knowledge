@@ -100,6 +100,15 @@ Password store initialized for 1234567812345678123456781234567812345678
 pass insert domain.com
 ```
 
+Most of the time you will want to insert a password
+with additional information like the username and email.
+
+Use `m` for multiline insertion. This will open with your `$EDITOR`.
+
+```none
+pass insert -m domain.com
+```
+
 You can also specify multiple passwords in a file structure.
 
 ```none
