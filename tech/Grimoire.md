@@ -16,6 +16,28 @@ a grimoire is a collection of useful software bits.
 Nothing here is guaranteed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
+### Ignoring Files When FS Searching
+
+When i am searching for things within the file system, i rely on `fdfind` and `ripgrep`.
+
+The shorthand for these tools are `fd` and `rg`.
+
+A lot of the time i helps to exclude directories.
+
+When searching for needles in haystacks, i find myself searching the entire file system
+and so must exclude special directories. I find the below to work well so far.
+
+```none
+rg 'SEARCH TERM' -g '!sys/' -g '!var/log/auth.log' -g '!run/' -g '!proc/'
+```
+
+When i am searching for file names, i can do a similar directory ignore pattern.
+Its also worth searching for `--hidden` to include hidden files and folders.
+
+```none
+fd --hidden 'SEARCH TERM' --exclude='/sys' --exclude='/run'
+```
+
 ### Clean up Git Checkout
 
 ```bash
