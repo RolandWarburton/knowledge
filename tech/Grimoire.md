@@ -22,7 +22,7 @@ When i am searching for things within the file system, i rely on `fdfind` and `r
 
 The shorthand for these tools are `fd` and `rg`.
 
-A lot of the time i helps to exclude directories.
+A lot of the time it helps to exclude directories.
 
 When searching for needles in haystacks, i find myself searching the entire file system
 and so must exclude special directories. I find the below to work well so far.
