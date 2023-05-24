@@ -16,6 +16,35 @@ a grimoire is a collection of useful software bits.
 Nothing here is guaranteed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
+### Sway Find Mice And Keyboards
+
+To find mice and return their acceleration speed.
+
+```none
+swaymsg -t get_inputs | jq '.[] | select(.type == "pointer") | {name: .name, accel_speed: .libinput.accel_speed}'
+```
+
+To find mice with a particular name.
+
+```none
+swaymsg -t get_inputs | jq '.[] | select(.type == "pointer" and .name == "Logitech MX Master 3")'
+```
+
+You can change the properties of the mouse using the sway `config` file.
+
+```none
+input "1133:16514:Logitech_MX_Master_3" {
+  pointer_accel -0.6
+  accel_profile "flat"
+}
+```
+
+To find keyboards change the type to "keyboard".
+
+```none
+swaymsg -t get_inputs | jq '.[] | select(.type == "keyboard")'
+```
+
 ### Ignoring Files When FS Searching
 
 When i am searching for things within the file system, i rely on `fdfind` and `ripgrep`.
