@@ -16,6 +16,14 @@ a grimoire is a collection of useful software bits.
 Nothing here is guaranteed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
+### Golang Programatic Breakpoint
+
+Insert this line anywhere in your code.
+
+```none
+runtime.Breakpoint()
+```
+
 ### Sway Find Mice And Keyboards
 
 To find mice and return their acceleration speed.
