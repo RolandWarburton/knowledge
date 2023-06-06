@@ -16,6 +16,19 @@ a grimoire is a collection of useful software bits.
 Nothing here is guaranteed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
+### ESM Get Directory Name
+
+In commonjs (cjs) you used to have `__dirname` as a global variable
+which referred to the modules base directory.
+
+In ESM modules you can emulate this behavior with this snippet.
+
+```js
+import { resolve, dirname } from 'path';
+
+const __dirname = dirname(new URL(import.meta.url).pathname);
+```
+
 ### Golang Programatic Breakpoint
 
 Insert this line anywhere in your code.
