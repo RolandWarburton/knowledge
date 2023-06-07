@@ -21,7 +21,7 @@ Just a collection of computer "spells" that i have used more than once.
 In commonjs (cjs) you used to have `__dirname` as a global variable
 which referred to the modules base directory.
 
-In ESM modules you can emulate this behavior with this snippet.
+When using ESM you can emulate this behavior with this snippet.
 
 ```js
 import { resolve, dirname } from 'path';
