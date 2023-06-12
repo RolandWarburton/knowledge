@@ -498,3 +498,40 @@ esxcfg-mpath -L | grep dead
 ```
 
 After rebooting the host itself, make sure to verify the settings of the virtual machine, i selected a USB controller for USB 3.0 and made sure that i had added a new USB drive device added under `virtual hardware > add another device`.
+
+## KVM/QEMU
+
+QEMU (Quick EMUlator) is a virtual machine host.
+
+KVM (Kernel-based Virtual Machine) is a linux kernel module that allows for better VM performance.
+
+### Checking Virtualization Support
+
+
+```none
+egrep -c '(vmx|svm)' /proc/cpuinfo
+```
+
+Any number > 0 indicates that KVM is supported.
+
+### Installing QEMU
+
+```none
+sudo apt install qemu-kvm libvirt-clients libvirt-daemon-system bridge-utils virt-manager
+```
+
+Then add yourself to groups.
+
+```none
+export USERNAME=roland
+sudo usermod -aG sudo $USERNAME
+sudo usermod -aG kvm $USERNAME
+```
+
+Then start the service.
+
+```none
+sudo systemctl enable libvirtd
+```
+
+Virtual machines can be managed via GUI through `virt-manager` (installed above).
