@@ -535,3 +535,53 @@ sudo systemctl enable libvirtd
 ```
 
 Virtual machines can be managed via GUI through `virt-manager` (installed above).
+
+### Creating And Starting Machines
+
+Create `domain.xml` that defines how your VM should be created.
+
+```html
+<domain type='kvm'>
+  <name>win10_v2</name>
+  <memory unit='KiB'>4194304</memory>
+  <vcpu placement='static'>2</vcpu>
+  <os>
+    <type arch='x86_64' machine='pc-i440fx-3.1'>hvm</type>
+    <boot dev='cdrom'/>
+  </os>
+  <devices>
+    <disk type='file' device='cdrom'>
+      <driver name='qemu' type='raw'/>
+      <source file='/home/roland/Downloads/en-us_windows_10_22h2_x64.iso'/>
+      <target dev='hda' bus='ide'/>
+      <readonly/>
+      <address type='drive' controller='0' bus='0' target='0' unit='0'/>
+    </disk>
+    <interface type='network'>
+      <mac address='52:54:00:12:34:56'/>
+      <source network='default'/>
+      <model type='virtio'/>
+      <address type='pci' domain='0x0000' bus='0x00' slot='0x03' function='0x0'/>
+    </interface>
+  </devices>
+</domain>
+```
+
+Then register and start it.
+
+```bash
+# register
+sudo virsh define domain.xml
+
+# start
+sudo virsh start win10_v2
+
+# confirm its running
+virsh -c qemu:///system list
+```
+
+You can stop the machine with.
+
+```bash
+sudo virsh destroy win10_v2
+```
