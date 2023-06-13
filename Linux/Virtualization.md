@@ -634,10 +634,10 @@ Then register and start it.
 
 ```bash
 # register
-sudo virsh define domain.xml
+virsh -c qemu:///system define domain.xml
 
 # start
-sudo virsh start win10_v2
+virsh -c qemu:///system start win10_v2
 
 # confirm its running
 virsh -c qemu:///system list
@@ -646,5 +646,74 @@ virsh -c qemu:///system list
 You can stop the machine with.
 
 ```bash
-sudo virsh destroy win10_v2
+virsh -c qemu:///system destroy win10_v2
+```
+
+### Navigating Around QEMU
+
+I find that it helps to specify the connection string, so all QEMU commands should have begin with.
+
+```bash
+virsh -c qemu:///system
+```
+
+#### Pools
+
+```bash
+# list pools
+virsh -c qemu:///system pool-list --all
+
+# delete pool
+virsh -c qemu:///system pool-destroy POOL_NAME
+```
+
+#### Volumes
+
+```bash
+# an example of a pool name would be "default"
+# an example of a volume name would be "win10.qcow2"
+
+# create a volume
+sudo qemu-img create -f qcow2 /var/lib/libvirt/images/VOL_NAME.qcow2 20G
+
+# list volumes
+virsh -c qemu:///system vol-list POOL_NAME
+
+# deleting a volume
+virsh -c qemu:///system vol-delete --pool POOL_NAME VOL_NAME
+```
+
+#### Machines
+
+```bash
+# an example of a machine name would be "win10"
+# the machine name is contained in domain.xml
+
+virsh -c qemu:///system define domain.xml
+
+# list all machines
+virsh -c qemu:///system list --all
+# sometimes the machines will not appear and you need to specify the URL
+virsh -c qemu:///system list --all
+
+# start a machine
+virsh -c qemu:///system start MACHINE_NAME
+```
+
+Removing a machine involves these steps.
+
+```bash
+# remove a machine
+virsh -c qemu:///system define domain.xml
+sudo rm -rf /var/lib/libvirt/images/MACHINE_NAME
+```
+
+When you are making changes to a machine use this script to quickly bring it down and re-create it.
+
+```bash
+export MACHINE_NAME='win10'
+virsh -c qemu:///system destroy $MACHINE_NAME
+virsh -c qemu:///system undefine $MACHINE_NAME
+virsh -c qemu:///system define domain.xml
+virsh -c qemu:///system start $MACHINE_NAME
 ```
