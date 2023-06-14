@@ -127,3 +127,23 @@ Next you need to install Remmina and create a new connection profile.
 * Share Folder: /home/roland/share
 
 Your share drive should appear under "restricted drives and folders".
+
+## Accessing The Shared Drive
+
+Since our drive is not "real" it can be hard to target files in it,
+for example running the `cd` command on `\\tsclient\_home_roland_share`
+would not be supported because it is a UNC path.
+
+To resolve this you can assign a drive letter to the UNC path instead,
+Allowing for command line access.
+
+```none
+net use "Z:" "\\tsclient\_home_roland_share"
+```
+
+You can then change directory and run your program.
+
+```none
+Z:
+myProgram.exe --flag value
+```
