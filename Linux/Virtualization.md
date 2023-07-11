@@ -663,8 +663,33 @@ virsh -c qemu:///system
 # list pools
 virsh -c qemu:///system pool-list --all
 
-# delete pool
+# un-register pool
 virsh -c qemu:///system pool-destroy POOL_NAME
+
+# delete pool
+virsh -c qemu:///system pool-delete default
+
+# un-define the pool
+virsh -c qemu:///system pool-undefine default 
+```
+
+To create new pools you can define XML and enroll them using.
+
+Create `pool.xml`.
+
+```xml
+<pool type='dir'>
+  <name>my_pool</name>
+  <target>
+    <path>/var/lib/libvirt/images/</path>
+  </target>
+</pool>
+```
+
+```none
+virsh -c qemu:///system pool-define pool.xml
+virsh -c qemu:///system pool-autostart default
+virsh -c qemu:///system pool-build default
 ```
 
 #### Volumes
@@ -679,7 +704,7 @@ sudo qemu-img create -f qcow2 /var/lib/libvirt/images/VOL_NAME.qcow2 20G
 # list volumes
 virsh -c qemu:///system vol-list POOL_NAME
 
-# deleting a volume
+# deleting a volume (VOL_NAME is the path to the volume)
 virsh -c qemu:///system vol-delete --pool POOL_NAME VOL_NAME
 ```
 
@@ -692,8 +717,6 @@ virsh -c qemu:///system vol-delete --pool POOL_NAME VOL_NAME
 virsh -c qemu:///system define domain.xml
 
 # list all machines
-virsh -c qemu:///system list --all
-# sometimes the machines will not appear and you need to specify the URL
 virsh -c qemu:///system list --all
 
 # start a machine
@@ -716,4 +739,23 @@ virsh -c qemu:///system destroy $MACHINE_NAME
 virsh -c qemu:///system undefine $MACHINE_NAME
 virsh -c qemu:///system define domain.xml
 virsh -c qemu:///system start $MACHINE_NAME
+```
+
+### Issues with QEMU/KVM
+
+Unable to mount ISO.
+
+```none
+error: Failed to start domain 'win10'
+error: internal error: process exited while connecting to monitor: 2023-07-11T08:16:55.168173Z qemu-system-x86_64: -blockdev {"driver":"file","filename":"/home/roland/Downloads/windows.iso","node-name":"libvirt-1-storage","auto-read-only":true,"discard":"unmap"}: Could not open '/home/roland/Downloads/windows.iso': Permission denied
+```
+
+I encountered this error when mounting a windows ISO to my VM.
+This was resolved by modifying `/etc/libvirt/qemu.conf` to specify my user.
+
+Modify these values to be your current user.
+
+```none
+user = "roland"
+group = "kvm"
 ```
