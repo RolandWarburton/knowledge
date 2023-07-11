@@ -1,5 +1,8 @@
 # QEMU Windows 10 Configuration Notes
 
+For a more in-depth and general overview, i have nodes on QEMU in Linux/Virtulization.md
+within this repository on github (rolandwarburton/knowledge)
+
 For situations that require windows, such as building & packaging software
 QEMU/KVM provides a great way to spin up a windows 10 machine.
 
@@ -9,6 +12,12 @@ For this one i will cover an RDC based file share. RDC (remote desktop connectio
 is a part of RDP (remote desktop protocol) that Microsoft offers for windows.
 
 To connect to the RDP session and to create a shared folder i use Remmina, a remote desktop client.
+
+Make sure you have the following dependencies first.
+
+```none
+sudo apt install qemu-kvm libvirt-clients libvirt-daemon-system virtinst bridge-utils
+```
 
 ## Method
 
@@ -109,6 +118,12 @@ Create a `domain.xml` file that describes how the VM will be created.
     </memballoon>
   </devices>
 </domain>
+```
+
+Start the network.
+
+```none
+sudo virsh net-start default
 ```
 
 Start the virtual machine
