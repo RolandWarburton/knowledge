@@ -143,6 +143,8 @@ Next you need to install Remmina and create a new connection profile.
 
 Your share drive should appear under "restricted drives and folders".
 
+Ensure you have RDP enabled on the windows machine for this to work.
+
 ## Accessing The Shared Drive
 
 Since our drive is not "real" it can be hard to target files in it,
