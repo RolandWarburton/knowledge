@@ -16,6 +16,14 @@ a grimoire is a collection of useful software bits.
 Nothing here is guaranteed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
+### Setting Brightness
+
+`sysfs` exposes some controls to edit the screen brightness.
+
+Setting the brightness level (eg 600) `echo "600" | sudo tee /sys/class/backlight/*/brightness `).
+
+Getting the maximum brightness value (minimum is 0) `cat /sys/class/backlight/*/max_brightness`.
+
 ### Convert PNGs to 1920x1080 Backgrounds
 
 Take a cool image `input.png` that i want to convert into a desktop background,
