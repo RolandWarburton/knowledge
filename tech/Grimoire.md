@@ -222,6 +222,14 @@ Only works in Xorg unfortunately.
 setxkbmap -option caps:escape
 ```
 
+### Remap CAPS to ESC in Wayland
+
+Similar to above, this sway config change will work for wayland/sway.
+
+```none
+xkb_options caps:escape
+```
+
 ### Get TB Written to a Drive
 
 Assuming 512 byte sectors. Change `sdX` as appropriate.
