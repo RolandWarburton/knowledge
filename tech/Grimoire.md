@@ -16,6 +16,25 @@ a grimoire is a collection of useful software bits.
 Nothing here is guaranteed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
+### Convert PNGs to 1920x1080 Backgrounds
+
+Take a cool image `input.png` that i want to convert into a desktop background,
+i can use this comment to place it on a white 1920x1080 image.
+
+```none
+convert input.png \
+-resize "1920x1080>" \
+-gravity center \
+-background white \
+-extent 1920x1080 \
+output.png
+```
+
+`-resize "1920x1080>"` resizes to 1920x1080, it will maintain its aspect ratio.
+The > symbol means "only if it's larger."
+
+`-extent 1920x1080` sets the overall size of the image, causing the output to be 1920x1080.
+
 ### ESM Get Directory Name
 
 In commonjs (cjs) you used to have `__dirname` as a global variable
