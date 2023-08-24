@@ -16,6 +16,14 @@ a grimoire is a collection of useful software bits.
 Nothing here is guaranteed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
+### Trim Whitespace
+
+You can trim (or slurp) whitespace using the `tr` command which translates or deletes characters.
+
+```none
+tr -d '[:space:]'
+```
+
 ### Setting Brightness
 
 `sysfs` exposes some controls to edit the screen brightness.
