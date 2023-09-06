@@ -32,6 +32,43 @@ Setting the brightness level (eg 600) `echo "600" | sudo tee /sys/class/backligh
 
 Getting the maximum brightness value (minimum is 0) `cat /sys/class/backlight/*/max_brightness`.
 
+### Convert PNGs to Squares
+
+You can pad a picture with transparent space to make it a square,
+this is useful for websites that require a square profile picture for example.
+
+```none
+convert INPUT.png \
+-background none \
+-gravity center \
+-resize 400x400 \
+-extent 400x400 \
+OUTPUT.png
+```
+
+You may update the background color by specifying `-background "#FF0000"`.
+
+The `resize` tag changes the size of the image.
+The `extent` tag changes the size of the canvas.
+
+The next section is about perfect resizing.
+
+If you would like resize and extent to have values such that the
+minimum amount of transparent border is added you can use below.
+
+```bash
+# return the biggest x or y value from the input image dimensions
+LENGTH=$(identify -format "%wx%h" INPUT.png | grep -oE '[0-9]+' | sort -nr | head -n 1)
+
+# run the same command again with substituted values
+convert INPUT.png \
+-background none \
+-gravity center \
+-resize "$LENGTH"x"$LENGTH" \
+-extent "$LENGTH"x"$LENGTH" \
+OUTPUT.png
+```
+
 ### Convert PNGs to 1920x1080 Backgrounds
 
 Take a cool image `input.png` that i want to convert into a desktop background,
