@@ -16,6 +16,15 @@ a grimoire is a collection of useful software bits.
 Nothing here is guaranteed to work, or even be useful in the long term.
 Just a collection of computer "spells" that i have used more than once.
 
+### Convert PNG to PDF
+
+This also applies to any other conversions that imagemagick can do.
+The trick is to use basename to avoid `.png.pdf`.
+
+```none
+fdfind --max-depth=1 '.png$' --exec sh -c 'convert "$0" "$(basename "$0" .png).pdf"'
+```
+
 ### Trim Whitespace
 
 You can trim (or slurp) whitespace using the `tr` command which translates or deletes characters.
