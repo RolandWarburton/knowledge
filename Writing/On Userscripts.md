@@ -31,7 +31,7 @@ Lets start by creating a basic project.
 mkdir -p src/{website-one,utils}
 ```
 
-Our project should not look like this.
+Our project should now look like this.
 
 ```none
 src
