@@ -383,7 +383,7 @@ await findElement(document, '.my-class')
 ## Working With Frameworks
 
 The last useful tool would be a nice way to create UI.
-Tools like preact are great for this use case
+Tools like [preact](https://preactjs.com/) are great for this use case
 as they are small and portable enough to keep entirely inside a single script
 file without it becoming too big.
 
