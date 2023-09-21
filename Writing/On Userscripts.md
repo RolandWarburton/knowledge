@@ -13,7 +13,7 @@ allowing for user defined code to act in conjunction with the contents of the pa
 remove, or modify its content.
 
 Scripts can empower you to shape already existing websites to make them more convenient
-in the manners mentioned above. The main focus of this writing will be discussing
+in the manners mentioned above. The main focus of will be discussing
 some of the ways in which you can leverage existing web technologies to
 create elaborate user scripts to do interesting things.
 
@@ -21,7 +21,7 @@ create elaborate user scripts to do interesting things.
 
 A user script requires a plugin to manage and load JS onto webpages as they load,
 for chrome this can be done with [tampermonkey](https://www.tampermonkey.net/index.php?locale=en)
-which this writing is based on.
+which this is based on.
 
 ### Getting Started
 
