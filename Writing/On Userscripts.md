@@ -108,7 +108,7 @@ npm install -D esbuild
 touch build.js
 ```
 
-Our project should not look like this.
+Our project should now look like this.
 
 ```none
 ├── build.js
