@@ -450,3 +450,5 @@ async function testWidget() {
   });
 }
 ```
+
+Run the build script, and you are done with the introduction! Have fun building :)
