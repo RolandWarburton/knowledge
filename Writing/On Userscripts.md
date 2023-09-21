@@ -347,14 +347,14 @@ the library functions in our user script.
 
 ## Utilities
 
-Currently we wait for the load event on the document, the run our code.
+Currently we wait for the load event on the document, then run our code.
 
 The load event is fired when the whole page has loaded,
 including all dependent resources such as stylesheets, scripts, iframes,
 and images ([mdm](https://developer.mozilla.org/en-US/docs/Web/API/Window/load_event)).
 
 However lots of pages hydrate their DOM with dynamic content,
-we need a way to wait for this content to be available.
+we need a way to wait for this content to be available before we try to modify it.
 
 ```js
 // waits for an element to be available by css selector
