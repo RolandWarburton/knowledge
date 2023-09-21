@@ -84,13 +84,13 @@ We can expand the scope of a bundler beyond these two major uses to suite our us
 For our user script purposes we need our bundler to do two things.
 
 First, it needs to resolve all the library dependencies,
-and be able to bundle them into each user script such each JS file has access to its
-required library code when its running.
+and be able to bundle them into each user script such that each JS file has access to its
+required library code at run time.
 
-Secondly it should transform any non browser friendly code
+Second it should transform any non browser friendly code
 into something our browser can understand.
 
-## The First (plain old) User Script Again
+## Bundling the (plain old) User Script Again
 
 Lets solve bundling with esbuild, which provides a library of its own
 which allows us to write code to describe how to build our user scripts.
