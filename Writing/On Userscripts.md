@@ -3,7 +3,8 @@
 This article will be about my opinions on user scripts, and how you can use them to maximum effect!
 
 This writing will cover how to use a bundler to embed JS libraries,
-and how to create JSX components in user scripts. Plus some edge cases.
+and how to create JSX components in user scripts. 
+Plus some extra bits that i think are useful to know.
 
 ## What is a User Script
 
@@ -12,7 +13,7 @@ allowing for user defined code to act in conjunction with the contents of the pa
 remove, or modify its content.
 
 Scripts can empower you to shape already existing websites to make them more convenient
-in the manners mentioned above. The main focus of this writing will be discussing
+in the manners mentioned above. The main focus of will be discussing
 some of the ways in which you can leverage existing web technologies to
 create elaborate user scripts to do interesting things.
 
@@ -20,7 +21,7 @@ create elaborate user scripts to do interesting things.
 
 A user script requires a plugin to manage and load JS onto webpages as they load,
 for chrome this can be done with [tampermonkey](https://www.tampermonkey.net/index.php?locale=en)
-which this writing is based on.
+which this is based on.
 
 ### Getting Started
 
@@ -30,7 +31,7 @@ Lets start by creating a basic project.
 mkdir -p src/{website-one,utils}
 ```
 
-Our project should not look like this.
+Our project should now look like this.
 
 ```none
 src
@@ -83,13 +84,13 @@ We can expand the scope of a bundler beyond these two major uses to suite our us
 For our user script purposes we need our bundler to do two things.
 
 First, it needs to resolve all the library dependencies,
-and be able to bundle them into each user script such each JS file has access to its
-required library code when its running.
+and be able to bundle them into each user script such that each JS file has access to its
+required library code at run time.
 
-Secondly it should transform any non browser friendly code
+Second it should transform any non browser friendly code
 into something our browser can understand.
 
-## The First (plain old) User Script Again
+## Bundling the (plain old) User Script Again
 
 Lets solve bundling with esbuild, which provides a library of its own
 which allows us to write code to describe how to build our user scripts.
@@ -107,7 +108,7 @@ npm install -D esbuild
 touch build.js
 ```
 
-Our project should not look like this.
+Our project should now look like this.
 
 ```none
 ├── build.js
@@ -242,7 +243,7 @@ async function buildScript(filepath, userScriptContent) {
     process.exit(1)
   });
 
-    // re-inject the user script content again to the built script
+  // re-inject the user script content again to the built script
   const content = result.outputFiles[0].text;
   parsedPath = path.parse(filepath);
   fs.writeFileSync(`temp/${parsedPath.base}`, userScriptContent + '\n\n' + content);
@@ -332,14 +333,14 @@ the library functions in our user script.
 
 ## Waiting for DOM
 
-Currently we wait for the load event on the document, the run our code.
+Currently we wait for the load event on the document, then run our code.
 
 The load event is fired when the whole page has loaded,
 including all dependent resources such as stylesheets, scripts, iframes,
 and images ([mdm](https://developer.mozilla.org/en-US/docs/Web/API/Window/load_event)).
 
 However lots of pages hydrate their DOM with dynamic content,
-we need a way to wait for this content to be available.
+we need a way to wait for this content to be available before we try to modify it.
 
 ```js
 // waits for an element to be available by css selector
@@ -368,7 +369,7 @@ await findElement(document, '.my-class')
 ## Working With Frameworks
 
 The last useful tool would be a nice way to create UI.
-Tools like preact are great for this use case
+Tools like [preact](https://preactjs.com/) are great for this use case
 as they are small and portable enough to keep entirely inside a single script
 file without it becoming too big.
 
@@ -493,4 +494,4 @@ I hope anyone reading can use some of my experiences to build their own more in 
 With the ability to bundle libraries
 and write proper JSX you can do a lot of interesting things i am sure.
 
-Have fun!
+Have fun building!
