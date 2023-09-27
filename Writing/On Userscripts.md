@@ -1,9 +1,11 @@
 # User Scripts
 
-This article will be about my opinions on user scripts, and how you can use them to maximum effect!
+This article share my opinions on user scripts, and how you can use them to maximum effect!
 
-This writing will cover how to use a bundler to embed JS libraries,
-and how to create JSX components in user scripts. 
+Mainly to answer two main questions.
+
+How do you use a bundler to embed JS libraries?
+How can you create JSX components in user scripts?
 Plus some extra bits that i think are useful to know.
 
 ## What is a User Script
