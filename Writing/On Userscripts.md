@@ -205,26 +205,11 @@ Lets fix that.
 Lets modify our build script (second iteration) by adding the `extractUserScriptContent` function.
 
 ```js
-const fs = require('fs');
-const path = require('path');
-const { build } = require('esbuild');
+function makeTemp(name) {}
 
-function makeTemp(name) {
-  if (!fs.existsSync(`./${name}`)) {
-    fs.mkdirSync(`./${name}`);
-  }
-}
+function readFilesInDirectory(directoryPath, filePaths) {}
 
-function readFilesInDirectory(directoryPath, filePaths) {
-  const files = fs.readdirSync(directoryPath, { withFileTypes: true });
-
-  for (const file of files) {
-    if (file.isFile()) {
-      const filePath = path.join(directoryPath, file.name);
-      filePaths.push(filePath);
-    }
-  }
-}
+// > Removed for brevity <
 
 // Add this new function
 function extractUserScriptContent(filePath) {
@@ -257,6 +242,7 @@ async function buildScript(filepath, userScriptContent) {
     process.exit(1)
   });
 
+    // re-inject the user script content again to the built script
   const content = result.outputFiles[0].text;
   parsedPath = path.parse(filepath);
   fs.writeFileSync(`temp/${parsedPath.base}`, userScriptContent + '\n\n' + content);
@@ -344,7 +330,7 @@ Have a look at the size of the output file, `wc -l` says its now 584 lines!
 We have successfully bundled the lorem-ipsum library allowing us to call
 the library functions in our user script.
 
-## Utilities
+## Waiting for DOM
 
 Currently we wait for the load event on the document, the run our code.
 
@@ -420,7 +406,7 @@ async function buildScript(filepath, userScriptContent) {
 }
 ```
 
-Next lets write a widget.
+Next lets write a widget that uses some JSX to render some elements using the preact virtual DOM.
 
 ```js
 async function testWidget() {
@@ -449,3 +435,62 @@ async function testWidget() {
   });
 }
 ```
+
+### Styling
+
+Since we want to go down the framework path to enable reusable components,
+we need to now solve styling.
+
+Usually among frameworks there are some solutions to consider, css-in-js,
+traditional css, or inline styling.
+
+For our preact islands its probably best to go with css-in-js because we don't want to ship
+more than 1 file, due to complexity and scoping issues when handling components
+that are shared between different pages or domains.
+
+The only real solution to get a small bundle size css-in-js solution working is
+[goober](https://www.npmjs.com/package/goober)
+which takes up almost no space at all which is wonderful.
+
+```none
+npm i goober
+```
+
+Since preact-island does not render to some root element like `body > #root`,
+we will need to use the style bind feature of goober to bind it to the root of any
+container that needs access to its specific styles.
+
+```js
+import * as goober form 'goober';
+
+// bind goober to the root of this component
+goober.setup(h);
+const root = useRef(null);
+const target = root.current;
+const styled = goober.styled.bind({ target: target });
+
+const Hero = styled('div')`
+background-color: black;
+color: white;
+`;
+
+return (
+<div ref={root}>
+    <Hero>
+        Hello world!
+    </Hero>
+  )}
+</div>
+);
+```
+
+Now we have styled the component with correctly scoped styles.
+
+## Conclusion
+
+I hope anyone reading can use some of my experiences to build their own more in depth user scripts.
+
+With the ability to bundle libraries
+and write proper JSX you can do a lot of interesting things i am sure.
+
+Have fun!
