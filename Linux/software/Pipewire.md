@@ -27,28 +27,35 @@ to alsa.
 
 ## Alsa
 
-The core of linux audio revolves around Alsa which is able to send audio to your sound card.
+The core of linux audio revolves around Alsa which is able to send and
+receive audio to and from your sound card.
 
 Alsa is the driver - It talks directly to your hardware.
 Alsa is delivered in two parts, a kernel driver, and a user space API that other applications
 consume. You always require alsa in any reasonable install.
 
-To control alsa, you need pulseaudio which speaks to alsa.
-However instead of using pulse, pipewire replaces pulseaudio.
+To control alsa, you need pulseaudio which speaks to alsa,
+pulseaudio speaks to alsa which talks to your sound card, which plays audio.
+
+However instead of using pulseaudio, pipewire will slowly replace it as a new audio server.
 
 ### Do I Need Alsa?
 
-Yes you need alsa as it speaks to the hardware directly, it converts from digital to PCM and
-the same in reverse. Pipewire does not do this.
+Yes you need alsa as it speaks to the hardware, it converts from digital output
+from your audio server (pulseaudio or pipewire)
+to PCM (analog audio) and the same in reverse.
 
-Alsa can only send one signal to the hardware in the form of PCM to play it however,
-this is implemented with pipewire which muxes audio.
+Pipewire alone does not do this and instead interacts with alsa.
+
+Alsa can only send one signal to the hardware in the form of PCM to play it,
+one of the jobs of pipewire is to mux the audio so that multiple applications can
+play audio at the same time.
 
 ## Replacing Pulse with Pipewire
 
 Do I Need Pulse even if i want to use pipewire as much as possible?
 
-It depends, but usually yes. For example most people will want to use chromium,
+It depends, but usually yes. For example most people will want to use software like chromium,
 chromium by default ships `libpulse0` in debian as a dependency, `libpulse0`
 is "used by applications that access a PulseAudio
 sound server via PulseAudio's native interface" - this is the core of pulse
