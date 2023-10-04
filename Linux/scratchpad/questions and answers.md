@@ -1,6 +1,6 @@
 # Debugging Mega Section
 
-### Fix Alsa Using Wrong Audio Card
+## Fix Alsa Using Wrong Audio Card
 
 Use `aplay -l` to list the possible devices, find the device you want.
 
@@ -18,7 +18,7 @@ ctl.!default {
 }
 ```
 
-### Add user details to github
+## Add user details to github
 
 This happens when github doesnt know who you are on a device.
 Your email is the email that you registered to gihub with.
@@ -26,7 +26,7 @@ Your email is the email that you registered to gihub with.
 The name is your github username
 `git config --global user.name RolandWarburton`.
 
-### Difference between & and &&
+## Difference between & and &&
 
 when you string commands together you have 2 options
 
@@ -34,7 +34,7 @@ when you string commands together you have 2 options
 * `command1 && command2`. command1 has to be returned 0 (no errors) BEFORE command2 starts
 * `command1; command2`. command1 will run THEN command2 will run after (sequential, waits for 1 to finish first)
 
-### Using grep in a shell script runs for each word individually
+## Using grep in a shell script runs for each word individually
 
 ```bash
 # The problem...
@@ -57,7 +57,7 @@ mystring = "hello world"
 echo ${mystring} | grep "hello"
 ```
 
-### Cannot write to files on NFS when its mounted through Thunar
+## Cannot write to files on NFS when its mounted through Thunar
 
 This happens when an ftp connection is being used. this is unsecure so you cannot write.
 However if you know you are using a secure connection it may be because of file permissions. The following steps are debug instructions to debug that.
@@ -68,12 +68,12 @@ However if you know you are using a secure connection it may be because of file 
 4. Set the GID for all subfolders too `sudo chmod g+s /home/myNFSFolder`
 Make sure the user is in the correct group with the `groups 'username'`` command and add them if not.
 
-### Thunar Freezes when a NFS drive is connected
+## Thunar Freezes when a NFS drive is connected
 
 Make sure `nfs-utils` is installed on the system. Once installed restart Thunar's daemon with `thunar -q` or kill it with `sudo pkill thunar`.
 You can also try to unmount the drive with `sudo umount -af -t nfs`
 
-### Wireless network not working (driver issues)
+## Wireless network not working (driver issues)
 
 These steps are relevent when you run `lshw -c network` and your wireless card tells your either *\*-network UNCLAIMED* or *\*-network DISABLED*
 
@@ -81,26 +81,26 @@ These steps are relevent when you run `lshw -c network` and your wireless card t
 2. Observe the output of `lshw -c network` and it should display `*-network DISABLED`. If not your driver is likely not supported as it was not contained in linux firmwares packages.
 3. Enable the network with `sudo ip link set dev wlp3s0 up`. wlp3s0 is the name of my network card. You can also turn it on through some graphical interfaces such as [cmst](https://www.archlinux.org/packages/community/x86_64/cmst/)] for [connman](https://wiki.archlinux.org/index.php/ConnMan).
 
-### StartX Debugging
+## StartX Debugging
 
-#### xf86OpenConsole: Cannot open virtual console 1 (Permission denied)
+### xf86OpenConsole: Cannot open virtual console 1 (Permission denied)
 
 This is caused by switching user. in particular when you log in as root then switch user.
 To fix log out (or restart) then log back in as the user you want to run the startx command on.
 
-#### startx failed to set iopl for i/o operation not permitted
+### startx failed to set iopl for i/o operation not permitted
 
 Are you missing drivers?
 I reinstalled `xf86-video-vesa` and installed `xf86-video-intel` (for my intel intergrated graphics laptop) and this solved startx not running.
 
 Also make sure that you have a .xinitrc in your home directory. there is an example one in `/etc/X11/xinit/xinitrc`
 
-### Remove old boot entries (created by boot managers)
+## Remove old boot entries (created by boot managers)
 
 You can do this installed in the live media off a usb or in the full environment if you need to.
 Run `efibootmgr` to see the list of boot entries. and then `efibootmgr -b #### -B` -b to specify the boot id and -B to specify delete.
 
-### Cannot remove EFI boot entries (re-appearing entries)
+## Cannot remove EFI boot entries (re-appearing entries)
 
 If you remove a boot entry as instructed above (Remove old boot entries) and reboot and it comes back.
 This may be due to a BIOS entry called *"reserve memory for uefi boot manager"*.
@@ -110,7 +110,7 @@ This means that when UEFI starts, the boot process may be looking at the firmwar
 
 A Side effect/extra note is that your boot options list (pressing f12 to boot from a specific drive) will also not detect these hidden entries.
 
-### How to image an iso to a usb (create bootable media)
+## How to image an iso to a usb (create bootable media)
 
 Use dd (data duplicator).
 
@@ -123,7 +123,7 @@ Other common flags are.
 
 * BS=(number)
 
-### How to wipe a drive
+## How to wipe a drive
 
 * You can use the `wipe -r /dev/sdX`. command from the [repos](https://www.archlinux.org/packages/extra/x86_64/wipe/). This will do a quick erase of the disk.
 * To entirely nuke a drive (similar to DBAN) use the `shred` command - `shred -v /dev/sdX`. -v for verbose. This is my preffered method as it avoids the "stack smashing" error that wipe sometimes throws (stack smashing is caused by buffer overflows, not sure why this happens though).
@@ -134,7 +134,7 @@ A common command for shredding a drive is to **-f**orce and only iterate once (-
 sudo shred -f -n1 /dev/sdx
 ```
 
-### Cant use echo in bash script
+## Cant use echo in bash script
 
 Use printf instead.
 
@@ -143,11 +143,11 @@ myvar="hello"
 printf 'test '${myvar}' test';
 ```
 
-### sudo open a file in Ranger
+## sudo open a file in Ranger
 
 press *space* to select the file then press *@* and type *sudo nano*
 
-### Updating NPM and NODE to latest versions
+## Updating NPM and NODE to latest versions
 
 NPM already should be the latest version. verify the version at the [website](https://www.npmjs.com/package/npm)
 
@@ -155,7 +155,7 @@ NODE however is not the latest version. update it by installing Node Version Man
 
 Once installed list avaliable versions with `nvm ls-remote` and install a version with `nvm install x.x.x`.
 
-### applications showing unrecognized characters (placeholders)
+## applications showing unrecognized characters (placeholders)
 
 Install the entire noto fonts package as a fallback for fonts. In particular `noto-fonts-cjk` for Chinese, Japanese, and Korean support.
 
@@ -165,12 +165,12 @@ noto-fonts-emoji noto-fonts-cjk noto-fonts noto-fonts-extra noto-fonts
 
 Then run `fc-cache -vf` to refresh your fonts and then reboot.
 
-### VSCode cant save stuff as sudo
+## VSCode cant save stuff as sudo
 
 The regular official *code* package cannot do this according to the [wiki](https://wiki.archlinux.org/index.php/Visual_Studio_Code).
 You can solve this by installing the AUR binary version thats contains proprietary stuff from microsoft [here](https://aur.archlinux.org/packages/visual-studio-code-bin/).
 
-### tree command using weird Characters
+## tree command using weird Characters
 
 tree looks like this
 
@@ -196,54 +196,54 @@ export LC_CTYPE=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 ```
 
-### Flameshot doesnt run
+## Flameshot doesnt run
 
 This issue happened when i switched over from a display manager (sddm) to xorg-xinit (~/.xinitrc).
 `flameshot` froze the terminal and `flameshot gui` simply didnt start the application.
 
 I think i solved this issue by changing my .xinitrc so that it uses dbus_launch to launch the desktop. `exec dbus-launch openbox-session`
 
-### See list of uninstalled packages in pacman
+## See list of uninstalled packages in pacman
 
 ```bash
 grep 'removed' /var/log/pacman.log
 ```
 
-### Boot stuck on *Reached target graphical interface*
+## Boot stuck on *Reached target graphical interface*
 
 This is an ongoing issue that i have had with my home computer. I havent solved it (it solved itself) yet but here is what i have done so far.
 
 * Make journalctl log bigger. this avoids journalctl being *rotated* which can display when looking at the systemctl status of some process, ie. when it freezes and you ctrl+alt+f2 to look at the status of sddm to see what its doing. `sudo journalctl --verify` and `journalctl --vacuum-size=200M` to Delete old logs for debugging.
 * Install the *nvidia* package.
 
-### Download stuff off a website where you cant FTP in
+## Download stuff off a website where you cant FTP in
 
 Use a * in the filepath to **r**ecursively download all files from that point onwards.
 
 `wget -r website.com/directory/*`
 
-### Cannot find terminfo entry for 'some-terminal' when using screen over ssh
+## Cannot find terminfo entry for 'some-terminal' when using screen over ssh
 
 My solution to this was to install the same terminal on the host im connecting to.
 This installs a terminfo file which you then need to export as a chosen terminal (export TERM=someterm)
 
-### see the version of the OS i am on
+## see the version of the OS i am on
 
 `lsb-release -a` OR `hostnamectl`\
 Rolling release distros like arch just say the release is 'rolling'. Whereas ubuntu has versions 'bionic', 'disco dingo', etc.
 
-### see the kernal i am using
+## see the kernal i am using
 
 `uname`\
 -r = release. (prints '5.4.1-arch1-1')\
 -n = nodename/hostname (prints ...@'arch' or ...@'roland')\
 -s = kernal (prints 'Linux')
 
-### Figlet font locations
+## Figlet font locations
 
 `/usr/share/figlet/fonts` (only .flf fonts seem to work)
 
-### Recursive search folders and files for text
+## Recursive search folders and files for text
 
 `grep -rw . -e 'TextToSearch'`\
 -r = recursive\
@@ -254,7 +254,7 @@ Rolling release distros like arch just say the release is 'rolling'. Whereas ubu
 You can also use a file of patterns to check (one per line)\
 `grep -rw . -f patterns.txt`
 
-### Can't connect to ftp server (Connection refused)
+## Can't connect to ftp server (Connection refused)
 
 I had this issue with a VPS once. The solution was to open up the ports for ftp again on the host.
 
@@ -271,7 +271,7 @@ Furthermore there are a couple ways to check for open ports.
 `sudo lsof -i -P -n | grep LISTEN`\
 `sudo firewall-cmd --list-ports` and `sudo firewall-cmd --list-services`
 
-### Errors When connecting to a ssh host and you get these errors when trying to use nano (eg. nano testfile > error)
+## Errors When connecting to a ssh host and you get these errors when trying to use nano (eg. nano testfile > error)
 
 `ERROR: /bin/sh: 1: /usr/bin/sensible-editor: not found`
 `ERROR: Error opening terminal: xterm-kitty.`
@@ -281,7 +281,7 @@ Furthermore there are a couple ways to check for open ports.
 export TERM=xterm
 ```
 
-### Backspace and Tab are spaces instead when in SSH
+## Backspace and Tab are spaces instead when in SSH
 
 Reset the terminal variable
 
@@ -290,11 +290,11 @@ Reset the terminal variable
 export TERM=xterm
 ```
 
-### Check what filesystem type you are using
+## Check what filesystem type you are using
 
 `lsblk -f` -f outputs info about filesystems
 
-### My Time and Date are all fucked up
+## My Time and Date are broken
 
 1. Verify your timezone `timedatectl status`.
 2. See all available timezones with `timedatectl list-timezones`
@@ -309,7 +309,7 @@ Time zone: UTC (UTC, +0000)
 Time zone: Australia/Melbourne (AEDT, +1100)
 ```
 
-### What does curl piped into -E Mean
+## What does curl piped into -E Mean
 
 ```none
 curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
@@ -317,7 +317,7 @@ curl -sL https://deb.nodesource.com/setup_13.x | sudo -E bash -
 
 `Curl -s (silent) -L` (follow redirects). Then pipe it and execute the script from the url in into bash and preserve the existing environment variables (-E), Finally the - means "the thing thats being piped".
 
-##### Further explanation of the pipe part of the command
+### Further explanation of the pipe part of the command
 
 `someCommand | **sudo** -E **bash** -`\
 Pipe the command into bash (like running it as sudo in bash normally).\
@@ -326,7 +326,7 @@ Preserve the environment variables in my bash environment\
 `someCommand | sudo -E bash **-**`\
 Substitute the result of someCommand into '-'
 
-### NVENC codec - OBS
+## NVENC codec - OBS
 
 The error `Failed to open NVENC codec: Unknown error occurred` occurs when you have updated your linux version and not restarted.
 
@@ -334,7 +334,7 @@ To verify that this is causing the issue run the commands `pacman -Q linux` and 
 
 If they do not match, then to resolve this you can restart and in 9/10 cases it will fix and they will match.
 
-### Setting up John The Ripper in arch
+## Setting up John The Ripper in arch
 
 There is a small gotcha with the current john package provided on the Arch repos.
 
@@ -353,7 +353,7 @@ Next verify that you can run the command, i have only successfully got this runn
 
 You can verify that `/usr/lib/john/lib/` by running `echo $PATH` and observing the former path not being present.
 
-### Fans not appearing on sensors
+## Fans not appearing on sensors
 
 When running the `sensors` command from `lm_sensors` i had a problem where fan speeds were not reported. These are the debugging steps that i remember 
 that resolved the issue.
@@ -370,21 +370,22 @@ sudo modprobe nct6775
 
 See more information about this under my "NAS setup" log
 
-### Prevent gnome from creating Videos, Documents, Desktop etc
+## Prevent gnome from creating Videos, Documents, Desktop etc
 
 Edit `/etc/xdg/user-dirs.conf` and set the first variable line to "False".
 
-### Fixing terminal keys
+## Fixing terminal keys
 
 I may have covered this before, however (in zsh) i have found the best solution and will describe the steps to fixing the problem of incorrectly mapped keys below.
 
-#### The problem
+### The problem
 
 When some interesting keys are pressed, instead of performing their action, a keycode is sent, for example `OH` or `OF` for home and end respectively.
 
-#### Diagnosing a solution
+### Diagnosing a solution
 
-##### 1. Inspecting your keycodes
+#### 1. Inspecting your keycodes
+
 I only have a good solution for this in zsh (using zkbd). Firstly however, you need to investigate what keycodes you are currently using. to do this use either of these methods (i used ctrl + v).
 
 1. Use `ctrl + v, any_key` to print its keycode
@@ -394,7 +395,7 @@ I only have a good solution for this in zsh (using zkbd). Firstly however, you n
 
 So for example the home key returns `OH`, note this down as you will encounter this later.
 
-##### 2. Inspecting your $TERM
+#### 2. Inspecting your $TERM
 
 Next check your $TERM in various states, firstly check what $TERM is in your preffered terminal, i am using urxvt and urxvt reports that `echo $TERM` is `rxvt-unicod` whilst not in tmux, and `screen-256color` while in tmux.
 
@@ -416,7 +417,7 @@ set -g default-terminal "screen-256color"
 set -g default-terminal 'tmux-256color'
 ```
 
-##### 3. Inspecting /etc/inputrc
+#### 3. Inspecting /etc/inputrc
 
 This section is largely not important for me as all the provided config below in this section is within an `$if mode=emacs` block, and im not using emacs so... However its worth reviewing for any garbage values etc.
 
@@ -445,7 +446,7 @@ $if term=rxvt
 $endif
 ```
 
-#### The solution
+### The solution
 
 With the knowledge gathered above, the next parts will hopefully resolve the problems, make sure to closely inspect the configs here and to match them against your keycodes when needed.
 
@@ -475,7 +476,7 @@ zkbd will also give you some examples, here is a longer version of the examples 
 [[ -n ${key[Right]} ]] && bindkey "${key[Right]}" forward-char
 ```
 
-#### Fixing vim keys
+### Fixing vim keys
 
 After implementing the fixes in zkbd i was still having issues in vim, here some some extra configuration changes that i made.
 
@@ -498,7 +499,7 @@ imap <esc>[1;5D <C-Left>
 imap <esc>[1;5C <C-Right>
 ```
 
-#### Misc fixes
+### Misc fixes
 
 One last issue that wasnt resolved the zkbd was ctrl+arrow whilst inside the terminal, using a similar setup to the vimrc config i simply just remapped these keys quick and dirty to ther proper actions.
 
@@ -510,7 +511,7 @@ bindkey '^[[1;5C' forward-word
 bindkey '^[[3;5~' kill-word
 ```
 
-### Enabling and disabling display manager (DM) in Debian 10
+## Enabling and disabling display manager (DM) in Debian 10
 
 Based on [this post](https://unix.stackexchange.com/questions/264393/how-to-disable-x-server-autostart-in-debian-jessie).
 
@@ -526,14 +527,14 @@ To re-enable.
 systemctl set-default graphical.target
 ```
 
-### Downgrading Debian From SID to Buster
+## Downgrading Debian From SID to Buster
 
 Recently i ended up with a server that ended up on SID (the testing branch of debian) while i was trying to fix an unrelated issue.
 Now ideally i want to downgrade this server back to Buster because stability (also some SID packages were breaking dependencies for me), unfortunately debian doesn't REALLY support this, and the solution is to revert to a backup - however i didn't have a backup so had to risk the downgrade.
 
 Fortunately i found a great solution [here](https://www.adammargherio.com/reverting-debian-from-sid-to-stable/) that explains how to downgrade simply and easily. Keep in mind that this didn't downgrade my kernel.
 
-#### Reverting - Step 1. Change Your Sources
+### Reverting - Step 1. Change Your Sources
 
 Firstly you need to change your `/etc/apt/sources.list` to remove all the SID repos, mine ended up looking like this.
 
@@ -568,7 +569,7 @@ Pin-Priority: 1001
 
 To stay on the safe side you should leave this file here even after you upgrade as the article that i got this information from is unsure if you can remove it or not.
 
-#### Reverting - Step 2. The Moment of Truth
+### Reverting - Step 2. The Moment of Truth
 
 Now run...
 
@@ -587,7 +588,7 @@ Replace the 5.10-0.3-amd with whichever version is available for the release you
 sudo apt-get install linux-image-5.10.0-3-amd
 ```
 
-### Docker not starting
+## Docker not starting
 
 Try [this](https://github.com/docker/cli/issues/2104).
 
