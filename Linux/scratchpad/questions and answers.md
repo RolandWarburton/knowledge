@@ -1,5 +1,23 @@
 # Debugging Mega Section
 
+### Fix Alsa Using Wrong Audio Card
+
+Use `aplay -l` to list the possible devices, find the device you want.
+
+Then create `~/.asoundrc` and write your config like below, changing `card 1` to the card you want.
+
+```none
+pcm.!default {
+    type hw
+    card 1
+}
+
+ctl.!default {
+    type hw
+    card 1
+}
+```
+
 ### Add user details to github
 
 This happens when github doesnt know who you are on a device.
