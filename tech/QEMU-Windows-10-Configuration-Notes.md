@@ -1,6 +1,6 @@
 # QEMU Windows 10 Configuration Notes
 
-For a more in-depth and general overview, i have nodes on QEMU in Linux/Virtulization.md
+For a more in-depth and general overview, i have notes on QEMU in Linux/core concepts/Virtualization.md
 within this repository on github (rolandwarburton/knowledge)
 
 For situations that require windows, such as building & packaging software
