@@ -526,6 +526,7 @@ Then add yourself to groups.
 export USERNAME=roland
 sudo usermod -aG sudo $USERNAME
 sudo usermod -aG kvm $USERNAME
+sudo usermod -aG libvirt $USERNAME
 ```
 
 Then start the service.
