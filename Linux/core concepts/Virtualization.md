@@ -541,13 +541,13 @@ Virtual machines can be managed via GUI through `virt-manager` (installed above)
 
 Create `domain.xml` that defines in "libvirt domain XML" how your VM should be created.
 
-```html
+```xml
 <domain type='kvm'>
   <name>win10</name>
   <memory unit='KiB'>4194304</memory>
   <vcpu placement='static'>2</vcpu>
   <os>
-    <type arch='x86_64' machine='pc-q35-8.0'>hvm</type>
+    <type arch='x86_64' machine='q35'>hvm</type>
     <boot dev='cdrom'/>
     <boot dev='hd'/>
   </os>
@@ -574,7 +574,7 @@ Create `domain.xml` that defines in "libvirt domain XML" how your VM should be c
     <!-- file system -->
     <disk type='file' device='disk'>
       <driver name='qemu' type='qcow2' discard='unmap'/>
-      <source file='/var/lib/libvirt/images/win10.qcow2' index='2'/>
+      <source file='/home/roland/windows-virtual-machines/images/win10-1.qcow2' index='2'/>
       <backingStore/>
       <target dev='sda' bus='sata'/>
       <alias name='sata0-0-0'/>
@@ -583,7 +583,7 @@ Create `domain.xml` that defines in "libvirt domain XML" how your VM should be c
     <!-- iso mount  -->
     <disk type='file' device='cdrom'>
       <driver name='qemu' type='raw'/>
-      <source file='/home/roland/Downloads/en-us_windows_10_22h2_x64.iso' index='1'/>
+      <source file='/home/roland/Downloads/win10_22H2.iso' index='1'/>
       <backingStore/>
       <target dev='sdb' bus='sata'/>
       <readonly/>
@@ -591,11 +591,10 @@ Create `domain.xml` that defines in "libvirt domain XML" how your VM should be c
       <address type='drive' controller='0' bus='0' target='0' unit='1'/>
     </disk>
     <!-- networking -->
-    <interface type='network'>
-      <mac address='52:54:00:f1:86:21'/>
-      <source network='default' portid='20cb4a90-36b7-4b7e-996f-ca261cd66050' bridge='virbr0'/>
-      <target dev='vnet11'/>
-      <model type='e1000e'/>
+    <interface type='direct'>
+      <mac address='f0:2f:74:32:c3:16'/>
+      <source dev='enp4s0'/>
+      <model type='virtio'/>
       <alias name='net0'/>
       <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
     </interface>
@@ -631,23 +630,34 @@ Create `domain.xml` that defines in "libvirt domain XML" how your VM should be c
 </domain>
 ```
 
-Then register and start it.
-
 ```bash
-# register
-virsh -c qemu:///system define domain.xml
+# create a blank image
+qemu-img create -f qcow2 /home/roland/windows-virtual-machines/images/win10-1.qcow2 20G
 
-# start
-virsh -c qemu:///system start win10_v2
+# register the machine
+virsh define --file win10-1.xml
 
-# confirm its running
-virsh -c qemu:///system list
+# start the machine
+virsh start win10
 ```
 
-You can stop the machine with.
+Other useful commands
 
 ```bash
-virsh -c qemu:///system destroy win10_v2
+# list machines
+virsh list
+
+# pools
+virsh pool-list --all
+virsh pool-undefine NAME
+virsh pool-destroy NAME
+
+# list networks
+virsh net-list --all
+
+# delete a machine
+virsh undefine NAME
+virsh destroy NAME
 ```
 
 ### Navigating Around QEMU
