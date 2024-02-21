@@ -535,6 +535,12 @@ Then start the service.
 sudo systemctl enable libvirtd
 ```
 
+Alias virsh to this command helped it work smoothly.
+
+```none
+alias virsh="virsh -c qemu:///system"
+```
+
 Virtual machines can be managed via GUI through `virt-manager` (installed above).
 
 ### Creating And Starting Machines
@@ -591,12 +597,10 @@ Create `domain.xml` that defines in "libvirt domain XML" how your VM should be c
       <address type='drive' controller='0' bus='0' target='0' unit='1'/>
     </disk>
     <!-- networking -->
-    <interface type='direct'>
-      <mac address='f0:2f:74:32:c3:16'/>
-      <source dev='enp4s0'/>
+  <interface type='network'>
+      <mac address='52:54:00:11:22:33'/>
+      <source network='network'/>
       <model type='virtio'/>
-      <alias name='net0'/>
-      <address type='pci' domain='0x0000' bus='0x01' slot='0x00' function='0x0'/>
     </interface>
     <!-- input -->
     <input type='mouse' bus='ps2'>
@@ -630,12 +634,37 @@ Create `domain.xml` that defines in "libvirt domain XML" how your VM should be c
 </domain>
 ```
 
+```xml
+<!-- network.xml -->
+<network>
+  <name>network</name>
+  <uuid>25b42fce-ba6c-4329-908b-72a72eec22d1</uuid>
+  <forward mode="nat">
+    <nat>
+      <port start="1024" end="65535"/>
+    </nat>
+  </forward>
+  <bridge name="virbr0" stp="on" delay="0"/>
+  <mac address="52:54:00:b1:cf:b2"/>
+  <domain name="network"/>
+  <ip address="192.168.100.1" netmask="255.255.255.0">
+    <dhcp>
+      <range start="192.168.100.128" end="192.168.100.254"/>
+    </dhcp>
+  </ip>
+</network>
+```
+
 ```bash
 # create a blank image
 qemu-img create -f qcow2 /home/roland/windows-virtual-machines/images/win10-1.qcow2 20G
 
 # register the machine
 virsh define --file win10-1.xml
+
+# register and start the network
+virsh net-define ./network.xml
+virsh net-start network
 
 # start the machine
 virsh start win10
@@ -660,85 +689,11 @@ virsh undefine NAME
 virsh destroy NAME
 ```
 
-### Navigating Around QEMU
-
-I find that it helps to specify the connection string, so all QEMU commands should have begin with.
-
-```bash
-virsh -c qemu:///system
-```
-
-#### Pools
-
-```bash
-# list pools
-virsh -c qemu:///system pool-list --all
-
-# un-register pool
-virsh -c qemu:///system pool-destroy POOL_NAME
-
-# delete pool
-virsh -c qemu:///system pool-delete default
-
-# un-define the pool
-virsh -c qemu:///system pool-undefine default 
-```
-
-To create new pools you can define XML and enroll them using.
-
-Create `pool.xml`.
-
-```xml
-<pool type='dir'>
-  <name>my_pool</name>
-  <target>
-    <path>/var/lib/libvirt/images/</path>
-  </target>
-</pool>
-```
-
-```none
-virsh -c qemu:///system pool-define pool.xml
-virsh -c qemu:///system pool-autostart default
-virsh -c qemu:///system pool-build default
-```
-
-#### Volumes
-
-```bash
-# an example of a pool name would be "default"
-# an example of a volume name would be "win10.qcow2"
-
-# create a volume
-sudo qemu-img create -f qcow2 /var/lib/libvirt/images/VOL_NAME.qcow2 20G
-
-# list volumes
-virsh -c qemu:///system vol-list POOL_NAME
-
-# deleting a volume (VOL_NAME is the path to the volume)
-virsh -c qemu:///system vol-delete --pool POOL_NAME VOL_NAME
-```
-
-#### Machines
-
-```bash
-# an example of a machine name would be "win10"
-# the machine name is contained in domain.xml
-
-virsh -c qemu:///system define domain.xml
-
-# list all machines
-virsh -c qemu:///system list --all
-
-# start a machine
-virsh -c qemu:///system start MACHINE_NAME
-```
-
-Removing a machine involves these steps.
+To completely remove a machine.
 
 ```bash
 # remove a machine
-virsh -c qemu:///system define domain.xml
+virsh define domain.xml
 sudo rm -rf /var/lib/libvirt/images/MACHINE_NAME
 ```
 
@@ -746,10 +701,10 @@ When you are making changes to a machine use this script to quickly bring it dow
 
 ```bash
 export MACHINE_NAME='win10'
-virsh -c qemu:///system destroy $MACHINE_NAME
-virsh -c qemu:///system undefine $MACHINE_NAME
-virsh -c qemu:///system define domain.xml
-virsh -c qemu:///system start $MACHINE_NAME
+virsh destroy $MACHINE_NAME
+virsh undefine $MACHINE_NAME
+virsh define --file win10.xml
+virsh start $MACHINE_NAME
 ```
 
 ### Issues with QEMU/KVM
@@ -770,3 +725,22 @@ Modify these values to be your current user.
 user = "roland"
 group = "kvm"
 ```
+
+### Getting RDP Working on Working
+
+Ensure you have `iptables-persistent` installed.
+
+```bash
+# Allow RDP traffic
+sudo iptables -A FORWARD -i virbr0 -o virbr0 -p tcp --dport 3389 -j ACCEPT
+
+# Forward RDP traffic to VM
+IP="192.168.100.100"
+sudo iptables -t nat -A PREROUTING -p tcp -i virbr0 -d 192.168.100.100 --dport 3389 -j DNAT --to $IP:3389
+
+# Save iptables rules
+sudo iptables-save > /etc/iptables/rules.v4
+```
+
+Then use your favorite RDP [software](https://remmina.org/) to connect.
+Make sure you add more IP addresses as you create more VMs.
