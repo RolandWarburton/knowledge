@@ -48,11 +48,19 @@ Ensure focus events are enabled in your `.tmux.conf`
 set -g focus-events on
 ```
 
-Each tmux pane as an index number that we can use to send commands to.
+Each tmux pane has an index number that we can use to send commands to.
 To find the index of the current pane run.
+
+You may also need to find the pane_pid which
+is the PID of the running processing inside a tmux pane.
 
 ```bash
 tmux display-message -p "#{pane_index}"
+tmux display-message -p "#{pane_pid}"
+
+# find the PID of a pane_index
+export target_pane_index=1
+tmux list-panes -a -F '#{pane_index} #{pane_pid}' | grep "$target_pane_index " | cut -d ' ' -f2 
 ```
 
 Consider this command which creates an event that runs each time you focus a new pane.
@@ -66,5 +74,8 @@ tmux set-hook -g pane-focus-in "run-shell 'echo #{pane_index} > /home/roland/.tm
 Lets improve this to keep only the last 10 pane_indexs in memory.
 
 ```bash
-tmux set-hook pane-focus-in "run-shell '(P=\"$HOME/.tmux-pane-id\"; echo #{pane_index} >> $P && tail -n 10 $P > $P.tmp && mv $P.tmp $P)'"
+tmux set-hook -g pane-focus-in "run-shell '(P=\"$HOME/.tmux-pane-id\"; echo #{pane_index} >> \$P && tail -n 10 \$P > \$P.tmp && mv \$P.tmp \$P)'"
 ```
+
+We can now track the last 10 panes we visited by their index, run this command in an open pane
+and move between panes to see the pane indexes be pushed to the `.tmux-pane-id` file
