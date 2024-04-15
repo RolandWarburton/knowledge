@@ -79,3 +79,66 @@ tmux set-hook -g pane-focus-in "run-shell '(P=\"$HOME/.tmux-pane-id\"; echo #{pa
 
 We can now track the last 10 panes we visited by their index, run this command in an open pane
 and move between panes to see the pane indexes be pushed to the `.tmux-pane-id` file
+
+### Toast Pane Index
+
+This will flash on each tmux pane its index.
+
+```bash
+tmux display-pane
+```
+
+### Find Running Processes in Tmux Panes
+
+For scripting purposes we may need to check what processes are running inside a tmux pane.
+We can use a tool `pstree` for this.
+
+First we need to find the pane PID, we can use the below to find the PID for a given index.
+
+```bash
+export pane_index="1"
+tmux list-panes -a -F '#{pane_index} #{pane_pid}' | grep "$pane_index " | cut -d' ' -f 2
+```
+
+Then call `pstree` to see whats running under the parent process.
+
+```bash
+# 29212 is the PID
+# -p show pids
+# -A ascii output
+pstree -pA 29212
+```
+
+An example of neovim.
+
+```none
+zsh(29212)───nvim(34028)─┬─nvim(34031)─┬─{nvim}(34032)
+                         │             ├─{nvim}(34034)
+                         │             ├─{nvim}(34038)
+                         │             ├─{nvim}(34100)
+                         │             ├─{nvim}(34101)
+                         │             ├─{nvim}(34102)
+                         │             ├─{nvim}(34103)
+                         │             ├─{nvim}(34104)
+                         │             ├─{nvim}(85658)
+                         │             ├─{nvim}(85824)
+                         │             └─{nvim}(85893)
+                         ├─{nvim}(34029)
+                         ├─{nvim}(34030)
+                         └─{nvim}(34033)
+```
+
+An example of nothing running.
+
+```none
+zsh(32149)
+```
+
+You can check if things are running by scanning this output.
+
+```bash
+export pane_pid="29212"
+if $(pstree -p "$pane_pid" | grep -qE 'nvim\([0-9+]\)'); then
+  echo "neovim is running in this pane"
+fi
+```
