@@ -16,13 +16,13 @@ Write a rule for this drive.
 
 ```bash
 # /etc/udev/rules.d/99-drive-names.rules
-KERNEL=="sd*", SUBSYSTEM=="block", ENV{ID_SERIAL}=="Samsung_SSD_870_EVO_1TB_ABCDEFG123", SYMLINK+="virtual-machines"
+KERNEL=="sd*1", SUBSYSTEM=="block", ENV{ID_SERIAL}=="Samsung_SSD_870_EVO_1TB_ABCDEFG123", SYMLINK+="virtual-machines"
 ```
 
 Then reload the rules.
 
 ```bash
-sudo udevadm control –reload-rules
+sudo udevadm control –-reload-rules
 
 sudo udevadm trigger
 ```
