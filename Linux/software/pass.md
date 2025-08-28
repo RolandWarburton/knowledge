@@ -308,3 +308,11 @@ Test the correct functioning of gpg by trying to encrypt a file.
 echo "hello" > test && gpg --symetric test`
 ```
 
+### Auto complete not working correctly
+
+Try regenerating the auto complete system.
+Following the code below if you are using zsh.
+
+```bash
+autoload -Uz compinit && compinit
+```
