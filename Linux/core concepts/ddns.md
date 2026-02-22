@@ -31,8 +31,8 @@ Create a your DDNS script.
 #!/bin/bash
 set -euo pipefail
 
+RECORD_NAME="laptop.example.net"
 ZONE_ID="${CF_ZONE_ID}"
-RECORD_NAME="nimbus.wirecrop.net"
 API_TOKEN="${CF_API_TOKEN}"
 
 # Get current public IP
@@ -84,7 +84,7 @@ Next create the service and timer files
 ```bash
 # /etc/systemd/system/ddns.service
 [Unit]
-Description=Update Cloudflare DNS for nimbus.wirecrop.net
+Description=Update Cloudflare DNS for laptop.example.net
 After=network-online.target
 Wants=network-online.target
 
