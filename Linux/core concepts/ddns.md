@@ -32,8 +32,8 @@ Create a your DDNS script.
 set -euo pipefail
 
 RECORD_NAME="laptop.example.net"
-ZONE_ID="${CF_ZONE_ID}"
-API_TOKEN="${CF_API_TOKEN}"
+ZONE_ID="${ZONE_ID}"
+API_TOKEN="${API_TOKEN}"
 
 # Get current public IP
 IP=$(curl -sf https://ifconfig.co) || { echo "Failed to get IP"; exit 1; }
@@ -63,18 +63,18 @@ echo "Updated ${RECORD_NAME} to ${IP}"
 
 ## Create the secrets file
 
-Next create a location to store the Cloudflare secrets `/etc/ddns.env`.
+Next create a location to store the Cloudflare secrets `/etc/credentials/ddns.env`.
 Make sure the environment values are not quoted.
 
 ```none
-CF_ZONE_ID=PLACEHOLDER
-CF_API_TOKEN=PLACEHOLDER
+ZONE_ID=PLACEHOLDER
+API_TOKEN=PLACEHOLDER
 ```
 
 Make sure to secure the file:
 
 ```bash
-sudo chmod 600 /etc/ddns.env
+sudo chmod 600 /etc/credentials/ddns.env
 ```
 
 ## Create the service and timer files
@@ -90,7 +90,7 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
-EnvironmentFile=/etc/ddns.env
+EnvironmentFile=/etc/credentials/ddns.env
 ExecStart=/usr/local/bin/ddns.sh
 ```
 
